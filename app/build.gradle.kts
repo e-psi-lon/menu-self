@@ -16,14 +16,22 @@ android {
         targetSdk = 33
         versionCode = 1
         versionName = "0.5"
-        if (project.hasProperty("args")) {
-            versionName += " (build ${project.property("args")})"
+        if (project.hasProperty("hash")) {
+            versionName += " (build ${project.property("hash")})"
         }
-        buildConfigField("String", "GIT_COMMIT_HASH", "\"${if (project.hasProperty("args")) project.property("args") else "unknown"}\"")
+        buildConfigField("String", "GIT_COMMIT_HASH", "\"${if (project.hasProperty("hash")) project.property("hash") else "unknown"}\"")
 
 
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+    signingConfigs {
+        create("release") {
+            keyAlias = "menu-self"
+            keyPassword = System.getenv("GPLAY_KEYSTORE_PASSWORD")
+            storeFile = file("../menu-self.jks")
+            storePassword = System.getenv("GPLAY_KEYSTORE_PASSWORD")
+        }
     }
 
     buildTypes {
@@ -33,6 +41,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
