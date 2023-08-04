@@ -5,7 +5,6 @@ plugins {
 
 android.buildFeatures.buildConfig = true
 // On importe ByteOutputStream pour pouvoir récupérer le hash de la dernière version de l'application
-
 android {
     namespace = "fr.e_psi_lon.menuself"
     compileSdk = 33
@@ -16,10 +15,10 @@ android {
         targetSdk = 33
         versionCode = 1
         versionName = "0.5"
-        if (project.hasProperty("hash")) {
-            versionName += " (build ${project.property("hash")})"
+        if (System.getenv("sha_short") != null) {
+            versionName += " (build ${System.getenv("sha_short")})"
         }
-        buildConfigField("String", "GIT_COMMIT_HASH", "\"${if (project.hasProperty("hash")) project.property("hash") else "unknown"}\"")
+        buildConfigField("String", "GIT_COMMIT_HASH", "\"${if (System.getenv("sha_short") != null) System.getenv("sha_short") else "unknown"}\"")
 
 
 
