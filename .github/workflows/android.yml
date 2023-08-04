@@ -10,7 +10,17 @@ jobs:
     env:
       GPLAY_KEYSTORE_PASSWORD: ${{ secrets.GPLAY_KEYSTORE_PASSWORD }}
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        path: "src"
+
+    - name: Checkout builds
+      uses: actions/checkout@v2
+      with:
+          ref: "builds"
+          path: "builds"
+
     - name: Adding some values
       run:
         echo "sha_short=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
