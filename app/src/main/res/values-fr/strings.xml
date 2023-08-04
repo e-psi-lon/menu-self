@@ -21,4 +21,6 @@
     <string name="loading_version">chargement de la version</string>
     <string name="made_by">Fait par e_psi_lon</string>
     <string name="version">Version %s</string>
+    <string name="no_day_data">Aucune donnée pour ce jour</string>
+    <string name="no_menu_this_day">Aucun menu chargé pour le %s</string>
 </resources>

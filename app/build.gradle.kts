@@ -2,20 +2,9 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
 }
-// On importe ByteOutputStream pour pouvoir récupérer le hash de la dernière version de l'application
-import java.io.ByteArrayOutputStream
-fun getCommitHash(): String {
-    val out = ByteArrayOutputStream()
-    val result = exec {
-        commandLine = listOf("git", "rev-parse", "--short", "HEAD")
-        standardOutput = out
-    }
-    if (result.exitValue == 0) {
-        return out.toString().trim()
-    }
-    return "unknown"
-}
 
+android.buildFeatures.buildConfig = true
+// On importe ByteOutputStream pour pouvoir récupérer le hash de la dernière version de l'application
 
 android {
     namespace = "fr.e_psi_lon.menuself"
@@ -26,8 +15,11 @@ android {
         minSdk = 24
         targetSdk = 33
         versionCode = 1
-        versionName = "0.5 build ${getCommitHash()}"
-        buildConfigField("String", "GIT_COMMIT_HASH", "\"${getCommitHash()}\"")
+        versionName = "0.5"
+        if (project.hasProperty("args")) {
+            versionName += " (build ${project.property("args")})"
+        }
+        buildConfigField("String", "GIT_COMMIT_HASH", "\"${if (project.hasProperty("args")) project.property("args") else "unknown"}\"")
 
 
 

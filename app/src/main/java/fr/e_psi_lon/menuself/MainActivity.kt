@@ -33,10 +33,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var dayView: TextView
     private lateinit var dayMinusButton: ImageButton
     private lateinit var menu: Menu
-    private lateinit var cachedMenu: Menu
     private val dayInWeek: List<String> = listOf("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday")
     private var currentDay: String = getDayOfWeek()
-    var currentPage = "noon"
+    private lateinit var currentPage: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,61 +50,56 @@ class MainActivity : AppCompatActivity() {
         dayView = findViewById(R.id.dateTextView)
         statusView = findViewById(R.id.statusTextView)
 
+        currentPage = if (intent.hasExtra("currentPage")) {
+            intent.getStringExtra("currentPage")!!
+        } else {
+            "noon"
+        }
+
         // Mettre à jour la ListView avec les menus
         println("Fetching menu data...")
-        fetchMenuData(0, 2)
+        if (currentPage == "noon") {
+            fetchMenuData(0, 2)
+        } else if (currentPage == "evening") {
+            // Need to change the background color of the button
+            noonButton.setBackgroundColor(ContextCompat.getColor(this,
+                R.color.colorSecondaryVariant))
+            eveningButton.setBackgroundColor(ContextCompat.getColor(this,
+                R.color.colorSelectedPageBackground))
+            settingsButton.setBackgroundColor(ContextCompat.getColor(this,
+                R.color.colorSecondaryVariant))
+            fetchMenuData(2, 4)
+        }
+
 
         // Gérer les clics sur les boutons de navigation
         noonButton.setOnClickListener {
             if (currentPage != "noon") {
-                // Faire quelque chose lorsque le bouton "Menu du noon" est cliqué
-                currentPage = "noon"
-                noonButton.setBackgroundColor(ContextCompat.getColor(this,
-                    R.color.colorSelectedPageBackground))
-                eveningButton.setBackgroundColor(ContextCompat.getColor(this,
-                    R.color.colorSecondaryVariant))
-                settingsButton.setBackgroundColor(ContextCompat.getColor(this,
-                    R.color.colorSecondaryVariant))
-                if (::cachedMenu.isInitialized) {
-                    menu = cachedMenu
-                    showMenu(currentDay)
-                } else {
-                    cachedMenu = menu
-                    fetchMenuData(0, 2)
-                }
+                startActivity(Intent(this, MainActivity::class.java).apply {
+                    putExtra("currentPage", "noon")
+                })
+                finish()
             }
         }
 
         eveningButton.setOnClickListener {
             if (currentPage != "evening") {
-                currentPage = "evening"
-                noonButton.setBackgroundColor(ContextCompat.getColor(this,
-                    R.color.colorSecondaryVariant))
-                eveningButton.setBackgroundColor(ContextCompat.getColor(this,
-                    R.color.colorSelectedPageBackground))
-                settingsButton.setBackgroundColor(ContextCompat.getColor(this,
-                    R.color.colorSecondaryVariant))
-                if (::cachedMenu.isInitialized) {
-                    menu = cachedMenu
-                    showMenu(currentDay)
-                } else {
-                    cachedMenu = menu
-                    fetchMenuData(2, 4)
-                }
+                startActivity(Intent(this, MainActivity::class.java).apply {
+                    putExtra("currentPage", "evening")
+                })
+                finish()
             }
-
         }
 
         settingsButton.setOnClickListener {
             // Faire quelque chose lorsque le bouton "Paramètres" est cliqué
             if (currentPage != "settings") {
-                currentPage = "settings"
                 val intent = Intent(this, SettingsActivity::class.java)
                 // We start the activity
+                intent.putExtra("currentPage", "settings")
                 startActivity(intent)
-
+                finish()
             }
-
         }
 
         dayPlusButton.setOnClickListener {
@@ -258,6 +252,22 @@ class MainActivity : AppCompatActivity() {
             statusView.visibility = View.VISIBLE
             return@launch
         }
+        if (menu.getDay(getFrench(day)).name == "") {
+            dayView.text = getTranslatedString(currentDay)
+            menuListView.visibility = View.GONE
+            statusView.text = getString(R.string.no_day_data)
+            statusView.visibility = View.VISIBLE
+            return@launch
+        }
+
+        if (menu.getDay(getFrench(day)).meals.isEmpty()) {
+            dayView.text = day
+            menuListView.visibility = View.GONE
+            statusView.text = getString(R.string.no_menu_this_day, menu.getDay(getFrench(day)).name)
+            statusView.visibility = View.VISIBLE
+            return@launch
+        }
+
         try {
             println("Trying to change date for $day")
             dayView.text = menu.getDay(getFrench(day)).name

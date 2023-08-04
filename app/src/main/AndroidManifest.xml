@@ -20,5 +20,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="fr.e_psi_lon.menuself.SettingsActivity"
+            android:exported="true" >
+        </activity>
+
     </application>
 </manifest>

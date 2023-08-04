@@ -10,6 +10,9 @@
 
     <!-- Autres couleurs -->
     <color name="colorSelectedPageBackground">#777777</color>
+    <color name="sun">#FFD700</color>
+    <color name="moon">#FFFFFF</color>
+
 
     <!-- Couleurs dynamiques (Material You) -->
     <color name="dynamic_colorPrimary">@color/colorPrimary</color>

@@ -70,12 +70,12 @@
         android:layout_gravity="center_vertical"
         android:gravity="center"
         android:orientation="horizontal">
-        <!-- Liste des plats ou message "Aucun menu disponible" -->
+
         <ListView
             android:id="@+id/menuListView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
+            android:layout_gravity="top"
             android:layout_marginTop="16dp"
             android:divider="@android:color/transparent"
             android:dividerHeight="8dp"
@@ -112,7 +112,7 @@
             android:src="@drawable/ic_sun"
             android:background="@color/colorSelectedPageBackground"
             android:scaleType="fitCenter"
-            app:tint="#A0A0A0"
+            app:tint="@color/sun"
             android:contentDescription="@string/noon" />
 
         <!-- Bouton pour le menu du soir -->
@@ -126,7 +126,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="fitCenter"
             android:contentDescription="@string/evening"
-            app:tint="#A0A0A0" />
+            app:tint="@color/moon" />
 
         <!-- Bouton pour accéder aux paramètres -->
         <ImageButton
@@ -138,7 +138,7 @@
             android:padding="8dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="fitCenter"
-            app:tint="#A0A0A0"
+            app:tint="@color/colorOnSecondary"
             android:contentDescription="@string/settings" />
     </LinearLayout>
 
