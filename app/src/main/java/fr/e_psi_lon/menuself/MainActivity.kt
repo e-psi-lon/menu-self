@@ -59,11 +59,10 @@ class MainActivity : AppCompatActivity() {
             "noon"
         }
 
-        if (isNetworkAvailable()){
+        if (isNetworkAvailable() && !intent.hasExtra("currentPage")) {
             GlobalScope.launch(Dispatchers.IO) {
                 checkVersion()
             }
-
         }
 
         // Update the ListView with the menu
