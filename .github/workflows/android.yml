@@ -39,6 +39,11 @@ jobs:
         ./gradlew build
         cp app/build/outputs/apk/release/app-release.apk ../builds/app-release.apk
 
+    - name: Upload APK 
+       uses: actions/upload-artifact@v3 
+       with: 
+         name: app-release
+         path: $GITHUB_WORKSPACE/builds/app-release.apk
     - name: Push builds
       run: |
         cd $GITHUB_WORKSPACE/builds
