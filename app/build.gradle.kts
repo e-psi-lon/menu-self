@@ -13,12 +13,12 @@ android {
         applicationId = "fr.e_psi_lon.menuself"
         minSdk = 24
         targetSdk = 33
-        versionCode = 1
+        versionCode = 2
         versionName = "0.5"
-        if (System.getenv("sha_short") != null) {
-            versionName += " (build ${System.getenv("sha_short")})"
+        if (System.getenv("GITHUB_SHA") != null) {
+            versionName += " (build ${System.getenv("GITHUB_SHA").take(8)})"
         }
-        buildConfigField("String", "GIT_COMMIT_HASH", "\"${if (System.getenv("sha_short") != null) System.getenv("sha_short") else "unknown"}\"")
+        buildConfigField("String", "GIT_COMMIT_HASH", "\"${if (System.getenv("GITHUB_SHA") != null) System.getenv("GITHUB_SHA") else "unknown"}\"")
 
 
 
