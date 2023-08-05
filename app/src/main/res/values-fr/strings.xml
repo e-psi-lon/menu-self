@@ -23,4 +23,8 @@
     <string name="version">Version %s</string>
     <string name="no_day_data">Aucune donnée pour ce jour</string>
     <string name="no_menu_this_day">Aucun menu chargé pour le %s</string>
+    <string name="update_available">Mise à jour disponible\nChangelog : %s</string>
+    <string name="install_update">Installer la mise à jour</string>
+    <string name="cancel">Annuler</string>
+    <string name="no_changelog">Pas de changelog</string>
 </resources>

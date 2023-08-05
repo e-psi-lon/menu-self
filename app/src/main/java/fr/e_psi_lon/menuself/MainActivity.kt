@@ -19,10 +19,12 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import androidx.core.content.ContextCompat
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import java.util.Calendar
 
 class MainActivity : AppCompatActivity() {
-    // Déclarer les boutons de navigation
+    // Define navigation buttons and others variables
     private lateinit var layout: LinearLayout
     private lateinit var noonButton: ImageButton
     private lateinit var eveningButton: ImageButton
@@ -37,6 +39,7 @@ class MainActivity : AppCompatActivity() {
     private var currentDay: String = getDayOfWeek()
     private lateinit var currentPage: String
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -56,8 +59,14 @@ class MainActivity : AppCompatActivity() {
             "noon"
         }
 
-        // Mettre à jour la ListView avec les menus
-        println("Fetching menu data...")
+        if (isNetworkAvailable()){
+            GlobalScope.launch(Dispatchers.IO) {
+                checkVersion()
+            }
+
+        }
+
+        // Update the ListView with the menu
         if (currentPage == "noon") {
             fetchMenuData(0, 2)
         } else if (currentPage == "evening") {
@@ -72,7 +81,7 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        // Gérer les clics sur les boutons de navigation
+        // Register click event on navigation buttons
         noonButton.setOnClickListener {
             if (currentPage != "noon") {
                 startActivity(Intent(this, MainActivity::class.java).apply {
@@ -119,10 +128,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private suspend fun checkVersion() {
+        if (AutoUpdater.getLastCommitHash() != BuildConfig.GIT_COMMIT_HASH) {
+            AutoUpdater().show(supportFragmentManager, "AutoUpdater")
+        }
+    }
+
     private fun fetchMenuData(start:Int, stop: Int) = CoroutineScope(Dispatchers.IO).launch {
         // Remplacer cette partie par l'appel réel à l'API pour récupérer les menus
         val url = "https://standarddelunivers.wordpress.com/2022/06/28/menu-de-la-semaine/"
-        println("Fetching $url...")
         val doc: Document = Jsoup.connect(url).get()
         // On selectionne les deux derniers tableaux (3 et 4) qui correspondent au menu du soir
         val tables: MutableList<Element> = doc.select("table").toMutableList()
@@ -131,8 +145,6 @@ class MainActivity : AppCompatActivity() {
         val days: MutableList<String> = tables[0].select("thead").select("tr")
             .select("th").map { it.text() }.toMutableList()
         days.addAll(tables[1].select("thead").select("tr").select("th").map { it.text() }.toMutableList())
-        println("Days")
-        println(days)
         // On récupère les colonnes de chaque jour
         val day1: MutableList<String> = mutableListOf()
         val day2: MutableList<String> = mutableListOf()
@@ -144,43 +156,34 @@ class MainActivity : AppCompatActivity() {
             if (cells.size == 2) {
                 val plat1 = cells[0].text()
                 if ("<" in plat1) {
-                    println(plat1)
                     val platSplit = plat1.split("<")
                     day1.add(platSplit[0])
-                    println("Text added to day1 is ${platSplit[0]} (now day1 is $day1)")
                 } else if (plat1 == "" || plat1 == " ") {
                     continue
                 }
                 else {
                     day1.add(plat1)
-                    println("Text added to day1 is $plat1 (now day1 is $day1)")
                 }
                 val plat2 = cells[1].text()
                 if ("<" in plat2) {
-                    println(plat2)
                     val platSplit = plat2.split("<")
                     day2.add(platSplit[0])
-                    println("Text added to day2 is ${platSplit[0]} (now day2 is $day2)")
                 } else if (plat2 == "" || plat2 == " ") {
                     continue
                 }
                 else {
                     day2.add(plat2)
-                    println("Text added to day2 is $plat2 (now day2 is $day2)")
                 }
             } else if (cells.size == 1) {
                 val plat1 = cells[0].text()
                 if ("<" in plat1) {
-                    println(plat1)
                     val platSplit = plat1.split("<")
                     day1.add(platSplit[0])
-                    println("Text added to day1 is ${platSplit[0]} (now day1 is $day1)")
                 } else if (plat1 == "" || plat1 == " ") {
                     continue
                 }
                 else {
                     day1.add(plat1)
-                    println("Text added to day1 is $plat1 (now day1 is $day1)")
                 }
             }
         }
@@ -190,7 +193,6 @@ class MainActivity : AppCompatActivity() {
             if (cells.size == 2) {
                 val plat1 = cells[0].text()
                 if ("<" in plat1) {
-                    println(plat1)
                     val platSplit = plat1.split("<")
                     day3.add(platSplit[0])
                 }
@@ -202,7 +204,6 @@ class MainActivity : AppCompatActivity() {
                 }
                 val plat2 = cells[1].text()
                 if ("<" in plat2) {
-                    println(plat2)
                     val platSplit = plat2.split("<")
                     day4.add(platSplit[0])
                 }
@@ -215,7 +216,6 @@ class MainActivity : AppCompatActivity() {
             } else if (cells.size == 1) {
                 val plat1 = cells[0].text()
                 if ("<" in plat1) {
-                    println(plat1)
                     val platSplit = plat1.split("<")
                     day3.add(platSplit[0])
                 }
@@ -229,7 +229,6 @@ class MainActivity : AppCompatActivity() {
         }
         menu = Menu(Day(days[0], day1), Day(days[1], day2), Day(days[2], day3),
             Day(days[3], day4))
-        println("Menu object is $menu")
         showMenu(currentDay)
 
 
@@ -269,18 +268,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         try {
-            println("Trying to change date for $day")
             dayView.text = menu.getDay(getFrench(day)).name
-            println("Changing date for $day")
             menuListView.adapter = ArrayAdapter(this@MainActivity,
                 android.R.layout.simple_list_item_1, menu.getDay(getFrench(day)).meals)
-            println("Setting adapter with ${menu.getDay(getFrench(day)).meals}")
             menuListView.visibility = View.VISIBLE
-            println("Setting menuListView to visible")
             statusView.visibility = View.GONE
-            println("Setting statusView to gone")
         } catch (e: Exception) {
-            println("Exception: $e")
             statusView.text = getString(R.string.loading_error)
             statusView.visibility = View.VISIBLE
             menuListView.visibility = View.GONE
