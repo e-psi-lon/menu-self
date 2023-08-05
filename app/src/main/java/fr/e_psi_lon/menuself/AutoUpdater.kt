@@ -56,13 +56,18 @@ class AutoUpdater : DialogFragment() {
 
     private suspend fun getChangelog() {
         val output = httpRequest("https://api.github.com/repos/e-psi-lon/menu-self/commits/master")
+        println("Output (in getting changelog) is $output")
         if (output == "") {
             changelog = getString(R.string.no_changelog)
         }
         val json = JSONObject(output)
+        println("Hash is $hash")
+        println("Json hash is ${json.getString("sha").take(8)}")
         changelog = if (hash == json.getString("sha").take(8)) {
             // On obtient la valeur message de du champ commit
             val commit = json.getJSONObject("commit")
+            println("Commit is $commit")
+            println("Message is ${commit.getString("message")}")
             commit.getString("message")
         } else {
             getString(R.string.no_changelog)
@@ -159,10 +164,11 @@ class AutoUpdater : DialogFragment() {
     companion object {
         suspend fun getLastCommitHash(): String {
             val output = AutoUpdater().httpRequest("https://api.github.com/repos/e-psi-lon/menu-self/commits/builds")
-            println("Output type: ${output::class.java}")
-            println("Output is $output")
             val json = JSONObject(output)
-            return json.getString("sha").take(8)
+            val commit = json.getJSONObject("commit")
+            val message = commit.getString("message")
+            // A message is 'builds: <hash>'
+            return message.split(" ")[1].take(8)
         }
     }
 }
