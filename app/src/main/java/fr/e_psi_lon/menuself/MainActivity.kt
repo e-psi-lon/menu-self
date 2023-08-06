@@ -232,10 +232,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showMenu(day: String) = CoroutineScope(Dispatchers.Main).launch {
-        if (day == "Saturday" || day == "Sunday" || day == "Monday") {
+        if (day == "Saturday" || day == "Sunday") {
             dayView.text = day
             menuListView.visibility = View.GONE
-            statusView.text = getString(R.string.no_menu_day, getTranslatedString(day))
+            statusView.text = getString(R.string.no_menu_this_day, getTranslatedString(day))
+            statusView.visibility = View.VISIBLE
+            return@launch
+        }
+
+        if (day == "Monday" && currentPage == "noon") {
+            dayView.text = day
+            menuListView.visibility = View.GONE
+            statusView.text = getString(R.string.no_menu_this_day, getTranslatedString(day))
+            statusView.visibility = View.VISIBLE
+            return@launch
+        }
+        if (day == "Friday" && currentPage == "evening") {
+            dayView.text = day
+            menuListView.visibility = View.GONE
+            statusView.text = getString(R.string.no_menu_this_day, getTranslatedString(day))
             statusView.visibility = View.VISIBLE
             return@launch
         }

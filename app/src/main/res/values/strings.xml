@@ -22,7 +22,7 @@
     <string name="made_by">Made by e_psi_lon</string>
     <string name="version">Version %s</string>
     <string name="no_day_data">No data for this day</string>
-    <string name="no_menu_this_day">No menu loaded for %s</string>
+    <string name="no_menu_this_day">No menu on %s</string>
     <string name="update_available">Update available\nChangelog : %s</string>
     <string name="install_update">Install update</string>
     <string name="cancel">Cancel</string>
