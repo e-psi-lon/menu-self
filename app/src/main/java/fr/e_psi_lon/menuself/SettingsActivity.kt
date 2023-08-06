@@ -27,7 +27,6 @@ class SettingsActivity: AppCompatActivity() {
         versionView.text = getString(R.string.version, appVersionName)
 
 
-        // Gérer les clics sur les boutons de navigation
         noonButton.setOnClickListener {
             if (currentPage != "noon") {
                 startActivity(Intent(this, MainActivity::class.java).apply {
@@ -47,7 +46,6 @@ class SettingsActivity: AppCompatActivity() {
         }
 
         settingsButton.setOnClickListener {
-            // Faire quelque chose lorsque le bouton "Paramètres" est cliqué
             if (currentPage != "settings") {
                 val intent = Intent(this, SettingsActivity::class.java)
                 // We start the activity

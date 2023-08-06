@@ -9,6 +9,6 @@
         <item name="android:statusBarColor">@color/dynamic_colorPrimaryVariant</item>
         <item name="android:navigationBarColor">@color/dynamic_colorPrimaryVariant</item>
     </style>
-    <!-- Autres styles personnalisés -->
+    <!-- Other styles -->
 
 </resources>

@@ -160,6 +160,7 @@ class AutoUpdater : DialogFragment() {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             activity.startActivity(intent)
         } catch (e: Exception) {
+            println("Error is $e")
             val message: String = when (e) {
                 is SecurityException -> {
                     context.getString(R.string.permission_denied, e.message)

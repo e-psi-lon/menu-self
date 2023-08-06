@@ -8,7 +8,7 @@
     android:id="@+id/mainLayout"
     android:orientation="vertical">
 
-    <!-- En-tête de l'application -->
+    <!-- Top part of the screen -->
     <TextView
         android:id="@+id/appNameTextView"
         android:layout_width="match_parent"
@@ -19,7 +19,7 @@
         android:textAlignment="center"
         android:textSize="24sp"
         android:textStyle="bold" />
-        <!-- Date avec boutons < > -->
+        <!-- Date with previous and next buttons -->
     <LinearLayout
         android:id="@+id/dateLayout"
         android:layout_width="match_parent"
@@ -60,7 +60,7 @@
             app:tint="@color/colorOnSecondary" />
     </LinearLayout>
 
-    <!-- Liste des plats ou message de statut -->
+    <!-- List of meals -->
     <LinearLayout
         android:id="@+id/mealLayout"
         android:layout_width="match_parent"
@@ -101,7 +101,7 @@
         android:orientation="horizontal"
         android:weightSum="3">
 
-        <!-- Bouton pour le menu du midi -->
+        <!-- Button for the lunch menu -->
         <ImageButton
             android:id="@+id/noonButton"
             android:layout_width="0dp"
@@ -114,7 +114,7 @@
             app:tint="@color/sun"
             android:contentDescription="@string/noon" />
 
-        <!-- Bouton pour le menu du soir -->
+        <!-- Button for the dinner menu -->
         <ImageButton
             android:id="@+id/eveningButton"
             android:layout_width="0dp"
@@ -127,7 +127,7 @@
             android:contentDescription="@string/evening"
             app:tint="@color/moon" />
 
-        <!-- Bouton pour accéder aux paramètres -->
+        <!-- Button for the settings -->
         <ImageButton
             android:id="@+id/settingsButton"
             android:layout_width="0dp"

@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Couleurs statiques -->
+    <!-- Static colors -->
     <color name="colorPrimary">#D0D0D0</color>
     <color name="colorPrimaryVariant">#C0C0C0</color>
     <color name="colorSecondary">#0D0D0D</color>
     <color name="colorSecondaryVariant">#616161</color>
-    <!-- Couleurs de fond -->
+    <!-- Background color -->
     <color name="colorBackground">#FFFFFF</color>
 
-    <!-- Autres couleurs -->
+    <!-- Other colors -->
     <color name="colorSelectedPageBackground">#777777</color>
     <color name="sun">#FFD700</color>
     <color name="moon">#FFFFFF</color>
 
 
-    <!-- Couleurs dynamiques (Material You) -->
+    <!-- Dynamic colors (Material You) -->
     <color name="dynamic_colorPrimary">@color/colorPrimary</color>
     <color name="dynamic_colorPrimaryVariant">@color/colorPrimaryVariant</color>
     <color name="dynamic_colorSecondary">@color/colorSecondary</color>
     <color name="dynamic_colorSecondaryVariant">@color/colorSecondaryVariant</color>
 
-    <!-- Autres couleurs -->
+    <!-- Other colors (bis) -->
     <color name="colorOnPrimary">#FFFFFF</color>
     <color name="colorOnSecondary">#000000</color>
 
-    <!-- Autres couleurs dynamiques (Material You) -->
+    <!-- Other dynamic colors (Material You) -->
     <color name="dynamic_colorOnPrimary">@color/colorOnPrimary</color>
     <color name="dynamic_colorOnSecondary">@color/colorOnSecondary</color>
 </resources>
