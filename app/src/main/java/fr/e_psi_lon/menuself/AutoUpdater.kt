@@ -1,7 +1,6 @@
 package fr.e_psi_lon.menuself
 
 
-// DownloadManager
 import android.app.Dialog
 import android.app.DownloadManager
 import android.content.Context

@@ -13,12 +13,12 @@ android {
         applicationId = "fr.e_psi_lon.menuself"
         minSdk = 24
         targetSdk = 33
-        versionCode = 3 // To change on each push to GitHub (maybe use GitHub Actions to do it automatically)
+        versionCode = System.getenv("GITHUB_RUN_NUMBER")?.toInt() ?: 1
         versionName = "0.5"
-        if (System.getenv("GITHUB_SHA") != null) {
-            versionName += " (build ${System.getenv("GITHUB_SHA").take(8)})"
+        versionName += if (System.getenv("GITHUB_SHA") != null) {
+            " (build ${System.getenv("GITHUB_SHA").take(8)})"
         } else {
-            versionName += " (unknown build)"
+            " (unknown build)"
         }
         buildConfigField("String", "GIT_COMMIT_HASH", "\"${if (System.getenv("GITHUB_SHA") != null) System.getenv("GITHUB_SHA") else "unknown"}\"")
 
