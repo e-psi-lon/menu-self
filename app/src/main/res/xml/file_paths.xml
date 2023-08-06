@@ -3,4 +3,8 @@
     <files-path
         name="files"
         path="." />
+    <!-- The download folder path -->
+    <external-path
+        name="download"
+        path="Download/" />
 </paths>

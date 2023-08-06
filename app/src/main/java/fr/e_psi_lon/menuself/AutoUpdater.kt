@@ -1,10 +1,15 @@
 package fr.e_psi_lon.menuself
 
-// Utiliser une lib interne a Java ou Kotlin pour faire une requete HTTP
 
+// DownloadManager
 import android.app.Dialog
+import android.app.DownloadManager
+import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.FileProvider
 import androidx.fragment.app.DialogFragment
@@ -19,11 +24,13 @@ import java.net.URL
 class AutoUpdater : DialogFragment() {
     private lateinit var hash: String
     private lateinit var changelog: String
+    private lateinit var context: Context
 
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return activity?.let {
             val builder = AlertDialog.Builder(it)
+            context = it.applicationContext
             CoroutineScope(Dispatchers.IO).launch {
                 getHash()
             }
@@ -31,7 +38,6 @@ class AutoUpdater : DialogFragment() {
                 Thread.sleep(100)
             }
             if (hash != "") {
-                // On cherche le commit sur la branche master
                 CoroutineScope(Dispatchers.IO).launch {
                     getChangelog()
                 }
@@ -40,13 +46,13 @@ class AutoUpdater : DialogFragment() {
                 }
 
             }
-            builder.setMessage(getString(R.string.update_available, changelog))
-                .setPositiveButton(getString(R.string.install_update)) { _, _ ->
+            builder.setMessage(context.getString(R.string.update_available, changelog))
+                .setPositiveButton(context.getString(R.string.install_update)) { _, _ ->
                     CoroutineScope(Dispatchers.IO).launch {
                         main(activity as MainActivity)
                     }
                 }
-                .setNegativeButton(getString(R.string.cancel)) { dialog, _ ->
+                .setNegativeButton(context.getString(R.string.cancel)) { dialog, _ ->
                     // User cancelled the dialog
                     dialog.cancel()
                 }
@@ -54,42 +60,34 @@ class AutoUpdater : DialogFragment() {
         } ?: throw IllegalStateException("Activity cannot be null")
     }
 
-    private suspend fun getChangelog() {
+    private fun getChangelog() {
         val output = httpRequest("https://api.github.com/repos/e-psi-lon/menu-self/commits/master")
-        println("Output (in getting changelog) is $output")
         if (output == "") {
-            changelog = getString(R.string.no_changelog)
+            changelog = context.getString(R.string.no_changelog)
         }
         val json = JSONObject(output)
-        println("Hash is $hash")
-        println("Json hash is ${json.getString("sha").take(8)}")
-        changelog = if (hash == json.getString("sha").take(8)) {
-            // On obtient la valeur message de du champ commit
+        changelog = if (hash == json.getString("sha")) {
             val commit = json.getJSONObject("commit")
-            println("Commit is $commit")
-            println("Message is ${commit.getString("message")}")
             commit.getString("message")
         } else {
-            getString(R.string.no_changelog)
+            context.getString(R.string.no_changelog)
         }
     }
 
-    private suspend fun main(activity: MainActivity) {
+    private fun main(activity: MainActivity) {
         val output = httpRequest("https://api.github.com/repos/e-psi-lon/menu-self/commits/builds")
         if (output == "") {
             return
         }
-        println("Starting request")
         val json = JSONObject(output)
-        val lastCommitHash = json.getString("sha").take(8)
+        val lastCommitHash = json.getJSONObject("commit").getString("message").split(" ")[1]
         if (lastCommitHash != BuildConfig.GIT_COMMIT_HASH) {
-            // On obtient le champ "files" qui est une liste de fichiers
             val files = json.getJSONArray("files")
             if (files.length() == 0) {
                 return
             }
-            if (files.length() == 1 && files.getJSONObject(0).getString("filename") == "apk-release.apk" ) {
-                // On obtient le champ "contents_url" qui est l'url du fichier (pour l'API GitHub)
+            println(if (files.length() == 1 && files.getJSONObject(0).getString("filename") == "app-release.apk" ) "File is app-release.apk" else "File is not app-release.apk")
+            if (files.length() == 1 && files.getJSONObject(0).getString("filename") == "app-release.apk" ) {
                 val contentsUrl = files.getJSONObject(0).getString("contents_url")
                 val content = httpRequest(contentsUrl)
                 if (content == "") {
@@ -97,7 +95,6 @@ class AutoUpdater : DialogFragment() {
                 }
                 val contentJson = JSONObject(content)
                 val downloadUrl = contentJson.getString("download_url")
-                println("Download url is $downloadUrl")
                 downloadApk(downloadUrl, activity)
 
             }
@@ -105,28 +102,30 @@ class AutoUpdater : DialogFragment() {
 
     }
 
-    private suspend fun downloadApk(url: String, activity: MainActivity) {
-        var output: File?
-        println("Downloading apk from $url")
-        with(URL(url).openConnection()as HttpURLConnection) {
-            requestMethod = "GET"  // optional default is GET
-            if (responseCode != 200) {
-                return
-            }
-            inputStream.use { inputStream ->
-                val outputFile = File(activity.filesDir, "update.apk")
-                outputFile.outputStream().use { outputStream ->
-                    inputStream.copyTo(outputStream)
-                }
-                output = outputFile
-            }
+    private fun downloadApk(url: String, activity: MainActivity) {
+        var outputFile = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "${context.getString(R.string.app_name)}.apk")
+        if (outputFile.exists()) {
+            outputFile.delete()
         }
-        println("Downloaded apk")
-        installApk(output!!, activity)
+        outputFile = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "${context.getString(R.string.app_name)}.apk")
+        val request = DownloadManager.Request(Uri.parse(url))
+            .setTitle(context.getString(R.string.app_name))
+            .setDescription("Downloading ${context.getString(R.string.app_name)}")
+            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
+            .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "${context.getString(R.string.app_name)}.apk")
+            .setAllowedOverMetered(true)
+            .setAllowedOverRoaming(true)
+        val downloadManager = activity.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+        downloadManager.enqueue(request)
+        while (outputFile.length() != 0L) {
+            Thread.sleep(100)
+        }
+        outputFile = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "${context.getString(R.string.app_name)}.apk")
+        installApk(outputFile, activity)
 
     }
 
-    private suspend fun httpRequest(url: String): String {
+    private fun httpRequest(url: String): String {
         val urlObject = URL(url)
 
         var output = ""
@@ -144,31 +143,43 @@ class AutoUpdater : DialogFragment() {
         return output
     }
 
-    private suspend fun getHash() {
+    private fun getHash() {
         hash = getLastCommitHash()
     }
 
     private fun installApk(file: File, activity: MainActivity) {
-        println("Installing apk")
-        val uri = FileProvider.getUriForFile(
-            activity,
-            "fr.e_psi_lon.menuself.fileprovider",
-            file
-        )
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.setDataAndType(uri, "application/vnd.android.package-archive")
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        activity.startActivity(intent)
+        try {
+            val uri = FileProvider.getUriForFile(
+                activity,
+                "fr.e_psi_lon.menuself.fileprovider",
+                file
+            )
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.setDataAndType(uri, "application/vnd.android.package-archive")
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            activity.startActivity(intent)
+        } catch (e: Exception) {
+            val message: String = when (e) {
+                is SecurityException -> {
+                    context.getString(R.string.permission_denied, e.message)
+                }
+                else -> {
+                    context.getString(R.string.unknown_error, e.message)
+                }
+            }
+            Toast.makeText(activity, message, Toast.LENGTH_LONG).show()
+        }
     }
 
     companion object {
-        suspend fun getLastCommitHash(): String {
+        fun getLastCommitHash(): String {
             val output = AutoUpdater().httpRequest("https://api.github.com/repos/e-psi-lon/menu-self/commits/builds")
             val json = JSONObject(output)
             val commit = json.getJSONObject("commit")
             val message = commit.getString("message")
             // A message is 'builds: <hash>'
-            return message.split(" ")[1].take(8)
+            return message.split(" ")[1]
         }
     }
 }

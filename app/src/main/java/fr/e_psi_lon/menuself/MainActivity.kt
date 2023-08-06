@@ -60,6 +60,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (isNetworkAvailable() && !intent.hasExtra("currentPage")) {
+            if (checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                AddReadExternalStoragePermissions().show(supportFragmentManager, "AddReadExternalStoragePermissions")
+        }
             GlobalScope.launch(Dispatchers.IO) {
                 checkVersion()
             }
@@ -100,7 +103,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         settingsButton.setOnClickListener {
-            // Faire quelque chose lorsque le bouton "Paramètres" est cliqué
             if (currentPage != "settings") {
                 val intent = Intent(this, SettingsActivity::class.java)
                 // We start the activity
@@ -111,7 +113,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         dayPlusButton.setOnClickListener {
-            // Faire quelque chose lorsque le bouton "Jour suivant" est cliqué
             if (currentDay != "Sunday") {
                 currentDay = dayInWeek[dayInWeek.indexOf(currentDay) + 1]
                 showMenu(currentDay)
@@ -119,7 +120,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         dayMinusButton.setOnClickListener {
-            // Faire quelque chose lorsque le bouton "Jour précédent" est cliqué
             if (currentDay != "Monday") {
                 currentDay = dayInWeek[dayInWeek.indexOf(currentDay) - 1]
                 showMenu(currentDay)
@@ -127,24 +127,22 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun checkVersion() {
+    private fun checkVersion() {
         if (AutoUpdater.getLastCommitHash() != BuildConfig.GIT_COMMIT_HASH) {
             AutoUpdater().show(supportFragmentManager, "AutoUpdater")
         }
     }
 
+
+
     private fun fetchMenuData(start:Int, stop: Int) = CoroutineScope(Dispatchers.IO).launch {
-        // Remplacer cette partie par l'appel réel à l'API pour récupérer les menus
         val url = "https://standarddelunivers.wordpress.com/2022/06/28/menu-de-la-semaine/"
         val doc: Document = Jsoup.connect(url).get()
-        // On selectionne les deux derniers tableaux (3 et 4) qui correspondent au menu du soir
         val tables: MutableList<Element> = doc.select("table").toMutableList()
             .subList(start, stop)
-        // On récupère les jours de la semaine
         val days: MutableList<String> = tables[0].select("thead").select("tr")
             .select("th").map { it.text() }.toMutableList()
         days.addAll(tables[1].select("thead").select("tr").select("th").map { it.text() }.toMutableList())
-        // On récupère les colonnes de chaque jour
         val day1: MutableList<String> = mutableListOf()
         val day2: MutableList<String> = mutableListOf()
         val day3: MutableList<String> = mutableListOf()
@@ -234,7 +232,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showMenu(day: String) = CoroutineScope(Dispatchers.Main).launch {
-        // Mettre à jour la ListView avec les menus
         if (day == "Saturday" || day == "Sunday" || day == "Monday") {
             dayView.text = day
             menuListView.visibility = View.GONE
@@ -242,7 +239,6 @@ class MainActivity : AppCompatActivity() {
             statusView.visibility = View.VISIBLE
             return@launch
         }
-        // We check if there is an Internet connection
         if (!isNetworkAvailable()) {
             dayView.text = day
             menuListView.visibility = View.GONE
