@@ -95,19 +95,23 @@ class AutoUpdater : DialogFragment() {
                 }
                 val contentJson = JSONObject(content)
                 val downloadUrl = contentJson.getString("download_url")
-                downloadApk(downloadUrl, activity)
+                downloadApk(downloadUrl, activity, lastCommitHash)
 
             }
         }
 
     }
 
-    private fun downloadApk(url: String, activity: MainActivity) {
-        var outputFile = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "${context.getString(R.string.app_name)}.apk")
+    private fun downloadApk(url: String, activity: MainActivity, hash: String) {
+        var outputFile = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "${context.getString(R.string.app_name)}-build-${hash}.apk")
         if (outputFile.exists()) {
             outputFile.delete()
         }
-        outputFile = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "${context.getString(R.string.app_name)}.apk")
+        val oldFile = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "${context.getString(R.string.app_name)}-build-${BuildConfig.GIT_COMMIT_HASH}.apk")
+        if (oldFile.exists()) {
+            oldFile.delete()
+        }
+        outputFile = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "${context.getString(R.string.app_name)}-build-${hash}.apk")
         val request = DownloadManager.Request(Uri.parse(url))
             .setTitle(context.getString(R.string.app_name))
             .setDescription("Downloading ${context.getString(R.string.app_name)}")
@@ -120,7 +124,7 @@ class AutoUpdater : DialogFragment() {
         while (outputFile.length() != 0L) {
             Thread.sleep(100)
         }
-        outputFile = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "${context.getString(R.string.app_name)}.apk")
+        outputFile = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "${context.getString(R.string.app_name)}-build-${hash}.apk")
         installApk(outputFile, activity)
 
     }
