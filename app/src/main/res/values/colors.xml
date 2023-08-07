@@ -12,7 +12,7 @@
     <color name="colorSelectedPageBackground">#777777</color>
     <color name="sun">#FFD700</color>
     <color name="moon">#FFFFFF</color>
-
+    <color name="settings">#FFFFFF</color>
 
     <!-- Dynamic colors (Material You) -->
     <color name="dynamic_colorPrimary">@color/colorPrimary</color>

@@ -112,7 +112,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="fitCenter"
             android:contentDescription="@string/evening"
-            app:tint="@color/sun" />
+            app:tint="@color/moon" />
 
         <!-- Button for the settings -->
         <ImageButton
@@ -124,8 +124,8 @@
             android:padding="8dp"
             android:background="@color/colorSelectedPageBackground"
             android:scaleType="fitCenter"
-            app:tint="@color/colorOnSecondary"
-            android:contentDescription="@string/settings" />
+            app:tint="@color/settings"
+            android:contentDescription="@string/settings_button" />
     </LinearLayout>
 
 </LinearLayout>

@@ -2,14 +2,16 @@
 <resources>
     <!-- Static colors -->
     <color name="colorPrimary">#0D0D0D</color>
-    <color name="colorPrimaryVariant">#616161</color>
+    <color name="colorPrimaryVariant">#C0C0C0</color>
     <color name="colorSecondary">#D0D0D0</color>
-    <color name="colorSecondaryVariant">#C0C0C0</color>
+    <color name="colorSecondaryVariant">#616161</color>
     <!-- Background color -->
     <color name="colorBackground">#010101</color>
 
     <!-- Other colors -->
     <color name="colorSelectedPageBackground">#777777</color>
+
+    
 
     <!-- Dynamic colors (Material You) -->
     <color name="dynamic_colorPrimary">@color/colorPrimary</color>

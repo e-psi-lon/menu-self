@@ -137,7 +137,7 @@
             android:padding="8dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:scaleType="fitCenter"
-            app:tint="@color/colorOnSecondary"
+            app:tint="@color/settings"
             android:contentDescription="@string/settings" />
     </LinearLayout>
 

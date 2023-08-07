@@ -33,4 +33,5 @@
     <string name="ask_permissions">Please accept to grant the %s permission, otherwise the app will not be able to update itself</string>
     <string name="ok" translatable="false">OK</string>
     <string name="unknown_error">An error occurred while updating the app :\n%s</string>
+    <string name="settings_button">Settings page</string>
 </resources>

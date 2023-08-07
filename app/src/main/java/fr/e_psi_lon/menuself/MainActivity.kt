@@ -105,7 +105,6 @@ class MainActivity : AppCompatActivity() {
         settingsButton.setOnClickListener {
             if (currentPage != "settings") {
                 val intent = Intent(this, SettingsActivity::class.java)
-                // We start the activity
                 intent.putExtra("currentPage", "settings")
                 startActivity(intent)
                 finish()
