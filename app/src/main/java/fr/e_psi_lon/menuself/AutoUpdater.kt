@@ -5,7 +5,6 @@ import android.app.Dialog
 import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.widget.Toast
@@ -17,8 +16,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.io.File
-import java.net.HttpURLConnection
-import java.net.URL
 
 class AutoUpdater : DialogFragment() {
     private lateinit var hash: String
@@ -60,7 +57,7 @@ class AutoUpdater : DialogFragment() {
     }
 
     private fun getChangelog() {
-        val output = httpRequest("https://api.github.com/repos/e-psi-lon/menu-self/commits/master")
+        val output = Request.get("https://api.github.com/repos/e-psi-lon/menu-self/commits/master")
         if (output == "") {
             changelog = context.getString(R.string.no_changelog)
         }
@@ -74,7 +71,7 @@ class AutoUpdater : DialogFragment() {
     }
 
     private fun main(activity: MainActivity) {
-        val output = httpRequest("https://api.github.com/repos/e-psi-lon/menu-self/commits/builds")
+        val output = Request.get("https://api.github.com/repos/e-psi-lon/menu-self/commits/builds")
         if (output == "") {
             return
         }
@@ -88,7 +85,7 @@ class AutoUpdater : DialogFragment() {
             println(if (files.length() == 1 && files.getJSONObject(0).getString("filename") == "app-release.apk" ) "File is app-release.apk" else "File is not app-release.apk")
             if (files.length() == 1 && files.getJSONObject(0).getString("filename") == "app-release.apk" ) {
                 val contentsUrl = files.getJSONObject(0).getString("contents_url")
-                val content = httpRequest(contentsUrl)
+                val content = Request.get(contentsUrl)
                 if (content == "") {
                     return
                 }
@@ -107,40 +104,11 @@ class AutoUpdater : DialogFragment() {
             outputFile.delete()
         }
         outputFile = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "${context.getString(R.string.app_name)}.apk")
-        val request = DownloadManager.Request(Uri.parse(url))
-            .setTitle(context.getString(R.string.app_name))
-            .setDescription("Downloading ${context.getString(R.string.app_name)}")
-            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
-            .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "${context.getString(R.string.app_name)}.apk")
-            .setAllowedOverMetered(true)
-            .setAllowedOverRoaming(true)
-        val downloadManager = activity.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-        downloadManager.enqueue(request)
-        while (outputFile.length() != 0L) {
-            Thread.sleep(100)
-        }
-        outputFile = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "${context.getString(R.string.app_name)}.apk")
+        outputFile = Request.download(url, context, activity, outputFile, DownloadManager.Request.VISIBILITY_VISIBLE)
         installApk(outputFile, activity)
 
     }
 
-    private fun httpRequest(url: String): String {
-        val urlObject = URL(url)
-
-        var output = ""
-        with(urlObject.openConnection() as HttpURLConnection) {
-            requestMethod = "GET"  // optional default is GET
-            if (responseCode != 200) {
-                return ""
-            }
-            inputStream.bufferedReader().use {
-                it.lines().forEach { line ->
-                    output += line + "\n"
-                }
-            }
-        }
-        return output
-    }
 
     private fun getHash() {
         hash = getLastCommitHash()
@@ -174,7 +142,7 @@ class AutoUpdater : DialogFragment() {
 
     companion object {
         fun getLastCommitHash(): String {
-            val output = AutoUpdater().httpRequest("https://api.github.com/repos/e-psi-lon/menu-self/commits/builds")
+            val output = Request.get("https://api.github.com/repos/e-psi-lon/menu-self/commits/builds")
             val json = JSONObject(output)
             val commit = json.getJSONObject("commit")
             val message = commit.getString("message")

@@ -34,4 +34,5 @@
     <string name="ok" translatable="false">OK</string>
     <string name="unknown_error">An error occurred while updating the app :\n%s</string>
     <string name="settings_button">Settings page</string>
+    <string name="downloading">Downloading %s</string>
 </resources>
