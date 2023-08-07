@@ -86,28 +86,19 @@ class MainActivity : AppCompatActivity() {
         // Register click event on navigation buttons
         noonButton.setOnClickListener {
             if (currentPage != "noon") {
-                startActivity(Intent(this, MainActivity::class.java).apply {
-                    putExtra("currentPage", "noon")
-                })
-                finish()
+                changePage(MainActivity::class.java, mapOf("currentPage" to "noon"))
             }
         }
 
         eveningButton.setOnClickListener {
             if (currentPage != "evening") {
-                startActivity(Intent(this, MainActivity::class.java).apply {
-                    putExtra("currentPage", "evening")
-                })
-                finish()
+                changePage(MainActivity::class.java, mapOf("currentPage" to "evening"))
             }
         }
 
         settingsButton.setOnClickListener {
             if (currentPage != "settings") {
-                val intent = Intent(this, SettingsActivity::class.java)
-                intent.putExtra("currentPage", "settings")
-                startActivity(intent)
-                finish()
+                changePage(SettingsActivity::class.java, mapOf("currentPage" to "settings"))
             }
         }
 
@@ -132,11 +123,29 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
+    private fun changePage(page: Class<*>, extras: Map<String, String>) {
+        val intent = Intent(this, page)
+        for (extra in extras) {
+            intent.putExtra(extra.key, extra.value)
+        }
+        // We define the animation (left to right or right to left)
+        val list = listOf("noon", "evening", "settings")
+        val index = list.indexOf(currentPage)
+        startActivity(intent).apply {
+            if (index < list.indexOf(extras["currentPage"])) {
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            } else {
+                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+            }
+        }.also {
+            finish()
+        }
+    }
 
     private fun fetchMenuData(start:Int, stop: Int) = CoroutineScope(Dispatchers.IO).launch {
         val url = "https://standarddelunivers.wordpress.com/2022/06/28/menu-de-la-semaine/"
-        val doc: Document = Jsoup.connect(url).get()
+        val content = Request.get(url)
+        val doc: Document = Jsoup.parse(content)
         val tables: MutableList<Element> = doc.select("table").toMutableList()
             .subList(start, stop)
         val days: MutableList<String> = tables[0].select("thead").select("tr")

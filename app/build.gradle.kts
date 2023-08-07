@@ -4,7 +4,7 @@ plugins {
 }
 
 android.buildFeatures.buildConfig = true
-// On importe ByteOutputStream pour pouvoir récupérer le hash de la dernière version de l'application
+
 android {
     namespace = "fr.e_psi_lon.menuself"
     compileSdk = 33
