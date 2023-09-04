@@ -45,7 +45,7 @@ class SettingsActivity : AppCompatActivity() {
         checkForUpdatesButton = findViewById(R.id.checkUpdateButton)
         versionView.text = getString(R.string.version, appVersionName)
 
-        // TODO: Add a button to clear the cache
+
         resetCacheButton.setOnClickListener {
             // On supprime le dossier Android/data/fr.e_psi_lon.menuself/cache
             val cacheDir = File("Android/data/fr.e_psi_lon.menuself/cache")
@@ -53,12 +53,12 @@ class SettingsActivity : AppCompatActivity() {
             cacheDir.mkdir()
             changePage(MainActivity::class.java, mapOf("currentPage" to "settings"))
         }
-        // TODO: Add a button to download latest apk in downloads folder
+
         downloadLatestApkButton.setOnClickListener {
             // On demande à l'utilisateur si il veut passer par le navigateur ou par l'application
             askUserForBrowserOrApp().show()
         }
-        // TODO: Add a button to check for updates
+
         checkForUpdatesButton.setOnClickListener {
             GlobalScope.launch(Dispatchers.IO) {
                 checkVersion()
