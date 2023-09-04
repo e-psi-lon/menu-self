@@ -14,7 +14,7 @@ android {
         minSdk = 24
         targetSdk = 33
         versionCode = System.getenv("GITHUB_RUN_NUMBER")?.toInt() ?: 1
-        versionName = "0.5"
+        versionName = "0.6"
         versionName += if (System.getenv("GITHUB_SHA") != null) {
             " (build ${System.getenv("GITHUB_SHA").take(8)})"
         } else {
