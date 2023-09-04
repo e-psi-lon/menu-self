@@ -7,7 +7,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 
-class SettingsActivity: AppCompatActivity() {
+class SettingsActivity : AppCompatActivity() {
     private lateinit var settingsButton: ImageButton
     private lateinit var eveningButton: ImageButton
     private lateinit var noonButton: ImageButton
@@ -25,6 +25,10 @@ class SettingsActivity: AppCompatActivity() {
         settingsButton = findViewById(R.id.settingsButton)
         versionView = findViewById(R.id.version)
         versionView.text = getString(R.string.version, appVersionName)
+
+        // TODO: Add a button to clear the cache
+        // TODO: Add a button to download latest apk in downloads folder
+        // TODO: Add a button to check for updates
 
 
         noonButton.setOnClickListener {
@@ -46,6 +50,7 @@ class SettingsActivity: AppCompatActivity() {
         }
 
     }
+
     private fun changePage(page: Class<*>, extras: Map<String, String>) {
         val intent = Intent(this, page)
         for (extra in extras) {

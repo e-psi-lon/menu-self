@@ -16,7 +16,7 @@ data class Menu(
         }
     }
 
-    override fun toString() : String {
+    override fun toString(): String {
         return "Menu: $day1, $day2, $day3, $day4"
 
     }

@@ -7,20 +7,21 @@ import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
-import android.widget.LinearLayout
 import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
-import androidx.core.content.ContextCompat
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import java.util.Calendar
 
 class MainActivity : AppCompatActivity() {
@@ -35,7 +36,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var dayView: TextView
     private lateinit var dayMinusButton: ImageButton
     private lateinit var menu: Menu
-    private val dayInWeek: List<String> = listOf("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday")
+    private val dayInWeek: List<String> =
+        listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
     private var currentDay: String = getDayOfWeek()
     private lateinit var currentPage: String
 
@@ -61,8 +63,11 @@ class MainActivity : AppCompatActivity() {
 
         if (isNetworkAvailable() && !intent.hasExtra("currentPage")) {
             if (checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
-                AddReadExternalStoragePermissions().show(supportFragmentManager, "AddReadExternalStoragePermissions")
-        }
+                AddReadExternalStoragePermissions().show(
+                    supportFragmentManager,
+                    "AddReadExternalStoragePermissions"
+                )
+            }
             GlobalScope.launch(Dispatchers.IO) {
                 checkVersion()
             }
@@ -73,12 +78,24 @@ class MainActivity : AppCompatActivity() {
             fetchMenuData(0, 2)
         } else if (currentPage == "evening") {
             // Need to change the background color of the button
-            noonButton.setBackgroundColor(ContextCompat.getColor(this,
-                R.color.colorSecondaryVariant))
-            eveningButton.setBackgroundColor(ContextCompat.getColor(this,
-                R.color.colorSelectedPageBackground))
-            settingsButton.setBackgroundColor(ContextCompat.getColor(this,
-                R.color.colorSecondaryVariant))
+            noonButton.setBackgroundColor(
+                ContextCompat.getColor(
+                    this,
+                    R.color.colorSecondaryVariant
+                )
+            )
+            eveningButton.setBackgroundColor(
+                ContextCompat.getColor(
+                    this,
+                    R.color.colorSelectedPageBackground
+                )
+            )
+            settingsButton.setBackgroundColor(
+                ContextCompat.getColor(
+                    this,
+                    R.color.colorSecondaryVariant
+                )
+            )
             fetchMenuData(2, 4)
         }
 
@@ -119,6 +136,16 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkVersion() {
         if (AutoUpdater.getLastCommitHash() != BuildConfig.GIT_COMMIT_HASH) {
+            if (checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                runOnUiThread {
+                    Toast.makeText(
+                        this,
+                        "Don't have permission to read external storage, canceling update",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@runOnUiThread
+                }
+            }
             AutoUpdater().show(supportFragmentManager, "AutoUpdater")
         }
     }
@@ -135,22 +162,23 @@ class MainActivity : AppCompatActivity() {
             if (index < list.indexOf(extras["currentPage"])) {
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
             } else {
-                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right).apply {
+                }
             }
         }.also {
             finish()
         }
     }
 
-    private fun fetchMenuData(start:Int, stop: Int) = CoroutineScope(Dispatchers.IO).launch {
+    private fun fetchMenuData(start: Int, stop: Int) = CoroutineScope(Dispatchers.IO).launch {
         val url = "https://standarddelunivers.wordpress.com/2022/06/28/menu-de-la-semaine/"
-        val content = Request.get(url)
-        val doc: Document = Jsoup.parse(content)
+        val doc: Document = Jsoup.connect(url).get()
         val tables: MutableList<Element> = doc.select("table").toMutableList()
             .subList(start, stop)
         val days: MutableList<String> = tables[0].select("thead").select("tr")
             .select("th").map { it.text() }.toMutableList()
-        days.addAll(tables[1].select("thead").select("tr").select("th").map { it.text() }.toMutableList())
+        days.addAll(tables[1].select("thead").select("tr").select("th").map { it.text() }
+            .toMutableList())
         val day1: MutableList<String> = mutableListOf()
         val day2: MutableList<String> = mutableListOf()
         val day3: MutableList<String> = mutableListOf()
@@ -165,8 +193,7 @@ class MainActivity : AppCompatActivity() {
                     day1.add(platSplit[0])
                 } else if (plat1 == "" || plat1 == " ") {
                     continue
-                }
-                else {
+                } else {
                     day1.add(plat1)
                 }
                 val plat2 = cells[1].text()
@@ -175,8 +202,7 @@ class MainActivity : AppCompatActivity() {
                     day2.add(platSplit[0])
                 } else if (plat2 == "" || plat2 == " ") {
                     continue
-                }
-                else {
+                } else {
                     day2.add(plat2)
                 }
             } else if (cells.size == 1) {
@@ -186,8 +212,7 @@ class MainActivity : AppCompatActivity() {
                     day1.add(platSplit[0])
                 } else if (plat1 == "" || plat1 == " ") {
                     continue
-                }
-                else {
+                } else {
                     day1.add(plat1)
                 }
             }
@@ -200,22 +225,18 @@ class MainActivity : AppCompatActivity() {
                 if ("<" in plat1) {
                     val platSplit = plat1.split("<")
                     day3.add(platSplit[0])
-                }
-                else if (plat1=="" || plat1==" ") {
+                } else if (plat1 == "" || plat1 == " ") {
                     continue
-                }
-                else {
+                } else {
                     day3.add(plat1)
                 }
                 val plat2 = cells[1].text()
                 if ("<" in plat2) {
                     val platSplit = plat2.split("<")
                     day4.add(platSplit[0])
-                }
-                else if (plat2=="" || plat2==" ") {
+                } else if (plat2 == "" || plat2 == " ") {
                     continue
-                }
-                else {
+                } else {
                     day4.add(plat2)
                 }
             } else if (cells.size == 1) {
@@ -223,17 +244,17 @@ class MainActivity : AppCompatActivity() {
                 if ("<" in plat1) {
                     val platSplit = plat1.split("<")
                     day3.add(platSplit[0])
-                }
-                else if (plat1=="" || plat1==" ") {
+                } else if (plat1 == "" || plat1 == " ") {
                     continue
-                }
-                else {
+                } else {
                     day3.add(plat1)
                 }
             }
         }
-        menu = Menu(Day(days[0], day1), Day(days[1], day2), Day(days[2], day3),
-            Day(days[3], day4))
+        menu = Menu(
+            Day(days[0], day1), Day(days[1], day2), Day(days[2], day3),
+            Day(days[3], day4)
+        )
         showMenu(currentDay)
 
 
@@ -287,8 +308,10 @@ class MainActivity : AppCompatActivity() {
 
         try {
             dayView.text = menu.getDay(getFrench(day)).name
-            menuListView.adapter = ArrayAdapter(this@MainActivity,
-                android.R.layout.simple_list_item_1, menu.getDay(getFrench(day)).meals)
+            menuListView.adapter = ArrayAdapter(
+                this@MainActivity,
+                android.R.layout.simple_list_item_1, menu.getDay(getFrench(day)).meals
+            )
             menuListView.visibility = View.VISIBLE
             statusView.visibility = View.GONE
         } catch (e: Exception) {
@@ -310,7 +333,8 @@ class MainActivity : AppCompatActivity() {
             else -> ""
         }
     }
-    private fun getFrench(day:String) : String {
+
+    private fun getFrench(day: String): String {
         return when (day) {
             "Monday" -> "Lundi"
             "Tuesday" -> "Mardi"

@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths >
-    <files-path
-        name="files"
-        path="." />
-    <!-- The download folder path -->
     <external-path
-        name="download"
-        path="Download/" />
+        name="cache"
+        path="Android/data/fr.e_psi_lon.menuself/cache" />
 </paths>

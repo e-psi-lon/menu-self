@@ -35,4 +35,8 @@
     <string name="unknown_error">An error occurred while updating the app :\n%s</string>
     <string name="settings_button">Settings page</string>
     <string name="downloading">Downloading %s</string>
+    <string name="download_error">There was an error while downloading the file</string>
+    <string name="downloading_progress">Downloading file %1$s : %2$s/%3$s</string>
+    <string name="install_apk">Please install the %s apk file</string>
+    <string name="install">Install</string>
 </resources>

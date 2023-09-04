@@ -6,7 +6,6 @@ import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Environment
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.FileProvider
@@ -91,22 +90,50 @@ class AutoUpdater : DialogFragment() {
                 }
                 val contentJson = JSONObject(content)
                 val downloadUrl = contentJson.getString("download_url")
-                downloadApk(downloadUrl, activity)
+                val size = contentJson.getLong("size")
+                downloadApk(downloadUrl, activity, size)
 
             }
         }
 
     }
 
-    private fun downloadApk(url: String, activity: MainActivity) {
-        var outputFile = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "${context.getString(R.string.app_name)}.apk")
+    private fun downloadApk(url: String, activity: MainActivity, fileSize: Long = 0) {
+        // Il me faut télécharger le fichier dans un dossier inaccessible par l'utilisateur, mais accessible par l'application (genre le files-path défini dans file_paths.xml
+        // correspondant au "." dans le l'application)
+        val cacheDir = context.externalCacheDir ?: context.cacheDir
+        var outputFile = File(cacheDir, "app-release.apk")
         if (outputFile.exists()) {
+            println("Found a previous version of the apk, deleting it")
             outputFile.delete()
         }
-        outputFile = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "${context.getString(R.string.app_name)}.apk")
-        outputFile = Request.download(url, context, activity, outputFile, DownloadManager.Request.VISIBILITY_VISIBLE)
-        installApk(outputFile, activity)
-
+        outputFile = File(cacheDir, "app-release.apk")
+        fun onDownloadError() {
+            activity.runOnUiThread {
+                Toast.makeText(context, context.getString(R.string.download_error), Toast.LENGTH_LONG).show()
+            }
+        }
+        val output = Request.download(url, context, activity, outputFile, DownloadManager.Request.VISIBILITY_VISIBLE, fileSize)
+        if (output == null) {
+            onDownloadError()
+            return
+        }
+        else {
+            // On attend que la popup de téléchargement se ferme
+            while (activity.supportFragmentManager.findFragmentByTag("downloading") != null) {
+                Thread.sleep(100)
+            }
+            if (output.exists()) {
+                activity.runOnUiThread {
+                    val builder = AlertDialog.Builder(activity)
+                    builder.setMessage(context.getString(R.string.install_apk, output.name))
+                        .setPositiveButton(context.getString(R.string.install)) { _, _ ->
+                            installApk(output, activity)
+                        }
+                builder.create().show()
+                }
+            }
+        }
     }
 
 
@@ -115,12 +142,14 @@ class AutoUpdater : DialogFragment() {
     }
 
     private fun installApk(file: File, activity: MainActivity) {
+        println("The file is ${file.absolutePath} ${"exists".takeIf { file.exists() } ?: "does not exist"}")
         try {
             val uri = FileProvider.getUriForFile(
                 activity,
-                "fr.e_psi_lon.menuself.fileprovider",
+                "fr.e_psi_lon.menuself.fileprovider", // Correspond à l'autorité définie dans le manifeste
                 file
             )
+            println("The uri is $uri and the file of the uri is ${uri.path}")
             val intent = Intent(Intent.ACTION_VIEW)
             intent.setDataAndType(uri, "application/vnd.android.package-archive")
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -133,10 +162,13 @@ class AutoUpdater : DialogFragment() {
                     context.getString(R.string.permission_denied, e.message)
                 }
                 else -> {
+                    println("Unknown error is $e")
                     context.getString(R.string.unknown_error, e.message)
                 }
             }
-            Toast.makeText(activity, message, Toast.LENGTH_LONG).show()
+            activity.runOnUiThread {
+                Toast.makeText(activity, message, Toast.LENGTH_LONG).show()
+            }
         }
     }
 
