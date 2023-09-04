@@ -6,7 +6,7 @@
     <color name="colorSecondary">#D0D0D0</color>
     <color name="colorSecondaryVariant">#616161</color>
     <!-- Background color -->
-    <color name="colorBackground">#010101</color>
+    <color name="colorBackground">#0D0D0D</color>
 
     <!-- Other colors -->
     <color name="colorSelectedPageBackground">#777777</color>

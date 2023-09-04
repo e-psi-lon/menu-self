@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
         android:text="@string/downloading_progress"
+        android:textColor="@color/colorOnSecondary"
         android:textSize="20sp"
         android:textStyle="bold" />
     <ProgressBar
@@ -19,5 +20,16 @@
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
         />
+    <!-- Le bouton doit être sur la droite -->
+    <Button
+        android:id="@+id/cancelButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_margin="20dp"
+        android:textColor="@color/colorOnSecondary"
+        android:background="@color/colorPrimary"
+        android:backgroundTint="@color/colorPrimary"
+        android:text="@string/cancel" />
 
 </LinearLayout>

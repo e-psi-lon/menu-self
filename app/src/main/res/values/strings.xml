@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Self Menu</string>
+    <string name="app_name">Cafeteria Menu</string>
     <string name="evening">Evening</string>
     <string name="noon">Noon</string>
     <string name="next">Next</string>
@@ -39,4 +39,10 @@
     <string name="downloading_progress">Downloading file %1$s : %2$s/%3$s</string>
     <string name="install_apk">Please install the %s apk file</string>
     <string name="install">Install</string>
+    <string name="reset_cache">Reset the cache</string>
+    <string name="download_apk">Download latest apk</string>
+    <string name="browser">Web Browser</string>
+    <string name="app">In-app downloader</string>
+    <string name="browser_or_app">How do you want to download the apk file ?</string>
+    <string name="check_update">Check updates</string>
 </resources>

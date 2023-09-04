@@ -134,22 +134,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkVersion() {
-        if (AutoUpdater.getLastCommitHash() != BuildConfig.GIT_COMMIT_HASH) {
-            if (checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
-                runOnUiThread {
-                    Toast.makeText(
-                        this,
-                        "Don't have permission to read external storage, canceling update",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return@runOnUiThread
-                }
-            }
-            AutoUpdater().show(supportFragmentManager, "AutoUpdater")
-        }
-    }
-
     private fun changePage(page: Class<*>, extras: Map<String, String>) {
         val intent = Intent(this, page)
         for (extra in extras) {
@@ -366,5 +350,21 @@ class MainActivity : AppCompatActivity() {
             getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetworkInfo = connectivityManager.activeNetwork
         return activeNetworkInfo != null
+    }
+
+    private fun checkVersion() {
+        if (AutoUpdater.getLastCommitHash() != BuildConfig.GIT_COMMIT_HASH) {
+            if (checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                runOnUiThread {
+                    Toast.makeText(
+                        this,
+                        "Don't have permission to read external storage, canceling update",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@runOnUiThread
+                }
+            }
+            AutoUpdater().show(supportFragmentManager, "AutoUpdater")
+        }
     }
 }
