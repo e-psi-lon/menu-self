@@ -2,11 +2,11 @@ package fr.e_psi_lon.menuself
 
 import android.app.DownloadManager
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
 import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
 import androidx.core.net.toUri
+import androidx.fragment.app.FragmentActivity
 
 class Request {
     companion object {
@@ -42,7 +42,7 @@ class Request {
             }
         }
 
-        fun download(url: String, context: Context, activity: AppCompatActivity, outputFile: File, visibility : Int, fileSize: Long, allowOverMetered : Boolean = true, allowOverRoaming : Boolean = true) : File? {
+        fun download(url: String, context: Context, activity: FragmentActivity, outputFile: File, visibility : Int, fileSize: Long, allowOverMetered : Boolean = true, allowOverRoaming : Boolean = true) : File? {
             println("Downloading $url to ${outputFile.absolutePath}")
             val request = DownloadManager.Request(url.toUri()).apply {
                 setTitle(context.getString(R.string.app_name))

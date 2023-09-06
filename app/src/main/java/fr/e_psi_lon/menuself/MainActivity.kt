@@ -11,7 +11,6 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.CoroutineScope
@@ -62,12 +61,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (isNetworkAvailable() && !intent.hasExtra("currentPage")) {
-            if (checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
-                AddReadExternalStoragePermissions().show(
-                    supportFragmentManager,
-                    "AddReadExternalStoragePermissions"
-                )
-            }
             GlobalScope.launch(Dispatchers.IO) {
                 checkVersion()
             }
@@ -354,16 +347,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun checkVersion() {
         if (AutoUpdater.getLastCommitHash() != BuildConfig.GIT_COMMIT_HASH) {
-            if (checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
-                runOnUiThread {
-                    Toast.makeText(
-                        this,
-                        "Don't have permission to read external storage, canceling update",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return@runOnUiThread
-                }
-            }
             AutoUpdater().show(supportFragmentManager, "AutoUpdater")
         }
     }

@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.FileProvider
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.FragmentActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -44,7 +45,7 @@ class AutoUpdater : DialogFragment() {
             builder.setMessage(context.getString(R.string.update_available, changelog))
                 .setPositiveButton(context.getString(R.string.install_update)) { _, _ ->
                     CoroutineScope(Dispatchers.IO).launch {
-                        main(activity as MainActivity)
+                        main(requireActivity())
                     }
                 }
                 .setNegativeButton(context.getString(R.string.cancel)) { dialog, _ ->
@@ -69,7 +70,7 @@ class AutoUpdater : DialogFragment() {
         }
     }
 
-    private fun main(activity: MainActivity) {
+    private fun main(activity: FragmentActivity) {
         val output = Request.get("https://api.github.com/repos/e-psi-lon/menu-self/commits/builds")
         if (output == "") {
             return
@@ -98,7 +99,7 @@ class AutoUpdater : DialogFragment() {
 
     }
 
-    private fun downloadApk(url: String, activity: MainActivity, fileSize: Long = 0) {
+    private fun downloadApk(url: String, activity: FragmentActivity, fileSize: Long = 0) {
         // Il me faut télécharger le fichier dans un dossier inaccessible par l'utilisateur, mais accessible par l'application (genre le files-path défini dans file_paths.xml
         // correspondant au "." dans le l'application)
         val cacheDir = context.externalCacheDir ?: context.cacheDir
@@ -130,6 +131,7 @@ class AutoUpdater : DialogFragment() {
                         .setPositiveButton(context.getString(R.string.install)) { _, _ ->
                             installApk(output, activity)
                         }
+                        .setCancelable(false)
                 builder.create().show()
                 }
             }
@@ -141,7 +143,7 @@ class AutoUpdater : DialogFragment() {
         hash = getLastCommitHash()
     }
 
-    private fun installApk(file: File, activity: MainActivity) {
+    private fun installApk(file: File, activity: FragmentActivity) {
         println("The file is ${file.absolutePath} ${"exists".takeIf { file.exists() } ?: "does not exist"}")
         try {
             val uri = FileProvider.getUriForFile(

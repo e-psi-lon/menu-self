@@ -45,4 +45,6 @@
     <string name="app">In-app downloader</string>
     <string name="browser_or_app">How do you want to download the apk file ?</string>
     <string name="check_update">Check updates</string>
+    <string name="up_to_date">The app is up to date</string>
+    <string name="filename">Please enter the name of the file you want</string>
 </resources>

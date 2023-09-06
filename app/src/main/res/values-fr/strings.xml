@@ -44,4 +44,6 @@
     <string name="app">Téléchargeur interne</string>
     <string name="browser_or_app">Commment voulez vous télécharger le fichier apk ?</string>
     <string name="check_update">Vérifier les mises à jour</string>
+    <string name="up_to_date">L\'application est à jour</string>
+    <string name="filename">Veuillez entrer le nom du fichier à télécharger</string>
 </resources>

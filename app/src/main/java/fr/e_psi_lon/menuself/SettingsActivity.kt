@@ -30,6 +30,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var checkForUpdatesButton: Button
     private var appVersionName: String = BuildConfig.VERSION_NAME
     private var currentPage: String = "settings"
+    private var filename: String = ""
 
     @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,7 +52,7 @@ class SettingsActivity : AppCompatActivity() {
             val cacheDir = File("Android/data/fr.e_psi_lon.menuself/cache")
             cacheDir.deleteRecursively()
             cacheDir.mkdir()
-            changePage(MainActivity::class.java, mapOf("currentPage" to "settings"))
+            changePage(MainActivity::class.java, mapOf("currentPage" to "noon"), false)
         }
 
         downloadLatestApkButton.setOnClickListener {
@@ -117,7 +118,14 @@ class SettingsActivity : AppCompatActivity() {
                     // On utilise une coroutine pour télécharger le fichier
                     GlobalScope.launch(Dispatchers.IO) {
                         val url = getUrl()
-                        val file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), getString(R.string.app_name) + ".apk")
+                        // On demande le nom du fichier à l'utilisateur
+                        runOnUiThread {
+                            askFilenameToUser().show()
+                        }
+                        while (filename == "") {
+                            Thread.sleep(100)
+                        }
+                        val file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "$filename.apk")
                         Request.download(url[0], this@SettingsActivity.applicationContext, this@SettingsActivity, file, DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED, url[1].toLong())
                     }
                 }
@@ -127,7 +135,7 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    private fun changePage(page: Class<*>, extras: Map<String, String>) {
+    private fun changePage(page: Class<*>, extras: Map<String, String>, animation: Boolean = true) {
         val intent = Intent(this, page)
         for (extra in extras) {
             intent.putExtra(extra.key, extra.value)
@@ -136,10 +144,13 @@ class SettingsActivity : AppCompatActivity() {
         val list = listOf("noon", "evening", "settings")
         val index = list.indexOf(currentPage)
         startActivity(intent).apply {
-            if (index < list.indexOf(extras["currentPage"])) {
-                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-            } else {
-                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+            if (animation) {
+                if (index < list.indexOf(extras["currentPage"])) {
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+                }
+                else {
+                    overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+                }
             }
         }.also {
             finish()
@@ -148,22 +159,33 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun checkVersion() {
         if (AutoUpdater.getLastCommitHash() != BuildConfig.GIT_COMMIT_HASH) {
-            if (checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
-                runOnUiThread {
-                    Toast.makeText(
-                        this,
-                        "Don't have permission to read external storage, canceling update",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return@runOnUiThread
-                }
-            }
             AutoUpdater().show(supportFragmentManager, "AutoUpdater")
         }
         else {
             runOnUiThread {
-                Toast.makeText(this, "You are up to date", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.up_to_date), Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+
+    private fun askFilenameToUser(): AlertDialog {
+        return this.let {
+            val builder = AlertDialog.Builder(it)
+            builder.apply {
+                setView(R.layout.dialog_filename)
+                setPositiveButton(R.string.ok) { _, _ ->
+                    val dialog = builder.create()
+                    val filenameView = dialog.findViewById<TextView>(R.id.filename)
+                    filename = if (filenameView?.text.toString() == "") {
+                        getString(R.string.app_name)
+                    }
+                    else {
+                        filenameView?.text.toString()
+                    }
+                }
+            }
+            // Create the AlertDialog
+            builder.create()
         }
     }
 }
