@@ -238,7 +238,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun showMenu(day: String) = CoroutineScope(Dispatchers.Main).launch {
         if (day == "Saturday" || day == "Sunday") {
-            dayView.text = day
+            dayView.text = getTranslatedString(day)
             menuListView.visibility = View.GONE
             statusView.text = getString(R.string.no_menu_this_day, getTranslatedString(day))
             statusView.visibility = View.VISIBLE
@@ -246,21 +246,21 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (day == "Monday" && currentPage == "noon") {
-            dayView.text = day
+            dayView.text = getTranslatedString(day)
             menuListView.visibility = View.GONE
             statusView.text = getString(R.string.no_menu_this_day, getTranslatedString(day))
             statusView.visibility = View.VISIBLE
             return@launch
         }
         if (day == "Friday" && currentPage == "evening") {
-            dayView.text = day
+            dayView.text = getTranslatedString(day)
             menuListView.visibility = View.GONE
             statusView.text = getString(R.string.no_menu_this_day, getTranslatedString(day))
             statusView.visibility = View.VISIBLE
             return@launch
         }
         if (!isNetworkAvailable()) {
-            dayView.text = day
+            dayView.text = getTranslatedString(currentDay)
             menuListView.visibility = View.GONE
             statusView.text = getString(R.string.no_internet)
             statusView.visibility = View.VISIBLE
@@ -275,7 +275,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (menu.getDay(getFrench(day)).meals.isEmpty()) {
-            dayView.text = day
+            dayView.text = getTranslatedString(currentDay)
             menuListView.visibility = View.GONE
             statusView.text = getString(R.string.no_menu_this_day, menu.getDay(getFrench(day)).name)
             statusView.visibility = View.VISIBLE
