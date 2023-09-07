@@ -2,11 +2,11 @@ package fr.e_psi_lon.menuself
 
 import android.app.DownloadManager
 import android.content.Context
+import androidx.core.net.toUri
+import androidx.fragment.app.FragmentActivity
 import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
-import androidx.core.net.toUri
-import androidx.fragment.app.FragmentActivity
 
 class Request {
     companion object {
@@ -42,7 +42,16 @@ class Request {
             }
         }
 
-        fun download(url: String, context: Context, activity: FragmentActivity, outputFile: File, visibility : Int, fileSize: Long, allowOverMetered : Boolean = true, allowOverRoaming : Boolean = true) : File? {
+        fun download(
+            url: String,
+            context: Context,
+            activity: FragmentActivity,
+            outputFile: File,
+            visibility: Int,
+            fileSize: Long,
+            allowOverMetered: Boolean = true,
+            allowOverRoaming: Boolean = true
+        ): File? {
             println("Downloading $url to ${outputFile.absolutePath}")
             val request = DownloadManager.Request(url.toUri()).apply {
                 setTitle(context.getString(R.string.app_name))
@@ -52,7 +61,8 @@ class Request {
                 setAllowedOverMetered(allowOverMetered)
                 setAllowedOverRoaming(allowOverRoaming)
             }
-            val downloadManager = activity.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+            val downloadManager =
+                activity.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
             val downloadId = downloadManager.enqueue(request)
             var previousSize = -1L
             var currentSize = 0L
@@ -80,17 +90,16 @@ class Request {
                     var status: Int
                     if (columnIndex < 0) {
                         continue
-                    }
-                    else {
+                    } else {
                         status = cursor.getInt(columnIndex)
                     }
                     activity.runOnUiThread {
-                        val dialog = if (activity.supportFragmentManager.findFragmentByTag("downloading") == null) {
-                            return@runOnUiThread
-                        }
-                        else {
-                            activity.supportFragmentManager.findFragmentByTag("downloading") as DownloadingProgress
-                        }
+                        val dialog =
+                            if (activity.supportFragmentManager.findFragmentByTag("downloading") == null) {
+                                return@runOnUiThread
+                            } else {
+                                activity.supportFragmentManager.findFragmentByTag("downloading") as DownloadingProgress
+                            }
                         dialog.setProgress(((currentSize * 100) / fileSize).toInt(), currentSize)
                         // On modifie aussi le contenu pour afficher à l'utilisateur la progression
                         if (dialog.cancel) {
@@ -103,11 +112,11 @@ class Request {
                         outputFile.delete()
                         return null
                     }
-                    val sizeColumnIndex = cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR)
+                    val sizeColumnIndex =
+                        cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR)
                     if (sizeColumnIndex < 0) {
                         continue
-                    }
-                    else {
+                    } else {
                         currentSize = cursor.getLong(sizeColumnIndex)
                     }
                     if (currentSize > previousSize) {
@@ -120,7 +129,8 @@ class Request {
                 cursor.close()
             }
             activity.runOnUiThread {
-                val dialog = activity.supportFragmentManager.findFragmentByTag("downloading") as DownloadingProgress
+                val dialog =
+                    activity.supportFragmentManager.findFragmentByTag("downloading") as DownloadingProgress
                 dialog.dismiss()
 
             }

@@ -20,7 +20,11 @@ android {
         } else {
             " (unknown build)"
         }
-        buildConfigField("String", "GIT_COMMIT_HASH", "\"${if (System.getenv("GITHUB_SHA") != null) System.getenv("GITHUB_SHA") else "unknown"}\"")
+        buildConfigField(
+            "String",
+            "GIT_COMMIT_HASH",
+            "\"${if (System.getenv("GITHUB_SHA") != null) System.getenv("GITHUB_SHA") else "unknown"}\""
+        )
 
 
 

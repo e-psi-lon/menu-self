@@ -125,8 +125,18 @@ class SettingsActivity : AppCompatActivity() {
                         while (filename == "") {
                             Thread.sleep(100)
                         }
-                        val file = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "$filename.apk")
-                        Request.download(url[0], this@SettingsActivity.applicationContext, this@SettingsActivity, file, DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED, url[1].toLong())
+                        val file = File(
+                            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                            "$filename.apk"
+                        )
+                        Request.download(
+                            url[0],
+                            this@SettingsActivity.applicationContext,
+                            this@SettingsActivity,
+                            file,
+                            DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED,
+                            url[1].toLong()
+                        )
                     }
                 }
             }
@@ -147,8 +157,7 @@ class SettingsActivity : AppCompatActivity() {
             if (animation) {
                 if (index < list.indexOf(extras["currentPage"])) {
                     overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-                }
-                else {
+                } else {
                     overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
                 }
             }
@@ -160,8 +169,7 @@ class SettingsActivity : AppCompatActivity() {
     private fun checkVersion() {
         if (AutoUpdater.getLastCommitHash() != BuildConfig.GIT_COMMIT_HASH) {
             AutoUpdater().show(supportFragmentManager, "AutoUpdater")
-        }
-        else {
+        } else {
             runOnUiThread {
                 Toast.makeText(this, getString(R.string.up_to_date), Toast.LENGTH_SHORT).show()
             }
@@ -178,8 +186,7 @@ class SettingsActivity : AppCompatActivity() {
                     val filenameView = dialog.findViewById<TextView>(R.id.filename)
                     filename = if (filenameView?.text.toString() == "") {
                         getString(R.string.app_name)
-                    }
-                    else {
+                    } else {
                         filenameView?.text.toString()
                     }
                 }

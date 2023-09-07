@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mainLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="bottom"
-    android:id="@+id/mainLayout"
     android:orientation="vertical">
 
     <!-- Top part of the screen -->
@@ -15,11 +14,11 @@
         android:layout_height="wrap_content"
         android:padding="16dp"
         android:text="@string/app_name"
-        android:textColor="@color/colorOnSecondary"
         android:textAlignment="center"
+        android:textColor="@color/colorOnSecondary"
         android:textSize="24sp"
         android:textStyle="bold" />
-        <!-- Date with previous and next buttons -->
+    <!-- Date with previous and next buttons -->
     <LinearLayout
         android:id="@+id/dateLayout"
         android:layout_width="match_parent"
@@ -65,8 +64,8 @@
         android:id="@+id/mealLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
         android:layout_gravity="center_vertical"
+        android:layout_weight="1"
         android:gravity="center"
         android:orientation="horizontal">
 
@@ -105,26 +104,26 @@
         <ImageButton
             android:id="@+id/noonButton"
             android:layout_width="0dp"
-            android:padding="8dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/ic_sun"
             android:background="@color/colorSelectedPageBackground"
+            android:contentDescription="@string/noon"
+            android:padding="8dp"
             android:scaleType="fitCenter"
-            app:tint="@color/sun"
-            android:contentDescription="@string/noon" />
+            android:src="@drawable/ic_sun"
+            app:tint="@color/sun" />
 
         <!-- Button for the dinner menu -->
         <ImageButton
             android:id="@+id/eveningButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:padding="8dp"
             android:layout_weight="1"
-            android:src="@drawable/ic_moon"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:scaleType="fitCenter"
             android:contentDescription="@string/evening"
+            android:padding="8dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_moon"
             app:tint="@color/moon" />
 
         <!-- Button for the settings -->
@@ -133,12 +132,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/ic_settings"
-            android:padding="8dp"
             android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/settings"
+            android:padding="8dp"
             android:scaleType="fitCenter"
-            app:tint="@color/settings"
-            android:contentDescription="@string/settings" />
+            android:src="@drawable/ic_settings"
+            app:tint="@color/settings" />
     </LinearLayout>
 
 </LinearLayout>

@@ -229,8 +229,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
         menu = Menu(
-            Day(days[0], day1), Day(days[1], day2), Day(days[2], day3),
-            Day(days[3], day4)
+            Day(days[0], day1), Day(days[1], day2), Day(days[2], day3), Day(days[3], day4)
         )
         showMenu(currentDay)
 

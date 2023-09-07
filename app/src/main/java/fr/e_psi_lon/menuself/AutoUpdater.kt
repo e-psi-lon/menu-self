@@ -82,8 +82,14 @@ class AutoUpdater : DialogFragment() {
             if (files.length() == 0) {
                 return
             }
-            println(if (files.length() == 1 && files.getJSONObject(0).getString("filename") == "app-release.apk" ) "File is app-release.apk" else "File is not app-release.apk")
-            if (files.length() == 1 && files.getJSONObject(0).getString("filename") == "app-release.apk" ) {
+            println(
+                if (files.length() == 1 && files.getJSONObject(0)
+                        .getString("filename") == "app-release.apk"
+                ) "File is app-release.apk" else "File is not app-release.apk"
+            )
+            if (files.length() == 1 && files.getJSONObject(0)
+                    .getString("filename") == "app-release.apk"
+            ) {
                 val contentsUrl = files.getJSONObject(0).getString("contents_url")
                 val content = Request.get(contentsUrl)
                 if (content == "") {
@@ -111,15 +117,26 @@ class AutoUpdater : DialogFragment() {
         outputFile = File(cacheDir, "app-release.apk")
         fun onDownloadError() {
             activity.runOnUiThread {
-                Toast.makeText(context, context.getString(R.string.download_error), Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.download_error),
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
-        val output = Request.download(url, context, activity, outputFile, DownloadManager.Request.VISIBILITY_VISIBLE, fileSize)
+
+        val output = Request.download(
+            url,
+            context,
+            activity,
+            outputFile,
+            DownloadManager.Request.VISIBILITY_VISIBLE,
+            fileSize
+        )
         if (output == null) {
             onDownloadError()
             return
-        }
-        else {
+        } else {
             // On attend que la popup de téléchargement se ferme
             while (activity.supportFragmentManager.findFragmentByTag("downloading") != null) {
                 Thread.sleep(100)
@@ -132,7 +149,7 @@ class AutoUpdater : DialogFragment() {
                             installApk(output, activity)
                         }
                         .setCancelable(false)
-                builder.create().show()
+                    builder.create().show()
                 }
             }
         }
@@ -163,6 +180,7 @@ class AutoUpdater : DialogFragment() {
                 is SecurityException -> {
                     context.getString(R.string.permission_denied, e.message)
                 }
+
                 else -> {
                     println("Unknown error is $e")
                     context.getString(R.string.unknown_error, e.message)
@@ -176,7 +194,8 @@ class AutoUpdater : DialogFragment() {
 
     companion object {
         fun getLastCommitHash(): String {
-            val output = Request.get("https://api.github.com/repos/e-psi-lon/menu-self/commits/builds")
+            val output =
+                Request.get("https://api.github.com/repos/e-psi-lon/menu-self/commits/builds")
             val json = JSONObject(output)
             val commit = json.getJSONObject("commit")
             val message = commit.getString("message")

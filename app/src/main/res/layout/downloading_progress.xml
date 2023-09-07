@@ -13,28 +13,29 @@
         android:textColor="@color/colorOnSecondary"
         android:textSize="20sp"
         android:textStyle="bold" />
+
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        />
+        android:layout_margin="20dp" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="end">
+        android:layout_gravity="end"
+        android:orientation="horizontal">
+
         <Button
             android:id="@+id/cancel"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginBottom="10dp"
             android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_weight="1"
             android:text="@string/cancel"
-            android:textColor="@color/colorSecondary"
-            style="?android:attr/buttonBarButtonStyle" />
+            android:textColor="@color/colorSecondary" />
     </LinearLayout>
 </LinearLayout>

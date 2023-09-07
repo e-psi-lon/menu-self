@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <!-- Ask the user the name he wants to give to the file using an EditText -->
 
@@ -17,31 +17,34 @@
         android:id="@+id/filename"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:autofillHints="filename"
         android:hint="@string/app_name"
         android:inputType="text"
-        android:padding="16dp"
-        android:autofillHints="filename" />
+        android:padding="16dp" />
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="end">
+        android:layout_gravity="end"
+        android:orientation="horizontal">
+
         <Button
             android:id="@+id/cancel"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/cancel"
-            android:textColor="@color/colorSecondary"
-            style="?android:attr/buttonBarButtonStyle" />
+            android:textColor="@color/colorSecondary" />
+
         <Button
             android:id="@+id/ok"
+            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/ok"
-            android:textColor="@color/colorSecondary"
-            style="?android:attr/buttonBarButtonStyle" />
+            android:textColor="@color/colorSecondary" />
     </LinearLayout>
 
 </LinearLayout>

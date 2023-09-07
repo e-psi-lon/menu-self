@@ -12,7 +12,7 @@ import androidx.fragment.app.DialogFragment
 import java.io.File
 
 
-class DownloadingProgress: DialogFragment() {
+class DownloadingProgress : DialogFragment() {
     var cancel: Boolean = false
     private lateinit var context: Context
     private lateinit var url: String
@@ -76,7 +76,12 @@ class DownloadingProgress: DialogFragment() {
             return
         }
         progressBar.progress = progress
-        titleDownloading.text = context.getString(R.string.downloading_progress, outputFile.name, Request.formatSize(downloadedSize), Request.formatSize(fileSize))
+        titleDownloading.text = context.getString(
+            R.string.downloading_progress,
+            outputFile.name,
+            Request.formatSize(downloadedSize),
+            Request.formatSize(fileSize)
+        )
     }
 
 }
