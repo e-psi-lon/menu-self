@@ -30,7 +30,7 @@
     <string name="unknown_error">Une erreur est survenue lors de la mise à jour :\n%s</string>
     <string name="settings_button">Page des paramètres</string>
     <string name="downloading">Téléchargement de %s</string>
-    <string name="download_error">There was an error while downloading the file</string>
+    <string name="download_error">Il y a eu une erreur lors du téléchargement du fichier</string>
     <string name="downloading_progress">Téléchargement du fichier %1$s : %2$s/%3$s</string>
     <string name="install_apk">Veuillez installer le fichier apk %s</string>
     <string name="install">Installer</string>
@@ -43,9 +43,9 @@
     <string name="up_to_date">L\'application est à jour</string>
     <string name="filename">Veuillez entrer le nom du fichier à télécharger</string>
     <string name="changelog">Voir le changelog</string>
-    <string name="changelog_history">Historique de changements</string>
+    <string name="changelog_history">Historique des changements</string>
     <string name="exit">Quitter</string>
     <string name="loading_history">Chargement de l\'historique des changements</string>
     <string name="changelogHistoryError">Erreur lors de l\'obtention de l\'historique</string>
-    <string name="changelog_is">Le changelog est :</string>
+    <string name="changelog_is">Le dernier changelog est :</string>
 </resources>

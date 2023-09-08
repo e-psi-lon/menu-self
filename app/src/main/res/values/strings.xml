@@ -48,5 +48,5 @@
     <string name="exit">Exit</string>
     <string name="loading_history">Loading Changelog History</string>
     <string name="changelogHistoryError">Error while getting history</string>
-    <string name="changelog_is">The changelog is :</string>
+    <string name="changelog_is">The latest changelog is :</string>
 </resources>
