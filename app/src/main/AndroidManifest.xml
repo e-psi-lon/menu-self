@@ -30,9 +30,7 @@
         </activity>
         <activity
             android:name="fr.e_psi_lon.menuself.SettingsActivity"
-            android:exported="true">
-        </activity>
-
+            android:exported="true"/>
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="fr.e_psi_lon.menuself.fileprovider"

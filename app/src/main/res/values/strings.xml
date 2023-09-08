@@ -7,7 +7,6 @@
     <string name="previous">Previous</string>
     <string name="loading">Loading menu</string>
     <string name="loading_error">Unable to load menu</string>
-    <string name="no_menu_day">There is no menu on %s</string>
     <string name="no_internet">No Internet connection</string>
     <string name="monday">Monday</string>
     <string name="tuesday">Tuesday</string>
@@ -28,9 +27,6 @@
     <string name="cancel">Cancel</string>
     <string name="no_changelog">No changelog</string>
     <string name="permission_denied">The app don\'t have the permission (%s) needed to update itself</string>
-    <string name="read_external_storage">read storage files</string>
-    <string name="install_packages">install packages</string>
-    <string name="ask_permissions">Please accept to grant the %s permission, otherwise the app will not be able to update itself</string>
     <string name="ok" translatable="false">OK</string>
     <string name="unknown_error">An error occurred while updating the app :\n%s</string>
     <string name="settings_button">Settings page</string>

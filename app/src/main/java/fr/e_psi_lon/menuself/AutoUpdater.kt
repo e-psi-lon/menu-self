@@ -49,7 +49,6 @@ class AutoUpdater : DialogFragment() {
                     }
                 }
                 .setNegativeButton(context.getString(R.string.cancel)) { dialog, _ ->
-                    // User cancelled the dialog
                     dialog.cancel()
                 }
             builder.create()
@@ -82,11 +81,6 @@ class AutoUpdater : DialogFragment() {
             if (files.length() == 0) {
                 return
             }
-            println(
-                if (files.length() == 1 && files.getJSONObject(0)
-                        .getString("filename") == "app-release.apk"
-                ) "File is app-release.apk" else "File is not app-release.apk"
-            )
             if (files.length() == 1 && files.getJSONObject(0)
                     .getString("filename") == "app-release.apk"
             ) {
@@ -106,12 +100,9 @@ class AutoUpdater : DialogFragment() {
     }
 
     private fun downloadApk(url: String, activity: FragmentActivity, fileSize: Long = 0) {
-        // Il me faut télécharger le fichier dans un dossier inaccessible par l'utilisateur, mais accessible par l'application (genre le files-path défini dans file_paths.xml
-        // correspondant au "." dans le l'application)
         val cacheDir = context.externalCacheDir ?: context.cacheDir
         var outputFile = File(cacheDir, "app-release.apk")
         if (outputFile.exists()) {
-            println("Found a previous version of the apk, deleting it")
             outputFile.delete()
         }
         outputFile = File(cacheDir, "app-release.apk")
@@ -137,7 +128,6 @@ class AutoUpdater : DialogFragment() {
             onDownloadError()
             return
         } else {
-            // On attend que la popup de téléchargement se ferme
             while (activity.supportFragmentManager.findFragmentByTag("downloading") != null) {
                 Thread.sleep(100)
             }
@@ -161,21 +151,18 @@ class AutoUpdater : DialogFragment() {
     }
 
     private fun installApk(file: File, activity: FragmentActivity) {
-        println("The file is ${file.absolutePath} ${"exists".takeIf { file.exists() } ?: "does not exist"}")
         try {
             val uri = FileProvider.getUriForFile(
                 activity,
-                "fr.e_psi_lon.menuself.fileprovider", // Correspond à l'autorité définie dans le manifeste
+                "fr.e_psi_lon.menuself.fileprovider",
                 file
             )
-            println("The uri is $uri and the file of the uri is ${uri.path}")
             val intent = Intent(Intent.ACTION_VIEW)
             intent.setDataAndType(uri, "application/vnd.android.package-archive")
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             activity.startActivity(intent)
         } catch (e: Exception) {
-            println("Error is $e")
             val message: String = when (e) {
                 is SecurityException -> {
                     context.getString(R.string.permission_denied, e.message)
@@ -199,7 +186,6 @@ class AutoUpdater : DialogFragment() {
             val json = JSONObject(output)
             val commit = json.getJSONObject("commit")
             val message = commit.getString("message")
-            // A message is 'builds: <hash>'
             return message.split(" ")[1]
         }
     }

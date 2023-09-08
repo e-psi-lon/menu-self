@@ -24,7 +24,6 @@ import org.jsoup.nodes.Element
 import java.util.Calendar
 
 class MainActivity : AppCompatActivity() {
-    // Define navigation buttons and others variables
     private lateinit var layout: LinearLayout
     private lateinit var noonButton: ImageButton
     private lateinit var eveningButton: ImageButton
@@ -34,7 +33,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var dayPlusButton: ImageButton
     private lateinit var dayView: TextView
     private lateinit var dayMinusButton: ImageButton
-    private lateinit var menu: Menu
+    private lateinit var eveningMenu: Menu
+    private lateinit var noonMenu: Menu
     private val dayInWeek: List<String> =
         listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
     private var currentDay: String = getDayOfWeek()
@@ -66,11 +66,20 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // Update the ListView with the menu
         if (currentPage == "noon") {
-            fetchMenuData(0, 2)
+            if (intent.hasExtra("noonMenu")) {
+                noonMenu = Menu.fromJson(intent.getStringExtra("noonMenu")!!)
+                showMenu(currentDay)
+                if (intent.hasExtra("eveningMenu")) {
+                    eveningMenu = Menu.fromJson(intent.getStringExtra("eveningMenu")!!)
+                }
+            } else {
+                if (intent.hasExtra("eveningMenu")) {
+                    eveningMenu = Menu.fromJson(intent.getStringExtra("eveningMenu")!!)
+                }
+                fetchMenuData(0, 2)
+            }
         } else if (currentPage == "evening") {
-            // Need to change the background color of the button
             noonButton.setBackgroundColor(
                 ContextCompat.getColor(
                     this,
@@ -89,27 +98,59 @@ class MainActivity : AppCompatActivity() {
                     R.color.colorSecondaryVariant
                 )
             )
-            fetchMenuData(2, 4)
+            if (intent.hasExtra("eveningMenu")) {
+                eveningMenu = Menu.fromJson(intent.getStringExtra("eveningMenu")!!)
+                showMenu(currentDay)
+                if (intent.hasExtra("noonMenu")) {
+                    noonMenu = Menu.fromJson(intent.getStringExtra("noonMenu")!!)
+                }
+            } else {
+                if (intent.hasExtra("noonMenu")) {
+                    noonMenu = Menu.fromJson(intent.getStringExtra("noonMenu")!!)
+                }
+                fetchMenuData(2, 4)
+            }
         }
 
 
-        // Register click event on navigation buttons
         noonButton.setOnClickListener {
             if (currentPage != "noon") {
-                changePage(MainActivity::class.java, mapOf("currentPage" to "noon"))
+                val extras = mutableMapOf<String, String>()
+                extras["currentPage"] = "noon"
+                if (::noonMenu.isInitialized) {
+                    extras["noonMenu"] = noonMenu.toJson()
+                }
+                if (::eveningMenu.isInitialized) {
+                    extras["eveningMenu"] = eveningMenu.toJson()
+                }
+                changePage(MainActivity::class.java, extras)
             }
         }
 
         eveningButton.setOnClickListener {
             if (currentPage != "evening") {
-                changePage(MainActivity::class.java, mapOf("currentPage" to "evening"))
+                val extras = mutableMapOf<String, String>()
+                extras["currentPage"] = "evening"
+                if (::noonMenu.isInitialized) {
+                    extras["noonMenu"] = noonMenu.toJson()
+                }
+                if (::eveningMenu.isInitialized) {
+                    extras["eveningMenu"] = eveningMenu.toJson()
+                }
+                changePage(MainActivity::class.java, extras)
             }
         }
 
         settingsButton.setOnClickListener {
-            if (currentPage != "settings") {
-                changePage(SettingsActivity::class.java, mapOf("currentPage" to "settings"))
+            val extras = mutableMapOf<String, String>()
+            extras["currentPage"] = "settings"
+            if (::noonMenu.isInitialized) {
+                extras["noonMenu"] = noonMenu.toJson()
             }
+            if (::eveningMenu.isInitialized) {
+                extras["eveningMenu"] = eveningMenu.toJson()
+            }
+            changePage(SettingsActivity::class.java, extras)
         }
 
         dayPlusButton.setOnClickListener {
@@ -132,7 +173,6 @@ class MainActivity : AppCompatActivity() {
         for (extra in extras) {
             intent.putExtra(extra.key, extra.value)
         }
-        // We define the animation (left to right or right to left)
         val list = listOf("noon", "evening", "settings")
         val index = list.indexOf(currentPage)
         startActivity(intent).apply {
@@ -228,9 +268,21 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        menu = Menu(
-            Day(days[0], day1), Day(days[1], day2), Day(days[2], day3), Day(days[3], day4)
-        )
+        if (currentPage == "noon") {
+            noonMenu = Menu(
+                Day(days[0], day1),
+                Day(days[1], day2),
+                Day(days[2], day3),
+                Day(days[3], day4)
+            )
+        } else if (currentPage == "evening") {
+            eveningMenu = Menu(
+                Day(days[0], day1),
+                Day(days[1], day2),
+                Day(days[2], day3),
+                Day(days[3], day4)
+            )
+        }
         showMenu(currentDay)
 
 
@@ -265,6 +317,11 @@ class MainActivity : AppCompatActivity() {
             statusView.text = getString(R.string.no_internet)
             statusView.visibility = View.VISIBLE
             return@launch
+        }
+        val menu = if (currentPage == "noon") {
+            noonMenu
+        } else {
+            eveningMenu
         }
         if (menu.getDay(getFrench(day)).name == "") {
             dayView.text = getTranslatedString(currentDay)

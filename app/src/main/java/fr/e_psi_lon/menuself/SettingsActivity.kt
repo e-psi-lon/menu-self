@@ -28,6 +28,8 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var resetCacheButton: Button
     private lateinit var downloadLatestApkButton: Button
     private lateinit var checkForUpdatesButton: Button
+    private lateinit var eveningMenu: Menu
+    private lateinit var noonMenu: Menu
     private var appVersionName: String = BuildConfig.VERSION_NAME
     private var currentPage: String = "settings"
     private var filename: String = ""
@@ -45,18 +47,20 @@ class SettingsActivity : AppCompatActivity() {
         downloadLatestApkButton = findViewById(R.id.downloadApkButton)
         checkForUpdatesButton = findViewById(R.id.checkUpdateButton)
         versionView.text = getString(R.string.version, appVersionName)
-
-
+        if (intent.hasExtra("eveningMenu")) {
+            eveningMenu = Menu.fromJson(intent.getStringExtra("eveningMenu")!!)
+        }
+        if (intent.hasExtra("noonMenu")) {
+            noonMenu = Menu.fromJson(intent.getStringExtra("noonMenu")!!)
+        }
         resetCacheButton.setOnClickListener {
-            // On supprime le dossier Android/data/fr.e_psi_lon.menuself/cache
             val cacheDir = File("Android/data/fr.e_psi_lon.menuself/cache")
             cacheDir.deleteRecursively()
             cacheDir.mkdir()
-            changePage(MainActivity::class.java, mapOf("currentPage" to "noon"), false)
+            changePage(MainActivity::class.java, mapOf("currentPage" to "settings"), false)
         }
 
         downloadLatestApkButton.setOnClickListener {
-            // On demande à l'utilisateur si il veut passer par le navigateur ou par l'application
             askUserForBrowserOrApp().show()
         }
 
@@ -68,22 +72,31 @@ class SettingsActivity : AppCompatActivity() {
 
         noonButton.setOnClickListener {
             if (currentPage != "noon") {
-                changePage(MainActivity::class.java, mapOf("currentPage" to "noon"))
+                val extras = mutableMapOf<String, String>()
+                extras["currentPage"] = "noon"
+                if (::eveningMenu.isInitialized) {
+                    extras["eveningMenu"] = eveningMenu.toJson()
+                }
+                if (::noonMenu.isInitialized) {
+                    extras["noonMenu"] = noonMenu.toJson()
+                }
+                changePage(MainActivity::class.java, extras)
             }
         }
 
         eveningButton.setOnClickListener {
             if (currentPage != "evening") {
-                changePage(MainActivity::class.java, mapOf("currentPage" to "evening"))
+                val extras = mutableMapOf<String, String>()
+                extras["currentPage"] = "evening"
+                if (::eveningMenu.isInitialized) {
+                    extras["eveningMenu"] = eveningMenu.toJson()
+                }
+                if (::noonMenu.isInitialized) {
+                    extras["noonMenu"] = noonMenu.toJson()
+                }
+                changePage(MainActivity::class.java, extras)
             }
         }
-
-        settingsButton.setOnClickListener {
-            if (currentPage != "settings") {
-                changePage(MainActivity::class.java, mapOf("currentPage" to "settings"))
-            }
-        }
-
     }
 
     private fun getUrl(): List<String> {
@@ -103,10 +116,8 @@ class SettingsActivity : AppCompatActivity() {
             builder.apply {
                 setTitle(R.string.browser_or_app)
                 setPositiveButton(R.string.browser) { _, _ ->
-                    // On utilise une coroutine pour télécharger le fichier
                     GlobalScope.launch(Dispatchers.IO) {
                         val url = getUrl()
-                        // On ouvre le navigateur avec l'url
                         val intent = Intent(Intent.ACTION_VIEW)
                         intent.data = url[0].toUri()
                         startActivity(intent).also {
@@ -115,10 +126,8 @@ class SettingsActivity : AppCompatActivity() {
                     }
                 }
                 setNegativeButton(R.string.app) { _, _ ->
-                    // On utilise une coroutine pour télécharger le fichier
                     GlobalScope.launch(Dispatchers.IO) {
                         val url = getUrl()
-                        // On demande le nom du fichier à l'utilisateur
                         runOnUiThread {
                             askFilenameToUser().show()
                         }
@@ -140,7 +149,6 @@ class SettingsActivity : AppCompatActivity() {
                     }
                 }
             }
-            // Create the AlertDialog
             builder.create()
         }
     }
@@ -150,7 +158,6 @@ class SettingsActivity : AppCompatActivity() {
         for (extra in extras) {
             intent.putExtra(extra.key, extra.value)
         }
-        // We define the animation (left to right or right to left)
         val list = listOf("noon", "evening", "settings")
         val index = list.indexOf(currentPage)
         startActivity(intent).apply {
@@ -191,7 +198,6 @@ class SettingsActivity : AppCompatActivity() {
                     }
                 }
             }
-            // Create the AlertDialog
             builder.create()
         }
     }

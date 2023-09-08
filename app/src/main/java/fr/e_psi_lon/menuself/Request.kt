@@ -52,7 +52,6 @@ class Request {
             allowOverMetered: Boolean = true,
             allowOverRoaming: Boolean = true
         ): File? {
-            println("Downloading $url to ${outputFile.absolutePath}")
             val request = DownloadManager.Request(url.toUri()).apply {
                 setTitle(context.getString(R.string.app_name))
                 setDescription(context.getString(R.string.downloading, outputFile.name))
@@ -101,7 +100,6 @@ class Request {
                                 activity.supportFragmentManager.findFragmentByTag("downloading") as DownloadingProgress
                             }
                         dialog.setProgress(((currentSize * 100) / fileSize).toInt(), currentSize)
-                        // On modifie aussi le contenu pour afficher à l'utilisateur la progression
                         if (dialog.cancel) {
                             cancel = true
                         }
@@ -121,7 +119,6 @@ class Request {
                     }
                     if (currentSize > previousSize) {
                         previousSize = currentSize
-                        // On actualise la barre de progression
                     } else {
                         Thread.sleep(100)
                     }
@@ -134,7 +131,6 @@ class Request {
                 dialog.dismiss()
 
             }
-            println("Finished downloading $url to ${outputFile.absolutePath} which ${"exists".takeIf { outputFile.exists() } ?: "does not exist"}")
             return File(outputFile.parent, outputFile.name)
         }
     }

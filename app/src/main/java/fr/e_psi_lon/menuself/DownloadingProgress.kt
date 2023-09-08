@@ -29,7 +29,6 @@ class DownloadingProgress : DialogFragment() {
             val builder = AlertDialog.Builder(it)
             context = it.applicationContext
             builder.setView(R.layout.downloading_progress)
-            // Il faut un bouton cancel
             builder.setCancelable(true)
             builder.create()
         } ?: throw IllegalStateException("Activity cannot be null")

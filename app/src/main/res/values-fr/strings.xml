@@ -7,7 +7,6 @@
     <string name="previous">Précédent</string>
     <string name="loading">Chargement du menu</string>
     <string name="loading_error">Impossible de charger le menu</string>
-    <string name="no_menu_day">Il n\'y a pas de menu le %s</string>
     <string name="no_internet">Pas de connexion Internet</string>
     <string name="monday">Lundi</string>
     <string name="tuesday">Mardi</string>
@@ -28,9 +27,6 @@
     <string name="cancel">Annuler</string>
     <string name="no_changelog">Pas de changelog</string>
     <string name="permission_denied">L\'application n\'as pas la permission (%s) nécessaire pour se mettre à jour</string>
-    <string name="read_external_storage">de lire les fichiers du stockage</string>
-    <string name="install_packages">d\'installer des applications</string>
-    <string name="ask_permissions">Merci de bien vouloir ajouter la permission %s, elle est nécessaire pour mettre à jour l\'application</string>
     <string name="unknown_error">Une erreur est survenue lors de la mise à jour :\n%s</string>
     <string name="settings_button">Page des paramètres</string>
     <string name="downloading">Téléchargement de %s</string>
