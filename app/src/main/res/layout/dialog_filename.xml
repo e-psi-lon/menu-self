@@ -4,8 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <!-- Ask the user the name he wants to give to the file using an EditText -->
-
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

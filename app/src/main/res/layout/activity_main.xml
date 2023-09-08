@@ -7,7 +7,7 @@
     android:gravity="bottom"
     android:orientation="vertical">
 
-    <!-- Top part of the screen -->
+
     <TextView
         android:id="@+id/appNameTextView"
         android:layout_width="match_parent"
@@ -18,7 +18,7 @@
         android:textColor="@color/colorOnSecondary"
         android:textSize="24sp"
         android:textStyle="bold" />
-    <!-- Date with previous and next buttons -->
+
     <LinearLayout
         android:id="@+id/dateLayout"
         android:layout_width="match_parent"
@@ -59,7 +59,7 @@
             app:tint="@color/colorOnSecondary" />
     </LinearLayout>
 
-    <!-- List of meals -->
+
     <LinearLayout
         android:id="@+id/mealLayout"
         android:layout_width="match_parent"
@@ -89,7 +89,7 @@
             android:textSize="50sp"
             android:textStyle="bold" />
     </LinearLayout>
-    <!-- Barre de navigation -->
+
     <LinearLayout
         android:id="@+id/bottomBarLayout"
         android:layout_width="match_parent"
@@ -100,7 +100,7 @@
         android:orientation="horizontal"
         android:weightSum="3">
 
-        <!-- Button for the lunch menu -->
+
         <ImageButton
             android:id="@+id/noonButton"
             android:layout_width="0dp"
@@ -113,7 +113,7 @@
             android:src="@drawable/ic_sun"
             app:tint="@color/sun" />
 
-        <!-- Button for the dinner menu -->
+
         <ImageButton
             android:id="@+id/eveningButton"
             android:layout_width="0dp"
@@ -126,7 +126,7 @@
             android:src="@drawable/ic_moon"
             app:tint="@color/moon" />
 
-        <!-- Button for the settings -->
+
         <ImageButton
             android:id="@+id/settingsButton"
             android:layout_width="0dp"

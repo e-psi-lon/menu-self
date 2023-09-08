@@ -7,7 +7,7 @@
     android:gravity="bottom"
     android:orientation="vertical">
 
-    <!-- Top part of the screen -->
+
     <TextView
         android:id="@+id/appNameTextView"
         android:layout_width="match_parent"
@@ -19,7 +19,7 @@
         android:textSize="24sp"
         android:textStyle="bold" />
 
-    <!-- Message that says "Settings" -->
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -30,7 +30,6 @@
         android:textSize="20sp"
         android:textStyle="bold" />
 
-    <!-- Settings buttons -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -53,7 +52,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-                <!-- Button to reset the cache -->
 
                 <Button
                     android:id="@+id/resetCacheButton"
@@ -65,7 +63,7 @@
                     android:textColor="@color/colorOnSecondary"
                     android:textSize="20sp"
                     android:textStyle="bold" />
-                <!-- Button to download apk in the Download folder -->
+
                 <Button
                     android:id="@+id/downloadApkButton"
                     android:layout_width="match_parent"
@@ -88,30 +86,57 @@
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/version"
-                    android:layout_width="wrap_content"
+                <Button
+                    android:id="@+id/changelogButton"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/loading_version"
+                    android:background="@color/colorBackground"
+                    android:text="@string/changelog"
                     android:textAlignment="center"
                     android:textColor="@color/colorOnSecondary"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <Button
+                    android:id="@+id/changelogHistoryButton"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/made_by"
+                    android:background="@color/colorBackground"
+                    android:text="@string/changelog_history"
                     android:textAlignment="center"
                     android:textColor="@color/colorOnSecondary"
                     android:textSize="20sp"
                     android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/version"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/loading_version"
+                        android:textAlignment="center"
+                        android:textColor="@color/colorOnSecondary"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/made_by"
+                        android:textAlignment="center"
+                        android:textColor="@color/colorOnSecondary"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
             </LinearLayout>
         </ScrollView>
     </LinearLayout>
-    <!-- Version, build, etc. -->
 
-    <!-- Barre de navigation -->
     <LinearLayout
         android:id="@+id/bottomBarLayout"
         android:layout_width="match_parent"
@@ -122,7 +147,6 @@
         android:orientation="horizontal"
         android:weightSum="3">
 
-        <!-- Button for the lunch menu -->
         <ImageButton
             android:id="@+id/noonButton"
             android:layout_width="0dp"
@@ -135,7 +159,6 @@
             android:src="@drawable/ic_sun"
             app:tint="@color/sun" />
 
-        <!-- Button for the diner menu -->
         <ImageButton
             android:id="@+id/eveningButton"
             android:layout_width="0dp"
@@ -148,7 +171,6 @@
             android:src="@drawable/ic_moon"
             app:tint="@color/moon" />
 
-        <!-- Button for the settings -->
         <ImageButton
             android:id="@+id/settingsButton"
             android:layout_width="0dp"

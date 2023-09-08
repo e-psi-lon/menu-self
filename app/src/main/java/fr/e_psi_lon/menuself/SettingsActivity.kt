@@ -28,6 +28,8 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var resetCacheButton: Button
     private lateinit var downloadLatestApkButton: Button
     private lateinit var checkForUpdatesButton: Button
+    private lateinit var latestChangelogButton: Button
+    private lateinit var changelogHistoryButton: Button
     private lateinit var eveningMenu: Menu
     private lateinit var noonMenu: Menu
     private var appVersionName: String = BuildConfig.VERSION_NAME
@@ -46,6 +48,8 @@ class SettingsActivity : AppCompatActivity() {
         resetCacheButton = findViewById(R.id.resetCacheButton)
         downloadLatestApkButton = findViewById(R.id.downloadApkButton)
         checkForUpdatesButton = findViewById(R.id.checkUpdateButton)
+        latestChangelogButton = findViewById(R.id.changelogButton)
+        changelogHistoryButton = findViewById(R.id.changelogHistoryButton)
         versionView.text = getString(R.string.version, appVersionName)
         if (intent.hasExtra("eveningMenu")) {
             eveningMenu = Menu.fromJson(intent.getStringExtra("eveningMenu")!!)
@@ -97,6 +101,41 @@ class SettingsActivity : AppCompatActivity() {
                 changePage(MainActivity::class.java, extras)
             }
         }
+        latestChangelogButton.setOnClickListener {
+            GlobalScope.launch(Dispatchers.IO) {
+                val output =
+                    Request.get("https://api.github.com/repos/e-psi-lon/menu-self/commits/master")
+                val changelog = if (output == "") {
+                    getString(R.string.no_changelog)
+                } else {
+                    val json = JSONObject(output)
+                    val commit = json.getJSONObject("commit")
+                    commit.getString("message")
+                }
+                runOnUiThread {
+                    val builder = AlertDialog.Builder(this@SettingsActivity)
+                    builder.apply {
+                        setTitle(R.string.changelog_is)
+                        setMessage(changelog)
+                        setPositiveButton(R.string.ok) { dialog, _ ->
+                            dialog.cancel()
+                        }
+                    }
+                    builder.create().show()
+                }
+            }
+        }
+        changelogHistoryButton.setOnClickListener {
+            val intent = Intent(this, ChangelogHistoryActivity::class.java)
+            if (::eveningMenu.isInitialized) {
+                intent.putExtra("eveningMenu", eveningMenu.toJson())
+            }
+            if (::noonMenu.isInitialized) {
+                intent.putExtra("noonMenu", noonMenu.toJson())
+            }
+            startActivity(intent).apply { }.also { finish() }
+        }
+
     }
 
     private fun getUrl(): List<String> {

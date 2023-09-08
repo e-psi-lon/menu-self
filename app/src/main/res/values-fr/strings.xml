@@ -42,4 +42,10 @@
     <string name="check_update">Vérifier les mises à jour</string>
     <string name="up_to_date">L\'application est à jour</string>
     <string name="filename">Veuillez entrer le nom du fichier à télécharger</string>
+    <string name="changelog">Voir le changelog</string>
+    <string name="changelog_history">Historique de changements</string>
+    <string name="exit">Quitter</string>
+    <string name="loading_history">Chargement de l\'historique des changements</string>
+    <string name="changelogHistoryError">Erreur lors de l\'obtention de l\'historique</string>
+    <string name="changelog_is">Le changelog est :</string>
 </resources>
