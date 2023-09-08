@@ -49,4 +49,6 @@
     <string name="loading_history">Loading Changelog History</string>
     <string name="changelogHistoryError">Error while getting history</string>
     <string name="changelog_is">The latest changelog is :</string>
+    <string name="actual">Actual</string>
+    <string name="published">Published on %s</string>
 </resources>

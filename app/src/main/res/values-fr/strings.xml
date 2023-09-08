@@ -48,4 +48,6 @@
     <string name="loading_history">Chargement de l\'historique des changements</string>
     <string name="changelogHistoryError">Erreur lors de l\'obtention de l\'historique</string>
     <string name="changelog_is">Le dernier changelog est :</string>
+    <string name="actual">Actuelle</string>
+    <string name="published">Publié le %s</string>
 </resources>

@@ -80,7 +80,18 @@ class ChangelogHistoryActivity : AppCompatActivity() {
                 val commit = commitsJson.getJSONObject(i)
                 val commitSha = commit.getString("sha").substring(0, 7)
                 val commitMessage = commit.getJSONObject("commit").getString("message")
-                changelogHistoryList.add("$commitSha :\n$commitMessage")
+                val author = commit.getJSONObject("commit").getJSONObject("author")
+                val authorName = author.getString("name")
+                val date = author.getString("date")
+                val dateSplit = date.split("T")[0].split("-")
+                val dateFormatted = "${dateSplit[2]}/${dateSplit[1]}/${dateSplit[0]}"
+                changelogHistoryList.add(
+                    if (commitSha == BuildConfig.GIT_COMMIT_HASH) {
+                        "$commitSha - (${getString(R.string.actual)}) ${getString(R.string.published, dateFormatted)}\n$commitMessage - $authorName"
+                    } else {
+                        "$commitSha - ${getString(R.string.published, dateFormatted)}\n$commitMessage - $authorName"
+                    }
+                )
             }
             runOnUiThread {
                 changelogHistory.adapter = ArrayAdapter(
