@@ -58,7 +58,9 @@ class ChangelogHistoryActivity : AppCompatActivity() {
             if (::noonMenu.isInitialized) {
                 intent.putExtra("noonMenu", noonMenu.toJson())
             }
-            startActivity(intent).apply { }.also { finish() }
+            startActivity(intent).apply {
+                overridePendingTransition(R.anim.dont_move, R.anim.slide_out_bottom)
+            }.also { finish() }
         }
 
     }

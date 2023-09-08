@@ -62,7 +62,11 @@ class MainActivity : AppCompatActivity() {
 
         if (isNetworkAvailable() && !intent.hasExtra("currentPage")) {
             GlobalScope.launch(Dispatchers.IO) {
-                checkVersion()
+                try {
+                    checkVersion()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
         }
 
@@ -179,8 +183,7 @@ class MainActivity : AppCompatActivity() {
             if (index < list.indexOf(extras["currentPage"])) {
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
             } else {
-                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right).apply {
-                }
+                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
             }
         }.also {
             finish()
