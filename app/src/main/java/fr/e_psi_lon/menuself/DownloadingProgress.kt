@@ -32,7 +32,6 @@ class DownloadingProgress : DialogFragment() {
             context = it.applicationContext
             builder.setView(R.layout.downloading_progress)
             builder.setCancelable(true)
-            setElements()
             builder.create()
         } ?: throw IllegalStateException("Activity cannot be null")
     }
@@ -79,7 +78,7 @@ class DownloadingProgress : DialogFragment() {
 
     fun setProgress(progress: Int, downloadedSize: Long) {
         if (!::progressBar.isInitialized || !::titleDownloading.isInitialized) {
-            return
+            return setElements()
         }
         progressBar.progress = progress
         titleDownloading.text = context.getString(
