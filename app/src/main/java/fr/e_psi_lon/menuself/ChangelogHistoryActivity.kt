@@ -87,9 +87,19 @@ class ChangelogHistoryActivity : AppCompatActivity() {
                 val dateFormatted = "${dateSplit[2]}/${dateSplit[1]}/${dateSplit[0]}"
                 changelogHistoryList.add(
                     if (commitSha == BuildConfig.GIT_COMMIT_HASH.substring(0, 7)) {
-                        "$commitSha (${getString(R.string.actual)}) - ${getString(R.string.published, dateFormatted)}\n$commitMessage - $authorName"
+                        "$commitSha (${getString(R.string.actual)}) - ${
+                            getString(
+                                R.string.published,
+                                dateFormatted
+                            )
+                        }\n$commitMessage - $authorName"
                     } else {
-                        "$commitSha - ${getString(R.string.published, dateFormatted)}\n$commitMessage - $authorName"
+                        "$commitSha - ${
+                            getString(
+                                R.string.published,
+                                dateFormatted
+                            )
+                        }\n$commitMessage - $authorName"
                     }
                 )
             }

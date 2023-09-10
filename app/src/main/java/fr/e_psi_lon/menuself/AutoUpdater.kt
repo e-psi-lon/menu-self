@@ -63,7 +63,11 @@ class AutoUpdater : DialogFragment() {
             return
         }
         val json = JSONObject(output)
-        val commits = Request.get("https://api.github.com/repos/e-psi-lon/menu-self/commits?sha=${json.getString("sha")}")
+        val commits = Request.get(
+            "https://api.github.com/repos/e-psi-lon/menu-self/commits?sha=${
+                json.getString("sha")
+            }"
+        )
         if (commits == "") {
             changelog = context.getString(R.string.no_changelog)
             return

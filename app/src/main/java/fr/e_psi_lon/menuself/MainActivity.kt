@@ -12,9 +12,9 @@ import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -177,7 +177,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         menuListView.setOnScrollListener(object : AbsListView.OnScrollListener {
-            override fun onScrollStateChanged(p0: AbsListView?, p1: Int) { }
+            override fun onScrollStateChanged(p0: AbsListView?, p1: Int) {}
             override fun onScroll(
                 view: AbsListView?,
                 firstVisibleItem: Int,
@@ -226,99 +226,55 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun fetchMenuData(start: Int, stop: Int) = CoroutineScope(Dispatchers.IO).launch {
-        val url = "https://standarddelunivers.wordpress.com/2022/06/28/menu-de-la-semaine/"
-        val doc: Document = Jsoup.connect(url).get()
+        val doc: Document =
+            Jsoup.connect("https://standarddelunivers.wordpress.com/2022/06/28/menu-de-la-semaine/")
+                .get()
         val tables: MutableList<Element> = doc.select("table").toMutableList()
             .subList(start, stop)
-        val days: MutableList<String> = tables[0].select("thead").select("tr")
-            .select("th").map { it.text() }.toMutableList()
-        days.addAll(tables[1].select("thead").select("tr").select("th").map { it.text() }
-            .toMutableList())
-        val day1: MutableList<String> = mutableListOf()
-        val day2: MutableList<String> = mutableListOf()
-        val day3: MutableList<String> = mutableListOf()
-        val day4: MutableList<String> = mutableListOf()
-        var rows = tables[0].select("tr")
-        for (row in rows) {
-            val cells = row.select("td")
-            if (cells.size == 2) {
-                val plat1 = cells[0].text()
-                if ("<" in plat1) {
-                    val platSplit = plat1.split("<")
-                    day1.add(platSplit[0])
-                } else if (plat1 == "" || plat1 == " ") {
+        val days: MutableList<String> = mutableListOf()
+        val contentPerDay: MutableList<MutableList<String>> =
+            mutableListOf(mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf())
+        var tableI = 0
+        for (table in tables) {
+            for (day in table.select("th")) {
+                days.add(day.text())
+            }
+            var perDayI = 0
+            for (meal in table.select("td")) {
+                if (meal.select("img").isNotEmpty()) {
+                    if (meal.text() != "") {
+                        contentPerDay[perDayI + tableI].add(
+                            "${meal.text()} (${
+                                meal.select("img").attr("data-image-title")
+                            })"
+                        )
+                    }
                     continue
-                } else {
-                    day1.add(plat1)
                 }
-                val plat2 = cells[1].text()
-                if ("<" in plat2) {
-                    val platSplit = plat2.split("<")
-                    day2.add(platSplit[0])
-                } else if (plat2 == "" || plat2 == " ") {
-                    continue
-                } else {
-                    day2.add(plat2)
+                if (meal.text() != "") {
+                    contentPerDay[perDayI + tableI].add(meal.text())
                 }
-            } else if (cells.size == 1) {
-                val plat1 = cells[0].text()
-                if ("<" in plat1) {
-                    val platSplit = plat1.split("<")
-                    day1.add(platSplit[0])
-                } else if (plat1 == "" || plat1 == " ") {
-                    continue
-                } else {
-                    day1.add(plat1)
+                perDayI++
+                if (perDayI == 2) {
+                    perDayI = 0
                 }
             }
-        }
-        rows = tables[1].select("tr")
-        for (row in rows) {
-            val cells = row.select("td")
-            if (cells.size == 2) {
-                val plat1 = cells[0].text()
-                if ("<" in plat1) {
-                    val platSplit = plat1.split("<")
-                    day3.add(platSplit[0])
-                } else if (plat1 == "" || plat1 == " ") {
-                    continue
-                } else {
-                    day3.add(plat1)
-                }
-                val plat2 = cells[1].text()
-                if ("<" in plat2) {
-                    val platSplit = plat2.split("<")
-                    day4.add(platSplit[0])
-                } else if (plat2 == "" || plat2 == " ") {
-                    continue
-                } else {
-                    day4.add(plat2)
-                }
-            } else if (cells.size == 1) {
-                val plat1 = cells[0].text()
-                if ("<" in plat1) {
-                    val platSplit = plat1.split("<")
-                    day3.add(platSplit[0])
-                } else if (plat1 == "" || plat1 == " ") {
-                    continue
-                } else {
-                    day3.add(plat1)
-                }
-            }
+            tableI++
+            tableI++
         }
         if (currentPage == "noon") {
             noonMenu = Menu(
-                Day(days[0], day1),
-                Day(days[1], day2),
-                Day(days[2], day3),
-                Day(days[3], day4)
+                Day(days[0], contentPerDay[0]),
+                Day(days[1], contentPerDay[1]),
+                Day(days[2], contentPerDay[2]),
+                Day(days[3], contentPerDay[3])
             )
         } else if (currentPage == "evening") {
             eveningMenu = Menu(
-                Day(days[0], day1),
-                Day(days[1], day2),
-                Day(days[2], day3),
-                Day(days[3], day4)
+                Day(days[0], contentPerDay[0]),
+                Day(days[1], contentPerDay[1]),
+                Day(days[2], contentPerDay[2]),
+                Day(days[3], contentPerDay[3])
             )
         }
         showMenu(currentDay)
@@ -375,7 +331,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (menu.getDay(getFrench(day)).meals.isEmpty()) {
-            dayView.text = getTranslatedString(currentDay)
+            dayView.text = menu.getDay(getFrench(day)).name
             menuListView.visibility = View.GONE
             statusView.text = getString(R.string.no_menu_this_day, menu.getDay(getFrench(day)).name)
             statusView.visibility = View.VISIBLE
