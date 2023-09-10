@@ -6,6 +6,7 @@ import android.app.DownloadManager
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
+import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
@@ -21,6 +22,7 @@ class DownloadingProgress : DialogFragment() {
     private lateinit var downloadManager: DownloadManager
     private lateinit var titleDownloading: TextView
     private lateinit var progressBar: ProgressBar
+    private lateinit var cancelButton: Button
     private lateinit var downloadId: String
 
 
@@ -30,6 +32,7 @@ class DownloadingProgress : DialogFragment() {
             context = it.applicationContext
             builder.setView(R.layout.downloading_progress)
             builder.setCancelable(true)
+            setElements()
             builder.create()
         } ?: throw IllegalStateException("Activity cannot be null")
     }
@@ -40,12 +43,17 @@ class DownloadingProgress : DialogFragment() {
         }
         titleDownloading = dialog!!.findViewById(R.id.titleDownloading)
         progressBar = dialog!!.findViewById(R.id.progressBar)
+        cancelButton = dialog!!.findViewById(R.id.cancel)
+        cancelButton.setOnClickListener {
+            onCancel(dialog!!)
+        }
     }
 
     override fun onCancel(dialog: DialogInterface) {
         cancel = true
         downloadManager.remove(downloadId.toLong())
         outputFile.delete()
+        dialog.cancel()
         super.onCancel(dialog)
     }
 
@@ -71,7 +79,6 @@ class DownloadingProgress : DialogFragment() {
 
     fun setProgress(progress: Int, downloadedSize: Long) {
         if (!::progressBar.isInitialized || !::titleDownloading.isInitialized) {
-            setElements()
             return
         }
         progressBar.progress = progress

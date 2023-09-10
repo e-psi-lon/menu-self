@@ -6,11 +6,13 @@ import android.content.Intent
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.View
+import android.widget.AbsListView
 import android.widget.ArrayAdapter
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.CoroutineScope
@@ -33,6 +35,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var dayPlusButton: ImageButton
     private lateinit var dayView: TextView
     private lateinit var dayMinusButton: ImageButton
+    private lateinit var menuLayout: SwipeRefreshLayout
     private lateinit var eveningMenu: Menu
     private lateinit var noonMenu: Menu
     private val dayInWeek: List<String> =
@@ -53,7 +56,9 @@ class MainActivity : AppCompatActivity() {
         dayMinusButton = findViewById(R.id.previousButton)
         dayView = findViewById(R.id.dateTextView)
         statusView = findViewById(R.id.statusTextView)
+        menuLayout = findViewById(R.id.mealLayout)
 
+        menuLayout.isRefreshing = true
         currentPage = if (intent.hasExtra("currentPage")) {
             intent.getStringExtra("currentPage")!!
         } else {
@@ -168,6 +173,36 @@ class MainActivity : AppCompatActivity() {
             if (currentDay != "Monday") {
                 currentDay = dayInWeek[dayInWeek.indexOf(currentDay) - 1]
                 showMenu(currentDay)
+            }
+        }
+
+        menuListView.setOnScrollListener(object : AbsListView.OnScrollListener {
+            override fun onScrollStateChanged(p0: AbsListView?, p1: Int) { }
+            override fun onScroll(
+                view: AbsListView?,
+                firstVisibleItem: Int,
+                visibleItemCount: Int,
+                totalItemCount: Int
+            ) {
+                menuLayout.isEnabled = firstVisibleItem == 0
+            }
+        })
+
+
+        menuLayout.setOnRefreshListener {
+            menuListView.visibility = View.GONE
+            statusView.visibility = View.VISIBLE
+            statusView.text = getString(R.string.loading)
+            dayView.text = getString(R.string.loading_date)
+            if (isNetworkAvailable()) {
+                if (currentPage == "noon") {
+                    fetchMenuData(0, 2)
+                } else if (currentPage == "evening") {
+                    fetchMenuData(2, 4)
+                }
+            } else {
+                menuLayout.isRefreshing = false
+                statusView.text = getString(R.string.no_internet)
             }
         }
     }
@@ -297,6 +332,7 @@ class MainActivity : AppCompatActivity() {
             menuListView.visibility = View.GONE
             statusView.text = getString(R.string.no_menu_this_day, getTranslatedString(day))
             statusView.visibility = View.VISIBLE
+            menuLayout.isRefreshing = false
             return@launch
         }
 
@@ -305,6 +341,7 @@ class MainActivity : AppCompatActivity() {
             menuListView.visibility = View.GONE
             statusView.text = getString(R.string.no_menu_this_day, getTranslatedString(day))
             statusView.visibility = View.VISIBLE
+            menuLayout.isRefreshing = false
             return@launch
         }
         if (day == "Friday" && currentPage == "evening") {
@@ -312,6 +349,7 @@ class MainActivity : AppCompatActivity() {
             menuListView.visibility = View.GONE
             statusView.text = getString(R.string.no_menu_this_day, getTranslatedString(day))
             statusView.visibility = View.VISIBLE
+            menuLayout.isRefreshing = false
             return@launch
         }
         if (!isNetworkAvailable()) {
@@ -319,6 +357,7 @@ class MainActivity : AppCompatActivity() {
             menuListView.visibility = View.GONE
             statusView.text = getString(R.string.no_internet)
             statusView.visibility = View.VISIBLE
+            menuLayout.isRefreshing = false
             return@launch
         }
         val menu = if (currentPage == "noon") {
@@ -331,6 +370,7 @@ class MainActivity : AppCompatActivity() {
             menuListView.visibility = View.GONE
             statusView.text = getString(R.string.no_day_data)
             statusView.visibility = View.VISIBLE
+            menuLayout.isRefreshing = false
             return@launch
         }
 
@@ -339,6 +379,7 @@ class MainActivity : AppCompatActivity() {
             menuListView.visibility = View.GONE
             statusView.text = getString(R.string.no_menu_this_day, menu.getDay(getFrench(day)).name)
             statusView.visibility = View.VISIBLE
+            menuLayout.isRefreshing = false
             return@launch
         }
 
@@ -349,11 +390,14 @@ class MainActivity : AppCompatActivity() {
                 android.R.layout.simple_list_item_1, menu.getDay(getFrench(day)).meals
             )
             menuListView.visibility = View.VISIBLE
+            menuListView.isEnabled = true
             statusView.visibility = View.GONE
         } catch (e: Exception) {
             statusView.text = getString(R.string.loading_error)
             statusView.visibility = View.VISIBLE
             menuListView.visibility = View.GONE
+        } finally {
+            menuLayout.isRefreshing = false
         }
     }
 

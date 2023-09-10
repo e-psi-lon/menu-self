@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 
@@ -59,13 +60,30 @@ class AutoUpdater : DialogFragment() {
         val output = Request.get("https://api.github.com/repos/e-psi-lon/menu-self/commits/master")
         if (output == "") {
             changelog = context.getString(R.string.no_changelog)
+            return
         }
         val json = JSONObject(output)
-        changelog = if (hash == json.getString("sha")) {
-            val commit = json.getJSONObject("commit")
-            commit.getString("message")
+        val commits = Request.get("https://api.github.com/repos/e-psi-lon/menu-self/commits?sha=${json.getString("sha")}")
+        if (commits == "") {
+            changelog = context.getString(R.string.no_changelog)
+            return
+        }
+        val commitsJson = JSONArray(commits)
+        // On récupère le nombre de commits entre le commit de la version installée et le commit de la version disponible
+        // Une fois qu'on a ce nombre, on récupère les messages des commits entre les deux en limitant à 3 et si plus on ajoute "..."
+        val commitCount = commitsJson.length()
+        val commitMessages = mutableListOf<String>()
+        for (i in 0 until commitCount) {
+            val commit = commitsJson.getJSONObject(i)
+            if (commit.getString("sha") == BuildConfig.GIT_COMMIT_HASH) {
+                break
+            }
+            commitMessages.add(commit.getJSONObject("commit").getString("message"))
+        }
+        changelog = if (commitMessages.size > 3) {
+            "${commitMessages[0]}\n${commitMessages[1]}\n${commitMessages[2]}\n${context.getString(R.string.more)}"
         } else {
-            context.getString(R.string.no_changelog)
+            commitMessages.joinToString("\n")
         }
     }
 

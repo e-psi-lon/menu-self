@@ -17,7 +17,6 @@
     <string name="sunday">Sunday</string>
     <string name="loading_date">Loading…</string>
     <string name="settings">Settings</string>
-    <string name="loading_version">loading version</string>
     <string name="made_by">Made by e_psi_lon</string>
     <string name="version">Version %s</string>
     <string name="no_day_data">No data for this day</string>
@@ -33,13 +32,13 @@
     <string name="downloading">Downloading %s</string>
     <string name="download_error">There was an error while downloading the file</string>
     <string name="downloading_progress">Downloading file %1$s : %2$s/%3$s</string>
-    <string name="install_apk">Please install the %s apk file</string>
+    <string name="install_apk">Please install the %s file</string>
     <string name="install">Install</string>
     <string name="reset_cache">Reset the cache</string>
     <string name="download_apk">Download latest apk</string>
     <string name="browser">Web Browser</string>
     <string name="app">In-app downloader</string>
-    <string name="browser_or_app">How do you want to download the apk file ?</string>
+    <string name="browser_or_app">How do you want to download the file ?</string>
     <string name="check_update">Check updates</string>
     <string name="up_to_date">The app is up to date</string>
     <string name="filename">Please enter the name of the file you want</string>
@@ -51,4 +50,5 @@
     <string name="changelog_is">The latest changelog is :</string>
     <string name="actual">Actual</string>
     <string name="published">Published on %s</string>
+    <string name="more">And more…</string>
 </resources>
