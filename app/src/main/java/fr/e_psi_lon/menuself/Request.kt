@@ -2,6 +2,7 @@ package fr.e_psi_lon.menuself
 
 import android.app.DownloadManager
 import android.content.Context
+import android.net.ConnectivityManager
 import androidx.core.net.toUri
 import androidx.fragment.app.FragmentActivity
 import java.io.File
@@ -132,6 +133,13 @@ class Request {
 
             }
             return File(outputFile.parent, outputFile.name)
+        }
+
+        fun isNetworkAvailable(context: Context): Boolean {
+            val connectivityManager =
+                context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val activeNetworkInfo = connectivityManager.activeNetwork
+            return activeNetworkInfo != null
         }
     }
 }

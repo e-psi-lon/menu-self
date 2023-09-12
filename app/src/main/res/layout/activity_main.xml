@@ -66,12 +66,12 @@
         android:layout_height="0dp"
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
-        android:gravity="center"
         android:orientation="horizontal">
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:orientation="vertical"
             android:gravity="center">
 
             <ListView
@@ -93,7 +93,7 @@
                 android:textColor="@color/colorOnSecondary"
                 android:textSize="50sp"
                 android:textStyle="bold" />
-        </RelativeLayout>
+        </LinearLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <LinearLayout

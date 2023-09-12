@@ -85,8 +85,11 @@ class AutoUpdater : DialogFragment() {
             commitMessages.add(commit.getJSONObject("commit").getString("message"))
         }
         changelog = if (commitMessages.size > 3) {
-            "${commitMessages[0]}\n${commitMessages[1]}\n${commitMessages[2]}\n${context.getString(R.string.more)}"
+            "1. ${commitMessages[0]}\n2. ${commitMessages[1]}\n3. ${commitMessages[2]}\n${context.getString(R.string.more)}"
         } else {
+            for (i in 0 until commitMessages.size) {
+                commitMessages[i] = "${i + 1}. ${commitMessages[i]}"
+            }
             commitMessages.joinToString("\n")
         }
     }

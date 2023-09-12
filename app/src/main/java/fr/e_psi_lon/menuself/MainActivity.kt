@@ -1,9 +1,7 @@
 package fr.e_psi_lon.menuself
 
 
-import android.content.Context
 import android.content.Intent
-import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.View
 import android.widget.AbsListView
@@ -13,7 +11,6 @@ import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -65,7 +62,7 @@ class MainActivity : AppCompatActivity() {
             "noon"
         }
 
-        if (isNetworkAvailable() && !intent.hasExtra("currentPage")) {
+        if (Request.isNetworkAvailable(this.applicationContext) && !intent.hasExtra("currentPage")) {
             GlobalScope.launch(Dispatchers.IO) {
                 try {
                     checkVersion()
@@ -86,27 +83,17 @@ class MainActivity : AppCompatActivity() {
                 if (intent.hasExtra("eveningMenu")) {
                     eveningMenu = Menu.fromJson(intent.getStringExtra("eveningMenu")!!)
                 }
-                fetchMenuData(0, 2)
+                if (Request.isNetworkAvailable(this.applicationContext)) {
+                    fetchMenuData(0, 2)
+                } else {
+                    menuLayout.isRefreshing = false
+                    statusView.text = getString(R.string.no_internet)
+                }
             }
         } else if (currentPage == "evening") {
-            noonButton.setBackgroundColor(
-                ContextCompat.getColor(
-                    this,
-                    R.color.colorSecondaryVariant
-                )
-            )
-            eveningButton.setBackgroundColor(
-                ContextCompat.getColor(
-                    this,
-                    R.color.colorSelectedPageBackground
-                )
-            )
-            settingsButton.setBackgroundColor(
-                ContextCompat.getColor(
-                    this,
-                    R.color.colorSecondaryVariant
-                )
-            )
+            noonButton.setBackgroundColor(getColor(R.color.colorSecondaryVariant))
+            eveningButton.setBackgroundColor(getColor(R.color.colorSelectedPageBackground))
+            settingsButton.setBackgroundColor(getColor(R.color.colorSecondaryVariant))
             if (intent.hasExtra("eveningMenu")) {
                 eveningMenu = Menu.fromJson(intent.getStringExtra("eveningMenu")!!)
                 showMenu(currentDay)
@@ -117,7 +104,12 @@ class MainActivity : AppCompatActivity() {
                 if (intent.hasExtra("noonMenu")) {
                     noonMenu = Menu.fromJson(intent.getStringExtra("noonMenu")!!)
                 }
-                fetchMenuData(2, 4)
+                if (Request.isNetworkAvailable(this.applicationContext)) {
+                    fetchMenuData(2, 4)
+                } else {
+                    menuLayout.isRefreshing = false
+                    statusView.text = getString(R.string.no_internet)
+                }
             }
         }
 
@@ -194,7 +186,7 @@ class MainActivity : AppCompatActivity() {
             statusView.visibility = View.VISIBLE
             statusView.text = getString(R.string.loading)
             dayView.text = getString(R.string.loading_date)
-            if (isNetworkAvailable()) {
+            if (Request.isNetworkAvailable(this.applicationContext)) {
                 if (currentPage == "noon") {
                     fetchMenuData(0, 2)
                 } else if (currentPage == "evening") {
@@ -308,7 +300,7 @@ class MainActivity : AppCompatActivity() {
             menuLayout.isRefreshing = false
             return@launch
         }
-        if (!isNetworkAvailable()) {
+        if (!Request.isNetworkAvailable(this@MainActivity.applicationContext)) {
             dayView.text = getTranslatedString(currentDay)
             menuListView.visibility = View.GONE
             statusView.text = getString(R.string.no_internet)
@@ -397,12 +389,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun isNetworkAvailable(): Boolean {
-        val connectivityManager =
-            getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val activeNetworkInfo = connectivityManager.activeNetwork
-        return activeNetworkInfo != null
-    }
 
     private fun checkVersion() {
         if (AutoUpdater.getLastCommitHash() != BuildConfig.GIT_COMMIT_HASH) {
