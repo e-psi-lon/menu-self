@@ -225,7 +225,11 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun getUrl(): List<String> {
         val repoOutput =
-            Request.get("https://api.github.com/repos/e-psi-lon/menu-self/commits/builds")
+            Request.get("https://api.github.com/repos/e-psi-lon/menu-self/commits/builds-${
+                config.getString(
+                    "updateChannel"
+                )
+            }")
         val repoJson = JSONObject(repoOutput)
         val contentUrl = repoJson.getJSONArray("files").getJSONObject(0).getString("contents_url")
         val contentOutput = Request.get(contentUrl)

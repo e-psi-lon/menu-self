@@ -100,7 +100,7 @@ class AutoUpdater : DialogFragment() {
     }
 
     private fun main(activity: FragmentActivity) {
-        val output = Request.get("https://api.github.com/repos/e-psi-lon/menu-self/commits/builds")
+        val output = Request.get("https://api.github.com/repos/e-psi-lon/menu-self/commits/builds-$updateChannel")
         if (output == "") {
             return
         }
