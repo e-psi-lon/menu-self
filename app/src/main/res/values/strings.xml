@@ -51,4 +51,10 @@
     <string name="actual">Actual</string>
     <string name="published">Published on %s</string>
     <string name="more">And more…</string>
+    <string name="vegetarian">Vegetarian</string>
+    <string name="home_made">Home made</string>
+    <string name="more_menu_info">More info about the menu</string>
+    <string name="more_menu_info_text">Last menu update was: %s\n\nNext menu update will be: %s</string>
+    <string name="more_menu_info_text_redaction_message">Last menu update was: %s\n\nNext menu update will be: %s\n\nThere\'s a message from the redaction:\n\n%s</string>
+    <string name="more_menu_info_text_no_menu">No data for the menu</string>
 </resources>

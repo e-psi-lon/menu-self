@@ -136,10 +136,14 @@ class Request {
         }
 
         fun isNetworkAvailable(context: Context): Boolean {
-            val connectivityManager =
-                context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-            val activeNetworkInfo = connectivityManager.activeNetwork
-            return activeNetworkInfo != null
+            return try {
+                val connectivityManager =
+                    context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                val activeNetworkInfo = connectivityManager.activeNetwork
+                activeNetworkInfo != null
+            } catch (e: Exception) {
+                false
+            }
         }
     }
 }

@@ -30,6 +30,8 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var checkForUpdatesButton: Button
     private lateinit var latestChangelogButton: Button
     private lateinit var changelogHistoryButton: Button
+    private lateinit var moreInfoButton: Button
+    private lateinit var config: JSONObject
     private lateinit var eveningMenu: Menu
     private lateinit var noonMenu: Menu
     private var appVersionName: String = BuildConfig.VERSION_NAME
@@ -50,6 +52,8 @@ class SettingsActivity : AppCompatActivity() {
         checkForUpdatesButton = findViewById(R.id.checkUpdateButton)
         latestChangelogButton = findViewById(R.id.changelogButton)
         changelogHistoryButton = findViewById(R.id.changelogHistoryButton)
+        moreInfoButton = findViewById(R.id.moreInfoButton)
+
         versionView.text = getString(R.string.version, appVersionName)
         if (intent.hasExtra("eveningMenu")) {
             eveningMenu = Menu.fromJson(intent.getStringExtra("eveningMenu")!!)
@@ -57,6 +61,73 @@ class SettingsActivity : AppCompatActivity() {
         if (intent.hasExtra("noonMenu")) {
             noonMenu = Menu.fromJson(intent.getStringExtra("noonMenu")!!)
         }
+        if (File(filesDir, "config.json").exists()) {
+            config = JSONObject(File(filesDir, "config.json").readText())
+        } else {
+            config = JSONObject().apply {
+                put("updateChannel", "stable")
+            }
+            File(filesDir, "config.json").writeText(config.toString())
+        }
+
+        moreInfoButton.setOnClickListener {
+            if (Request.isNetworkAvailable(applicationContext)) {
+                val builder = AlertDialog.Builder(this)
+                builder.apply {
+                    setTitle(R.string.more_menu_info)
+                    if (::eveningMenu.isInitialized) {
+                        if (eveningMenu.redactionMessage != null) {
+                            setMessage(
+                                getString(
+                                    R.string.more_menu_info_text_redaction_message,
+                                    eveningMenu.lastUpdate,
+                                    eveningMenu.nextUpdate,
+                                    eveningMenu.redactionMessage
+                                )
+                            )
+                        } else {
+                            setMessage(
+                                getString(
+                                    R.string.more_menu_info_text,
+                                    eveningMenu.lastUpdate,
+                                    eveningMenu.nextUpdate
+                                )
+                            )
+                        }
+                    } else if (::noonMenu.isInitialized) {
+                        if (noonMenu.redactionMessage != null) {
+                            setMessage(
+                                getString(
+                                    R.string.more_menu_info_text_redaction_message,
+                                    noonMenu.lastUpdate,
+                                    noonMenu.nextUpdate,
+                                    noonMenu.redactionMessage
+                                )
+                            )
+                        } else {
+                            setMessage(
+                                getString(
+                                    R.string.more_menu_info_text,
+                                    noonMenu.lastUpdate,
+                                    noonMenu.nextUpdate
+                                )
+                            )
+                        }
+                    } else {
+                        setMessage(getString(R.string.more_menu_info_text_no_menu))
+                    }
+                    setPositiveButton(R.string.ok) { dialog, _ ->
+                        dialog.cancel()
+                    }
+                }
+                runOnUiThread {
+                    builder.create().show()
+                }
+            } else {
+                Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show()
+            }
+        }
+
         resetCacheButton.setOnClickListener {
             val cacheDir = File("Android/data/fr.e_psi_lon.menuself/cache")
             cacheDir.deleteRecursively()
@@ -65,12 +136,20 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         downloadLatestApkButton.setOnClickListener {
-            askUserForBrowserOrApp().show()
+            if (Request.isNetworkAvailable(applicationContext)) {
+                askUserForBrowserOrApp().show()
+            } else {
+                Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show()
+            }
         }
 
         checkForUpdatesButton.setOnClickListener {
-            GlobalScope.launch(Dispatchers.IO) {
-                checkVersion()
+            if (Request.isNetworkAvailable(applicationContext)) {
+                GlobalScope.launch(Dispatchers.IO) {
+                    checkVersion()
+                }
+            } else {
+                Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -102,27 +181,31 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
         latestChangelogButton.setOnClickListener {
-            GlobalScope.launch(Dispatchers.IO) {
-                val output =
-                    Request.get("https://api.github.com/repos/e-psi-lon/menu-self/commits/master")
-                val changelog = if (output == "") {
-                    getString(R.string.no_changelog)
-                } else {
-                    val json = JSONObject(output)
-                    val commit = json.getJSONObject("commit")
-                    commit.getString("message")
-                }
-                runOnUiThread {
-                    val builder = AlertDialog.Builder(this@SettingsActivity)
-                    builder.apply {
-                        setTitle(R.string.changelog_is)
-                        setMessage(changelog)
-                        setPositiveButton(R.string.ok) { dialog, _ ->
-                            dialog.cancel()
-                        }
+            if (Request.isNetworkAvailable(applicationContext)) {
+                GlobalScope.launch(Dispatchers.IO) {
+                    val output =
+                        Request.get("https://api.github.com/repos/e-psi-lon/menu-self/commits/master")
+                    val changelog = if (output == "") {
+                        getString(R.string.no_changelog)
+                    } else {
+                        val json = JSONObject(output)
+                        val commit = json.getJSONObject("commit")
+                        commit.getString("message")
                     }
-                    builder.create().show()
+                    runOnUiThread {
+                        val builder = AlertDialog.Builder(this@SettingsActivity)
+                        builder.apply {
+                            setTitle(R.string.changelog_is)
+                            setMessage(changelog)
+                            setPositiveButton(R.string.ok) { dialog, _ ->
+                                dialog.cancel()
+                            }
+                        }
+                        builder.create().show()
+                    }
                 }
+            } else {
+                Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show()
             }
         }
         changelogHistoryButton.setOnClickListener {
@@ -172,8 +255,12 @@ class SettingsActivity : AppCompatActivity() {
                         runOnUiThread {
                             askFilenameToUser().show()
                         }
-                        while (filename == "") {
+                        // On boucle tant que l'utilisateur n'as pas fermé la boîte de dialogue "askFilenameToUser"
+                        while (supportFragmentManager.findFragmentByTag("askFilenameToUser") != null) {
                             Thread.sleep(100)
+                        }
+                        if (filename == "") {
+                            return@launch
                         }
                         val file = File(
                             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
@@ -215,7 +302,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun checkVersion() {
-        if (AutoUpdater.getLastCommitHash() != BuildConfig.GIT_COMMIT_HASH) {
+        if (AutoUpdater.getLastCommitHash(config.getString("updateChannel")) != BuildConfig.GIT_COMMIT_HASH) {
             AutoUpdater().show(supportFragmentManager, "AutoUpdater")
         } else {
             runOnUiThread {
@@ -237,6 +324,9 @@ class SettingsActivity : AppCompatActivity() {
                     } else {
                         filenameView?.text.toString()
                     }
+                }
+                setNegativeButton(R.string.cancel) { dialog, _ ->
+                    dialog.cancel()
                 }
             }
             builder.create()

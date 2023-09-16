@@ -22,6 +22,7 @@ class AutoUpdater : DialogFragment() {
     private lateinit var hash: String
     private lateinit var changelog: String
     private lateinit var context: Context
+    private lateinit var updateChannel: String
 
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -85,7 +86,11 @@ class AutoUpdater : DialogFragment() {
             commitMessages.add(commit.getJSONObject("commit").getString("message"))
         }
         changelog = if (commitMessages.size > 3) {
-            "1. ${commitMessages[0]}\n2. ${commitMessages[1]}\n3. ${commitMessages[2]}\n${context.getString(R.string.more)}"
+            "1. ${commitMessages[0]}\n2. ${commitMessages[1]}\n3. ${commitMessages[2]}\n${
+                context.getString(
+                    R.string.more
+                )
+            }"
         } else {
             for (i in 0 until commitMessages.size) {
                 commitMessages[i] = "${i + 1}. ${commitMessages[i]}"
@@ -172,7 +177,7 @@ class AutoUpdater : DialogFragment() {
 
 
     private fun getHash() {
-        hash = getLastCommitHash()
+        hash = getLastCommitHash(updateChannel)
     }
 
     private fun installApk(file: File, activity: FragmentActivity) {
@@ -204,14 +209,37 @@ class AutoUpdater : DialogFragment() {
         }
     }
 
+    fun setChannel(channel: String) {
+        updateChannel = channel
+    }
+
     companion object {
-        fun getLastCommitHash(): String {
+        fun getLastCommitHash(channel: String = ""): String {
             val output =
-                Request.get("https://api.github.com/repos/e-psi-lon/menu-self/commits/builds")
+                Request.get("https://api.github.com/repos/e-psi-lon/menu-self/commits/builds-$channel")
+            if (output == "") {
+                return ""
+            }
             val json = JSONObject(output)
-            val commit = json.getJSONObject("commit")
-            val message = commit.getString("message")
-            return message.split(" ")[1]
+            return json.getJSONObject("commit").getString("message").split(" ")[1]
+        }
+
+        fun checkForUpdates(activity: FragmentActivity, channel: String = "") {
+            // On doit récupérer le hash du dernier commit de la branche builds<channel>
+            // Si le hash est différent de celui de la version installée, on doit télécharger le fichier app-release.apk
+            val output =
+                Request.get("https://api.github.com/repos/e-psi-lon/menu-self/commits/builds-$channel")
+            if (output == "") {
+                return
+            }
+            val json = JSONObject(output)
+            val lastCommitHash = json.getJSONObject("commit").getString("message").split(" ")[1]
+            if (lastCommitHash != BuildConfig.GIT_COMMIT_HASH) {
+                AutoUpdater().apply {
+                    setChannel(channel)
+                    show(activity.supportFragmentManager, "update")
+                }
+            }
         }
     }
 }

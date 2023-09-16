@@ -17,9 +17,11 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
+import java.io.File
 import java.util.Calendar
 
 class MainActivity : AppCompatActivity() {
@@ -35,6 +37,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var menuLayout: SwipeRefreshLayout
     private lateinit var eveningMenu: Menu
     private lateinit var noonMenu: Menu
+    private lateinit var config: JSONObject
     private val dayInWeek: List<String> =
         listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
     private var currentDay: String = getDayOfWeek()
@@ -62,10 +65,22 @@ class MainActivity : AppCompatActivity() {
             "noon"
         }
 
+        if (File(filesDir, "config.json").exists()) {
+            config = JSONObject(File(filesDir, "config.json").readText())
+
+        } else {
+            config = JSONObject()
+            config.put("updateChannel", "dev")
+            File(filesDir, "config.json").writeText(config.toString())
+        }
+
         if (Request.isNetworkAvailable(this.applicationContext) && !intent.hasExtra("currentPage")) {
             GlobalScope.launch(Dispatchers.IO) {
                 try {
-                    checkVersion()
+                    AutoUpdater.checkForUpdates(
+                        this@MainActivity,
+                        config.getString("updateChannel")
+                    )
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -88,6 +103,7 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     menuLayout.isRefreshing = false
                     statusView.text = getString(R.string.no_internet)
+                    dayView.text = getTranslatedString(currentDay)
                 }
             }
         } else if (currentPage == "evening") {
@@ -109,6 +125,7 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     menuLayout.isRefreshing = false
                     statusView.text = getString(R.string.no_internet)
+                    dayView.text = getTranslatedString(currentDay)
                 }
             }
         }
@@ -235,9 +252,22 @@ class MainActivity : AppCompatActivity() {
             for (meal in table.select("td")) {
                 if (meal.select("img").isNotEmpty()) {
                     if (meal.text() != "") {
+                        val images = meal.select("img")
+                        val imagesNames = mutableListOf<String>()
+                        for (img in images) {
+                            imagesNames.add(
+                                when (img.attr("data-image-title")) {
+                                    "vegetarien" -> getString(R.string.vegetarian)
+                                    "pates" -> getString(R.string.home_made)
+                                    else -> ""
+                                }
+                            )
+                        }
                         contentPerDay[perDayI + tableI].add(
                             "${meal.text()} (${
-                                meal.select("img").attr("data-image-title")
+                                imagesNames.joinToString(
+                                    ", "
+                                )
                             })"
                         )
                     }
@@ -254,20 +284,43 @@ class MainActivity : AppCompatActivity() {
             tableI++
             tableI++
         }
+        var lastMenuUpdate = ""
+        var nextMenuUpdate = ""
+        var redactionMessage: String? = null
+        for (p in doc.select("p")) {
+            if (p.text().contains("Dernière mise à jour")) {
+                lastMenuUpdate = p.text().replace("Dernière mise à jour : ", "")
+            }
+            if (p.text().contains("Prochaine mise à jour")) {
+                nextMenuUpdate = p.text().replace("Prochaine mise à jour : ", "")
+            }
+            if (p.text() == "La Rédaction") {
+                redactionMessage = p.previousElementSibling()?.text()
+            }
+        }
+
         if (currentPage == "noon") {
             noonMenu = Menu(
                 Day(days[0], contentPerDay[0]),
                 Day(days[1], contentPerDay[1]),
                 Day(days[2], contentPerDay[2]),
-                Day(days[3], contentPerDay[3])
+                Day(days[3], contentPerDay[3]),
+                lastMenuUpdate,
+                nextMenuUpdate,
+                redactionMessage
             )
+            println("The menu is: $noonMenu")
         } else if (currentPage == "evening") {
             eveningMenu = Menu(
                 Day(days[0], contentPerDay[0]),
                 Day(days[1], contentPerDay[1]),
                 Day(days[2], contentPerDay[2]),
-                Day(days[3], contentPerDay[3])
+                Day(days[3], contentPerDay[3]),
+                lastMenuUpdate,
+                nextMenuUpdate,
+                redactionMessage
             )
+            println("The menu is: $eveningMenu")
         }
         showMenu(currentDay)
 
@@ -389,10 +442,4 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
-    private fun checkVersion() {
-        if (AutoUpdater.getLastCommitHash() != BuildConfig.GIT_COMMIT_HASH) {
-            AutoUpdater().show(supportFragmentManager, "AutoUpdater")
-        }
-    }
 }

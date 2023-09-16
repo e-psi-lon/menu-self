@@ -54,6 +54,17 @@
                 android:orientation="vertical">
 
                 <Button
+                    android:id="@+id/moreInfoButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorBackground"
+                    android:text="@string/more_menu_info"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorOnSecondary"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <Button
                     android:id="@+id/resetCacheButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -133,6 +144,7 @@
                         android:textColor="@color/colorOnSecondary"
                         android:textSize="20sp"
                         android:textStyle="bold" />
+
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>
