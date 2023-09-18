@@ -71,6 +71,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             config = JSONObject()
             config.put("updateChannel", "dev")
+            File(filesDir, "config.json").createNewFile()
             File(filesDir, "config.json").writeText(config.toString())
         }
 
