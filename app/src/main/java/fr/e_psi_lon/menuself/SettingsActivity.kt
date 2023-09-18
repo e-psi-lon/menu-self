@@ -65,7 +65,7 @@ class SettingsActivity : AppCompatActivity() {
             config = JSONObject(File(filesDir, "config.json").readText())
         } else {
             config = JSONObject().apply {
-                put("updateChannel", "stable")
+                put("updateChannel", "dev")
             }
             File(filesDir, "config.json").writeText(config.toString())
         }
