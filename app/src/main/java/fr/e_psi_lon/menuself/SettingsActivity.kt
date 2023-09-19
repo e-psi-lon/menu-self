@@ -35,7 +35,6 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var eveningMenu: Menu
     private lateinit var noonMenu: Menu
     private var appVersionName: String = BuildConfig.VERSION_NAME
-    private var currentPage: String = "settings"
     private var filename: String = ""
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -68,6 +67,24 @@ class SettingsActivity : AppCompatActivity() {
                 put("updateChannel", "dev")
             }
             File(filesDir, "config.json").writeText(config.toString())
+        }
+        // Si on a "init" en intent, on check les mises à jour
+        if (intent.hasExtra("init") && Request.isNetworkAvailable(applicationContext)) {
+            GlobalScope.launch(Dispatchers.IO) {
+                if (!AutoUpdater.checkForUpdates(
+                        this@SettingsActivity,
+                        config.getString("updateChannel")
+                    )
+                ) {
+                    runOnUiThread {
+                        Toast.makeText(
+                            this@SettingsActivity,
+                            getString(R.string.up_to_date),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
         }
 
         moreInfoButton.setOnClickListener {
@@ -132,7 +149,7 @@ class SettingsActivity : AppCompatActivity() {
             val cacheDir = File("Android/data/fr.e_psi_lon.menuself/cache")
             cacheDir.deleteRecursively()
             cacheDir.mkdir()
-            changePage(MainActivity::class.java, mapOf("currentPage" to "settings"), false)
+            changePage(MainActivity::class.java, mapOf(), false)
         }
 
         downloadLatestApkButton.setOnClickListener {
@@ -146,7 +163,10 @@ class SettingsActivity : AppCompatActivity() {
         checkForUpdatesButton.setOnClickListener {
             if (Request.isNetworkAvailable(applicationContext)) {
                 GlobalScope.launch(Dispatchers.IO) {
-                    checkVersion()
+                    AutoUpdater.checkForUpdates(
+                        this@SettingsActivity,
+                        config.getString("updateChannel")
+                    )
                 }
             } else {
                 Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show()
@@ -154,31 +174,25 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         noonButton.setOnClickListener {
-            if (currentPage != "noon") {
-                val extras = mutableMapOf<String, String>()
-                extras["currentPage"] = "noon"
-                if (::eveningMenu.isInitialized) {
-                    extras["eveningMenu"] = eveningMenu.toJson()
-                }
-                if (::noonMenu.isInitialized) {
-                    extras["noonMenu"] = noonMenu.toJson()
-                }
-                changePage(MainActivity::class.java, extras)
+            val extras = mutableMapOf<String, String>()
+            if (::eveningMenu.isInitialized) {
+                extras["eveningMenu"] = eveningMenu.toJson()
             }
+            if (::noonMenu.isInitialized) {
+                extras["noonMenu"] = noonMenu.toJson()
+            }
+            changePage(NoonActivity::class.java, extras)
         }
 
         eveningButton.setOnClickListener {
-            if (currentPage != "evening") {
-                val extras = mutableMapOf<String, String>()
-                extras["currentPage"] = "evening"
-                if (::eveningMenu.isInitialized) {
-                    extras["eveningMenu"] = eveningMenu.toJson()
-                }
-                if (::noonMenu.isInitialized) {
-                    extras["noonMenu"] = noonMenu.toJson()
-                }
-                changePage(MainActivity::class.java, extras)
+            val extras = mutableMapOf<String, String>()
+            if (::eveningMenu.isInitialized) {
+                extras["eveningMenu"] = eveningMenu.toJson()
             }
+            if (::noonMenu.isInitialized) {
+                extras["noonMenu"] = noonMenu.toJson()
+            }
+            changePage(EveningActivity::class.java, extras)
         }
         latestChangelogButton.setOnClickListener {
             if (Request.isNetworkAvailable(applicationContext)) {
@@ -225,11 +239,13 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun getUrl(): List<String> {
         val repoOutput =
-            Request.get("https://api.github.com/repos/e-psi-lon/menu-self/commits/builds-${
-                config.getString(
-                    "updateChannel"
-                )
-            }")
+            Request.get(
+                "https://api.github.com/repos/e-psi-lon/menu-self/commits/builds-${
+                    config.getString(
+                        "updateChannel"
+                    )
+                }"
+            )
         val repoJson = JSONObject(repoOutput)
         val contentUrl = repoJson.getJSONArray("files").getJSONObject(0).getString("contents_url")
         val contentOutput = Request.get(contentUrl)
@@ -259,7 +275,6 @@ class SettingsActivity : AppCompatActivity() {
                         runOnUiThread {
                             askFilenameToUser().show()
                         }
-                        // On boucle tant que l'utilisateur n'as pas fermé la boîte de dialogue "askFilenameToUser"
                         while (supportFragmentManager.findFragmentByTag("askFilenameToUser") != null) {
                             Thread.sleep(100)
                         }
@@ -290,11 +305,15 @@ class SettingsActivity : AppCompatActivity() {
         for (extra in extras) {
             intent.putExtra(extra.key, extra.value)
         }
-        val list = listOf("noon", "evening", "settings")
-        val index = list.indexOf(currentPage)
+        val map = mapOf(
+            "NoonActivity" to 0,
+            "EveningActivity" to 1,
+            "SettingsActivity" to 2
+        )
+        val index = 2
         startActivity(intent).apply {
             if (animation) {
-                if (index < list.indexOf(extras["currentPage"])) {
+                if (index < map[page.simpleName]!!) {
                     overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
                 } else {
                     overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
@@ -302,16 +321,6 @@ class SettingsActivity : AppCompatActivity() {
             }
         }.also {
             finish()
-        }
-    }
-
-    private fun checkVersion() {
-        if (AutoUpdater.getLastCommitHash(config.getString("updateChannel")) != BuildConfig.GIT_COMMIT_HASH) {
-            AutoUpdater().show(supportFragmentManager, "AutoUpdater")
-        } else {
-            runOnUiThread {
-                Toast.makeText(this, getString(R.string.up_to_date), Toast.LENGTH_SHORT).show()
-            }
         }
     }
 

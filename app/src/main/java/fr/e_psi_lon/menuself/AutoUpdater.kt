@@ -74,8 +74,6 @@ class AutoUpdater : DialogFragment() {
             return
         }
         val commitsJson = JSONArray(commits)
-        // On récupère le nombre de commits entre le commit de la version installée et le commit de la version disponible
-        // Une fois qu'on a ce nombre, on récupère les messages des commits entre les deux en limitant à 3 et si plus on ajoute "..."
         val commitCount = commitsJson.length()
         val commitMessages = mutableListOf<String>()
         for (i in 0 until commitCount) {
@@ -100,7 +98,8 @@ class AutoUpdater : DialogFragment() {
     }
 
     private fun main(activity: FragmentActivity) {
-        val output = Request.get("https://api.github.com/repos/e-psi-lon/menu-self/commits/builds-$updateChannel")
+        val output =
+            Request.get("https://api.github.com/repos/e-psi-lon/menu-self/commits/builds-$updateChannel")
         if (output == "") {
             return
         }
@@ -214,7 +213,7 @@ class AutoUpdater : DialogFragment() {
     }
 
     companion object {
-        fun getLastCommitHash(channel: String = ""): String {
+        fun getLastCommitHash(channel: String): String {
             val output =
                 Request.get("https://api.github.com/repos/e-psi-lon/menu-self/commits/builds-$channel")
             if (output == "") {
@@ -224,22 +223,22 @@ class AutoUpdater : DialogFragment() {
             return json.getJSONObject("commit").getString("message").split(" ")[1]
         }
 
-        fun checkForUpdates(activity: FragmentActivity, channel: String = "") {
-            // On doit récupérer le hash du dernier commit de la branche builds<channel>
-            // Si le hash est différent de celui de la version installée, on doit télécharger le fichier app-release.apk
+        fun checkForUpdates(activity: FragmentActivity, channel: String): Boolean {
             val output =
                 Request.get("https://api.github.com/repos/e-psi-lon/menu-self/commits/builds-$channel")
             if (output == "") {
-                return
+                return false
             }
             val json = JSONObject(output)
             val lastCommitHash = json.getJSONObject("commit").getString("message").split(" ")[1]
-            if (lastCommitHash != BuildConfig.GIT_COMMIT_HASH) {
+            return if (lastCommitHash != BuildConfig.GIT_COMMIT_HASH) {
                 AutoUpdater().apply {
                     setChannel(channel)
                     show(activity.supportFragmentManager, "update")
                 }
-            }
+                true
+            } else
+                false
         }
     }
 }

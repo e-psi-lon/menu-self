@@ -7,12 +7,12 @@ android.buildFeatures.buildConfig = true
 
 android {
     namespace = "fr.e_psi_lon.menuself"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "fr.e_psi_lon.menuself"
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 34
         versionCode = System.getenv("GITHUB_RUN_NUMBER")?.toInt() ?: 1
         versionName = "0.6"
         versionName += if (System.getenv("GITHUB_SHA") != null) {
@@ -59,7 +59,7 @@ android {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.10.1")
+    implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     implementation("com.google.android.material:material:1.9.0")

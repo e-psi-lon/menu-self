@@ -29,11 +29,18 @@
             </intent-filter>
         </activity>
         <activity
+            android:name="fr.e_psi_lon.menuself.NoonActivity"
+            android:exported="true" />
+        <activity
+            android:name="fr.e_psi_lon.menuself.EveningActivity"
+            android:exported="true" />
+        <activity
             android:name="fr.e_psi_lon.menuself.SettingsActivity"
             android:exported="true" />
         <activity
             android:name="fr.e_psi_lon.menuself.ChangelogHistoryActivity"
             android:exported="true" />
+
 
         <provider
             android:name="androidx.core.content.FileProvider"
