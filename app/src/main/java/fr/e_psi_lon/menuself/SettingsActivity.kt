@@ -4,9 +4,13 @@ import android.app.DownloadManager
 import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -31,11 +35,11 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var latestChangelogButton: Button
     private lateinit var changelogHistoryButton: Button
     private lateinit var moreInfoButton: Button
+    private lateinit var initActivitySpinner: Spinner
     private lateinit var config: JSONObject
     private lateinit var eveningMenu: Menu
     private lateinit var noonMenu: Menu
     private var appVersionName: String = BuildConfig.VERSION_NAME
-    private var filename: String = ""
 
     @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,6 +56,20 @@ class SettingsActivity : AppCompatActivity() {
         latestChangelogButton = findViewById(R.id.changelogButton)
         changelogHistoryButton = findViewById(R.id.changelogHistoryButton)
         moreInfoButton = findViewById(R.id.moreInfoButton)
+        initActivitySpinner = findViewById(R.id.initActivitySpinner)
+        val map = mapOf(
+            "NoonActivity" to "NoonActivity",
+            "EveningActivity" to "EveningActivity",
+            "SettingsActivity" to "SettingsActivity",
+            "previous" to getString(R.string.restart_where_you_left)
+        )
+        val adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_item,
+            map.values.toList()
+        )
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        initActivitySpinner.adapter = adapter
 
         versionView.text = getString(R.string.version, appVersionName)
         if (intent.hasExtra("eveningMenu")) {
@@ -60,15 +78,14 @@ class SettingsActivity : AppCompatActivity() {
         if (intent.hasExtra("noonMenu")) {
             noonMenu = Menu.fromJson(intent.getStringExtra("noonMenu")!!)
         }
-        if (File(filesDir, "config.json").exists()) {
-            config = JSONObject(File(filesDir, "config.json").readText())
-        } else {
-            config = JSONObject().apply {
-                put("updateChannel", "dev")
-            }
+        config = JSONObject(File(filesDir, "config.json").readText())
+        if (config.getString("defaultActivity") == "previous") {
+            config.put("previousActivity", "SettingsActivity")
             File(filesDir, "config.json").writeText(config.toString())
         }
-        // Si on a "init" en intent, on check les mises à jour
+        initActivitySpinner.setSelection(
+            map.keys.toList().indexOf(config.getString("defaultActivity"))
+        )
         if (intent.hasExtra("init") && Request.isNetworkAvailable(applicationContext)) {
             GlobalScope.launch(Dispatchers.IO) {
                 if (!AutoUpdater.checkForUpdates(
@@ -163,10 +180,19 @@ class SettingsActivity : AppCompatActivity() {
         checkForUpdatesButton.setOnClickListener {
             if (Request.isNetworkAvailable(applicationContext)) {
                 GlobalScope.launch(Dispatchers.IO) {
-                    AutoUpdater.checkForUpdates(
-                        this@SettingsActivity,
-                        config.getString("updateChannel")
-                    )
+                    if (!AutoUpdater.checkForUpdates(
+                            this@SettingsActivity,
+                            config.getString("updateChannel")
+                        )
+                    ) {
+                        runOnUiThread {
+                            Toast.makeText(
+                                this@SettingsActivity,
+                                getString(R.string.up_to_date),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
                 }
             } else {
                 Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show()
@@ -235,6 +261,23 @@ class SettingsActivity : AppCompatActivity() {
             }.also { finish() }
         }
 
+        initActivitySpinner.onItemSelectedListener = object :
+            AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>,
+                view: View?,
+                pos: Int,
+                id: Long
+            ) {
+                config.put("defaultActivity", map.keys.toList()[pos])
+                if (map.keys.toList()[pos] == "previous") {
+                    config.put("previousActivity", this@SettingsActivity::class.java.simpleName)
+                }
+                File(filesDir, "config.json").writeText(config.toString())
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
     }
 
     private fun getUrl(): List<String> {
@@ -246,11 +289,16 @@ class SettingsActivity : AppCompatActivity() {
                     )
                 }"
             )
-        val repoJson = JSONObject(repoOutput)
-        val contentUrl = repoJson.getJSONArray("files").getJSONObject(0).getString("contents_url")
-        val contentOutput = Request.get(contentUrl)
-        val contentJson = JSONObject(contentOutput)
-        return listOf(contentJson.getString("download_url"), contentJson.getLong("size").toString())
+        return try {
+            val repoJson = JSONObject(repoOutput)
+            val contentUrl =
+                repoJson.getJSONArray("files").getJSONObject(0).getString("contents_url")
+            val contentOutput = Request.get(contentUrl)
+            val contentJson = JSONObject(contentOutput)
+            listOf(contentJson.getString("download_url"), contentJson.getLong("size").toString())
+        } catch (e: Exception) {
+            listOf("", "")
+        }
     }
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -262,6 +310,9 @@ class SettingsActivity : AppCompatActivity() {
                 setPositiveButton(R.string.browser) { _, _ ->
                     GlobalScope.launch(Dispatchers.IO) {
                         val url = getUrl()
+                        if (url[0] == "") {
+                            return@launch
+                        }
                         val intent = Intent(Intent.ACTION_VIEW)
                         intent.data = url[0].toUri()
                         startActivity(intent).also {
@@ -272,24 +323,17 @@ class SettingsActivity : AppCompatActivity() {
                 setNegativeButton(R.string.app) { _, _ ->
                     GlobalScope.launch(Dispatchers.IO) {
                         val url = getUrl()
-                        runOnUiThread {
-                            askFilenameToUser().show()
-                        }
-                        while (supportFragmentManager.findFragmentByTag("askFilenameToUser") != null) {
-                            Thread.sleep(100)
-                        }
-                        if (filename == "") {
+                        if (url[0] == "") {
                             return@launch
                         }
-                        val file = File(
-                            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                            "$filename.apk"
-                        )
                         Request.download(
                             url[0],
                             this@SettingsActivity.applicationContext,
                             this@SettingsActivity,
-                            file,
+                            File(
+                                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                                getString(R.string.app_name) + ".apk"
+                            ),
                             DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED,
                             url[1].toLong()
                         )
@@ -321,28 +365,6 @@ class SettingsActivity : AppCompatActivity() {
             }
         }.also {
             finish()
-        }
-    }
-
-    private fun askFilenameToUser(): AlertDialog {
-        return this.let {
-            val builder = AlertDialog.Builder(it)
-            builder.apply {
-                setView(R.layout.dialog_filename)
-                setPositiveButton(R.string.ok) { _, _ ->
-                    val dialog = builder.create()
-                    val filenameView = dialog.findViewById<TextView>(R.id.filename)
-                    filename = if (filenameView?.text.toString() == "") {
-                        getString(R.string.app_name)
-                    } else {
-                        filenameView?.text.toString()
-                    }
-                }
-                setNegativeButton(R.string.cancel) { dialog, _ ->
-                    dialog.cancel()
-                }
-            }
-            builder.create()
         }
     }
 }

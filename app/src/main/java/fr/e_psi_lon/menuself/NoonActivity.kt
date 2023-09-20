@@ -57,18 +57,13 @@ class NoonActivity : AppCompatActivity() {
         menuLayout = findViewById(R.id.mealLayout)
 
         menuLayout.isRefreshing = true
-
-        if (File(filesDir, "config.json").exists()) {
-            config = JSONObject(File(filesDir, "config.json").readText())
-
-        } else {
-            config = JSONObject()
-            config.put("updateChannel", "dev")
-            File(filesDir, "config.json").createNewFile()
+        config = JSONObject(File(filesDir, "config.json").readText())
+        if (config.getString("defaultActivity") == "previous") {
+            config.put("previousActivity", "NoonActivity")
             File(filesDir, "config.json").writeText(config.toString())
         }
-
-        if (Request.isNetworkAvailable(this.applicationContext) && !intent.hasExtra("init")) {
+        if (Request.isNetworkAvailable(this.applicationContext) && intent.hasExtra("init")) {
+            println("We have internet and init")
             GlobalScope.launch(Dispatchers.IO) {
                 try {
                     AutoUpdater.checkForUpdates(

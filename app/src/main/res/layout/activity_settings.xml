@@ -120,6 +120,33 @@
                     android:textStyle="bold" />
 
                 <LinearLayout
+                    android:id="@+id/initActivityLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:padding="16dp"
+                    android:background="@color/colorBackground"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_weight="5"
+                        android:text="@string/init_activity"
+                        android:textAlignment="textStart"
+                        android:textColor="@color/colorOnSecondary"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+                    <Spinner
+                        android:id="@+id/initActivitySpinner"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="5"
+                        android:spinnerMode="dropdown" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"

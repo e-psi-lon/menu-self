@@ -41,7 +41,6 @@
     <string name="browser_or_app">How do you want to download the file ?</string>
     <string name="check_update">Check updates</string>
     <string name="up_to_date">The app is up to date</string>
-    <string name="filename">Please enter the name of the file you want</string>
     <string name="changelog">View Changelog</string>
     <string name="changelog_history">Changelog History</string>
     <string name="exit">Exit</string>
@@ -57,4 +56,6 @@
     <string name="more_menu_info_text">Last menu update was: %s\n\nNext menu update will be: %s</string>
     <string name="more_menu_info_text_redaction_message">Last menu update was: %s\n\nNext menu update will be: %s\n\nThere\'s a message from the redaction:\n\n%s</string>
     <string name="more_menu_info_text_no_menu">No data for the menu</string>
+    <string name="restart_where_you_left">Restart where you left</string>
+    <string name="init_activity">Restart from :</string>
 </resources>

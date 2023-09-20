@@ -17,6 +17,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.TimeZone
 
 class ChangelogHistoryActivity : AppCompatActivity() {
     private lateinit var changelogHistoryLoading: TextView
@@ -73,7 +74,7 @@ class ChangelogHistoryActivity : AppCompatActivity() {
             val masterCommit = masterJson.getJSONObject("commit")
             val masterCommitSha = masterCommit.getString("sha")
             val commits =
-                Request.get("https://api.github.com/repos/e-psi-lon/menu-self/commits?sha=$masterCommitSha")
+                Request.get("https://api.github.com/repos/e-psi-lon/menu-self/commits?sha=$masterCommitSha&per_page=100")
             val commitsJson = JSONArray(commits)
             val changelogHistoryList = ArrayList<String>()
             for (i in 0 until commitsJson.length()) {
@@ -84,7 +85,11 @@ class ChangelogHistoryActivity : AppCompatActivity() {
                 val authorName = author.getString("name")
                 val date = author.getString("date")
                 val dateSplit = date.split("T")[0].split("-")
-                val dateFormatted = "${dateSplit[2]}/${dateSplit[1]}/${dateSplit[0]}"
+                val hourSplit = date.split("T")[1].split(":").toMutableList()
+                val currentGMTOffset = (0 - (TimeZone.getDefault().rawOffset / 1000 / 60 / 60))
+                hourSplit[0] = (hourSplit[0].toInt() + currentGMTOffset).toString()
+                val dateFormatted =
+                    "${dateSplit[2]}/${dateSplit[1]}/${dateSplit[0]} - ${hourSplit[0]}h${hourSplit[1]}"
                 changelogHistoryList.add(
                     if (commitSha == BuildConfig.GIT_COMMIT_HASH.substring(0, 7)) {
                         "$commitSha (${getString(R.string.actual)}) - ${

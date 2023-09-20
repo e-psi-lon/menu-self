@@ -40,7 +40,6 @@
     <string name="browser_or_app">Commment voulez vous télécharger le fichier ?</string>
     <string name="check_update">Vérifier les mises à jour</string>
     <string name="up_to_date">L\'application est à jour</string>
-    <string name="filename">Veuillez entrer le nom du fichier à télécharger</string>
     <string name="changelog">Voir les derniers changements</string>
     <string name="changelog_history">Historique des changements</string>
     <string name="exit">Quitter</string>
@@ -56,4 +55,6 @@
     <string name="more_menu_info_text">Dernière mise à jour du menu : %s\n\nProchaine mise à jour du menu : %s</string>
     <string name="more_menu_info_text_redaction_message">Dernière mise à jour du menu : %s\n\nProchaine mise à jour du menu : %s\n\nIl y a un message de la rédaction :\n\n%s</string>
     <string name="more_menu_info_text_no_menu">Aucune donnée pour le menu</string>
+    <string name="restart_where_you_left">Reprendre là où vous vous êtes arrêté</string>
+    <string name="init_activity">Que voulez-vous faire au démarrage :</string>
 </resources>
