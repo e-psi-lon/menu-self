@@ -52,8 +52,8 @@
     <string name="vegetarian">Végétarien</string>
     <string name="home_made">Fait maison</string>
     <string name="more_menu_info">Plus d\'informations sur le menu</string>
-    <string name="more_menu_info_text">Dernière mise à jour du menu : %s\n\nProchaine mise à jour du menu : %s</string>
-    <string name="more_menu_info_text_redaction_message">Dernière mise à jour du menu : %s\n\nProchaine mise à jour du menu : %s\n\nIl y a un message de la rédaction :\n\n%s</string>
+    <string name="more_menu_info_text">Dernière mise à jour du menu : %1$s\n\nProchaine mise à jour du menu : %2$s</string>
+    <string name="more_menu_info_text_redaction_message">Dernière mise à jour du menu : %1$s\n\nProchaine mise à jour du menu : %2$s\n\nIl y a un message de la rédaction :\n\n%3$s</string>
     <string name="more_menu_info_text_no_menu">Aucune donnée pour le menu</string>
     <string name="restart_where_you_left">Reprendre là où vous vous êtes arrêté</string>
     <string name="init_activity">Que voulez-vous faire au démarrage :</string>
