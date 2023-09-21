@@ -185,8 +185,10 @@ class NoonActivity : AppCompatActivity() {
         val index = 0
         startActivity(intent).apply {
             if (index < map[page.simpleName]!!) {
+                @Suppress("DEPRECATION")
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
             } else {
+                @Suppress("DEPRECATION")
                 overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
             }
         }.also {

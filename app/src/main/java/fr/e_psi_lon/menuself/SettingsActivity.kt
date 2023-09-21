@@ -58,9 +58,9 @@ class SettingsActivity : AppCompatActivity() {
         moreInfoButton = findViewById(R.id.moreInfoButton)
         initActivitySpinner = findViewById(R.id.initActivitySpinner)
         val map = mapOf(
-            "NoonActivity" to "NoonActivity",
-            "EveningActivity" to "EveningActivity",
-            "SettingsActivity" to "SettingsActivity",
+            "NoonActivity" to getString(R.string.noon),
+            "EveningActivity" to getString(R.string.evening),
+            "SettingsActivity" to getString(R.string.settings),
             "previous" to getString(R.string.restart_where_you_left)
         )
         val adapter = ArrayAdapter(
@@ -88,19 +88,10 @@ class SettingsActivity : AppCompatActivity() {
         )
         if (intent.hasExtra("init") && Request.isNetworkAvailable(applicationContext)) {
             GlobalScope.launch(Dispatchers.IO) {
-                if (!AutoUpdater.checkForUpdates(
-                        this@SettingsActivity,
-                        config.getString("updateChannel")
-                    )
-                ) {
-                    runOnUiThread {
-                        Toast.makeText(
-                            this@SettingsActivity,
-                            getString(R.string.up_to_date),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
+                AutoUpdater.checkForUpdates(
+                    this@SettingsActivity,
+                    config.getString("updateChannel")
+                )
             }
         }
 
@@ -257,6 +248,7 @@ class SettingsActivity : AppCompatActivity() {
                 intent.putExtra("noonMenu", noonMenu.toJson())
             }
             startActivity(intent).apply {
+                @Suppress("DEPRECATION")
                 overridePendingTransition(R.anim.slide_in_top, R.anim.dont_move)
             }.also { finish() }
         }
@@ -358,8 +350,10 @@ class SettingsActivity : AppCompatActivity() {
         startActivity(intent).apply {
             if (animation) {
                 if (index < map[page.simpleName]!!) {
+                    @Suppress("DEPRECATION")
                     overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
                 } else {
+                    @Suppress("DEPRECATION")
                     overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
                 }
             }

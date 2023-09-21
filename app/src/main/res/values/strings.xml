@@ -54,7 +54,7 @@
     <string name="home_made">Home made</string>
     <string name="more_menu_info">More info about the menu</string>
     <string name="more_menu_info_text">Last menu update was: %1$s\n\nNext menu update will be: %2$s</string>
-    <string name="more_menu_info_text_redaction_message">Last menu update was: %1$s\n\nNext menu update will be: %2$s\n\nThere\'s a message from the redaction:\n\n%2$s</string>
+    <string name="more_menu_info_text_redaction_message">Last menu update was: %1$s\n\nNext menu update will be: %2$s\n\nThere\'s a message from the redaction:\n\n%3$s</string>
     <string name="more_menu_info_text_no_menu">No data for the menu</string>
     <string name="restart_where_you_left">Restart where you left</string>
     <string name="init_activity">Restart from :</string>

@@ -60,6 +60,7 @@ class ChangelogHistoryActivity : AppCompatActivity() {
                 intent.putExtra("noonMenu", noonMenu.toJson())
             }
             startActivity(intent).apply {
+                @Suppress("DEPRECATION")
                 overridePendingTransition(R.anim.dont_move, R.anim.slide_out_bottom)
             }.also { finish() }
         }
@@ -86,8 +87,10 @@ class ChangelogHistoryActivity : AppCompatActivity() {
                 val date = author.getString("date")
                 val dateSplit = date.split("T")[0].split("-")
                 val hourSplit = date.split("T")[1].split(":").toMutableList()
-                val currentGMTOffset = (0 - (TimeZone.getDefault().rawOffset / 1000 / 60 / 60))
-                hourSplit[0] = (hourSplit[0].toInt() + currentGMTOffset).toString()
+                val timeZone = TimeZone.getDefault()
+                val offset = timeZone.getOffset(System.currentTimeMillis())
+                val offsetHours = offset / 1000 / 60 / 60
+                hourSplit[0] = (hourSplit[0].toInt() + offsetHours).toString()
                 val dateFormatted =
                     "${dateSplit[2]}/${dateSplit[1]}/${dateSplit[0]} - ${hourSplit[0]}h${hourSplit[1]}"
                 changelogHistoryList.add(
