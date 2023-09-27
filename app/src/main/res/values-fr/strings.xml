@@ -57,4 +57,9 @@
     <string name="more_menu_info_text_no_menu">Aucune donnée pour le menu</string>
     <string name="restart_where_you_left">Reprendre là où vous vous êtes arrêté</string>
     <string name="init_activity">Au démarrage :</string>
+    <string name="update_channel">Canal de mise à jour</string>
+    <string name="dev">Développement</string>
+    <string name="alpha">Alpha</string>
+    <string name="beta">Beta</string>
+    <string name="stable">Stable</string>
 </resources>

@@ -58,4 +58,9 @@
     <string name="more_menu_info_text_no_menu">No data for the menu</string>
     <string name="restart_where_you_left">Restart where you left</string>
     <string name="init_activity">Restart from :</string>
+    <string name="update_channel">Update channel</string>
+    <string name="dev">Dev</string>
+    <string name="alpha">Alpha</string>
+    <string name="beta">Beta</string>
+    <string name="stable">Release</string>
 </resources>

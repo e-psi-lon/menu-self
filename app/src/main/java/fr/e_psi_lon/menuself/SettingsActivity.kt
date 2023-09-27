@@ -36,6 +36,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var changelogHistoryButton: Button
     private lateinit var moreInfoButton: Button
     private lateinit var initActivitySpinner: Spinner
+    private lateinit var updateBranchSpinner: Spinner
     private lateinit var config: JSONObject
     private lateinit var eveningMenu: Menu
     private lateinit var noonMenu: Menu
@@ -57,19 +58,33 @@ class SettingsActivity : AppCompatActivity() {
         changelogHistoryButton = findViewById(R.id.changelogHistoryButton)
         moreInfoButton = findViewById(R.id.moreInfoButton)
         initActivitySpinner = findViewById(R.id.initActivitySpinner)
-        val map = mapOf(
+        updateBranchSpinner = findViewById(R.id.updateBranchSpinner)
+        val channel = mapOf(
+            "dev" to getString(R.string.dev),
+            "alpha" to getString(R.string.alpha),
+            "beta" to getString(R.string.beta),
+            "stable" to getString(R.string.stable)
+        )
+        val activity = mapOf(
             "NoonActivity" to getString(R.string.noon),
             "EveningActivity" to getString(R.string.evening),
             "SettingsActivity" to getString(R.string.settings),
             "previous" to getString(R.string.restart_where_you_left)
         )
-        val adapter = ArrayAdapter(
+        val activityAdapter = ArrayAdapter(
             this,
             android.R.layout.simple_spinner_item,
-            map.values.toList()
+            activity.values.toList()
         )
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        initActivitySpinner.adapter = adapter
+        val channelAdapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_item,
+            channel.values.toList()
+        )
+        activityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        initActivitySpinner.adapter = activityAdapter
+        channelAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        updateBranchSpinner.adapter = channelAdapter
 
         versionView.text = getString(R.string.version, appVersionName)
         if (intent.hasExtra("eveningMenu")) {
@@ -84,7 +99,7 @@ class SettingsActivity : AppCompatActivity() {
             File(filesDir, "config.json").writeText(config.toString())
         }
         initActivitySpinner.setSelection(
-            map.keys.toList().indexOf(config.getString("defaultActivity"))
+            activity.keys.toList().indexOf(config.getString("defaultActivity"))
         )
         if (intent.hasExtra("init") && Request.isNetworkAvailable(applicationContext)) {
             GlobalScope.launch(Dispatchers.IO) {
@@ -261,10 +276,24 @@ class SettingsActivity : AppCompatActivity() {
                 pos: Int,
                 id: Long
             ) {
-                config.put("defaultActivity", map.keys.toList()[pos])
-                if (map.keys.toList()[pos] == "previous") {
+                config.put("defaultActivity", activity.keys.toList()[pos])
+                if (activity.keys.toList()[pos] == "previous") {
                     config.put("previousActivity", this@SettingsActivity::class.java.simpleName)
                 }
+                File(filesDir, "config.json").writeText(config.toString())
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
+        updateBranchSpinner.onItemSelectedListener = object :
+            AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>,
+                view: View?,
+                pos: Int,
+                id: Long
+            ) {
+                config.put("updateChannel", channel.keys.toList()[pos])
                 File(filesDir, "config.json").writeText(config.toString())
             }
 
