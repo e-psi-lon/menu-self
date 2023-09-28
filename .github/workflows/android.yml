@@ -41,11 +41,14 @@ jobs:
             channel="stable"
           fi
           echo "Channel: $channel"
+          echo "::set-output name=channel::$channel"
         shell: bash
 
       - name: Checkout builds-channel
-        run: |
-          git checkout builds-$channel
+        uses: actions/checkout@v2
+        with:
+          ref: "builds-${{ steps.channel.outputs.channel }}"
+          path: "builds-${{ steps.channel.outputs.channel }}"
 
       - name: set up JDK 17
         uses: actions/setup-java@v3
@@ -60,7 +63,7 @@ jobs:
           cd $GITHUB_WORKSPACE/src
           chmod +x gradlew
           ./gradlew build
-          cp app/build/outputs/apk/release/app-release.apk ../builds-$channel/app-release.apk
+          cp app/build/outputs/apk/release/app-release.apk ../builds-${{ steps.channel.outputs.channel }}/app-release.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v3
@@ -69,7 +72,7 @@ jobs:
           path: app/build/outputs/apk/release/app-release.apk
       - name: Push builds-channel
         run: |
-          cd $GITHUB_WORKSPACE/builds-$channel
+          cd $GITHUB_WORKSPACE/builds-${{ steps.channel.outputs.channel }}
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
           git add .
