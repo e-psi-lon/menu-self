@@ -1,4 +1,4 @@
-package fr.e_psi_lon.menuself
+package fr.e_psi_lon.menuself.data
 
 import org.json.JSONObject
 

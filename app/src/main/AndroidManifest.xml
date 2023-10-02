@@ -29,16 +29,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="fr.e_psi_lon.menuself.NoonActivity"
+            android:name="fr.e_psi_lon.menuself.activity.NoonActivity"
             android:exported="true" />
         <activity
-            android:name="fr.e_psi_lon.menuself.EveningActivity"
+            android:name="fr.e_psi_lon.menuself.activity.EveningActivity"
             android:exported="true" />
         <activity
-            android:name="fr.e_psi_lon.menuself.SettingsActivity"
+            android:name="fr.e_psi_lon.menuself.activity.SettingsActivity"
             android:exported="true" />
         <activity
-            android:name="fr.e_psi_lon.menuself.ChangelogHistoryActivity"
+            android:name="fr.e_psi_lon.menuself.activity.ChangelogHistoryActivity"
             android:exported="true" />
 
 

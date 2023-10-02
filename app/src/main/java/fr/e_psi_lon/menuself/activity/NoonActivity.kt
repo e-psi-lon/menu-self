@@ -1,4 +1,4 @@
-package fr.e_psi_lon.menuself
+package fr.e_psi_lon.menuself.activity
 
 import android.content.Intent
 import android.os.Bundle
@@ -11,6 +11,11 @@ import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import fr.e_psi_lon.menuself.others.AutoUpdater
+import fr.e_psi_lon.menuself.data.Day
+import fr.e_psi_lon.menuself.data.Menu
+import fr.e_psi_lon.menuself.R
+import fr.e_psi_lon.menuself.data.Request
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers

@@ -1,4 +1,4 @@
-package fr.e_psi_lon.menuself
+package fr.e_psi_lon.menuself.activity
 
 
 import android.content.Context
@@ -11,6 +11,10 @@ import android.widget.ImageButton
 import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import fr.e_psi_lon.menuself.BuildConfig
+import fr.e_psi_lon.menuself.data.Menu
+import fr.e_psi_lon.menuself.R
+import fr.e_psi_lon.menuself.data.Request
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope

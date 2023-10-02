@@ -3,6 +3,9 @@ package fr.e_psi_lon.menuself
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import fr.e_psi_lon.menuself.activity.EveningActivity
+import fr.e_psi_lon.menuself.activity.NoonActivity
+import fr.e_psi_lon.menuself.activity.SettingsActivity
 import org.json.JSONObject
 import java.io.File
 

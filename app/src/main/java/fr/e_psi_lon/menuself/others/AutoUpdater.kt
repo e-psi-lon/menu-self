@@ -1,4 +1,4 @@
-package fr.e_psi_lon.menuself
+package fr.e_psi_lon.menuself.others
 
 
 import android.app.Dialog
@@ -11,6 +11,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.FileProvider
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
+import fr.e_psi_lon.menuself.BuildConfig
+import fr.e_psi_lon.menuself.R
+import fr.e_psi_lon.menuself.data.Request
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

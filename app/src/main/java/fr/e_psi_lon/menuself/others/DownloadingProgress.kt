@@ -1,4 +1,4 @@
-package fr.e_psi_lon.menuself
+package fr.e_psi_lon.menuself.others
 
 import android.app.AlertDialog
 import android.app.Dialog
@@ -10,6 +10,8 @@ import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import fr.e_psi_lon.menuself.R
+import fr.e_psi_lon.menuself.data.Request
 import java.io.File
 
 

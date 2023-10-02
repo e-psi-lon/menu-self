@@ -1,4 +1,4 @@
-package fr.e_psi_lon.menuself
+package fr.e_psi_lon.menuself.activity
 
 import android.app.DownloadManager
 import android.content.Intent
@@ -16,6 +16,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
+import fr.e_psi_lon.menuself.others.AutoUpdater
+import fr.e_psi_lon.menuself.BuildConfig
+import fr.e_psi_lon.menuself.MainActivity
+import fr.e_psi_lon.menuself.data.Menu
+import fr.e_psi_lon.menuself.R
+import fr.e_psi_lon.menuself.data.Request
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
