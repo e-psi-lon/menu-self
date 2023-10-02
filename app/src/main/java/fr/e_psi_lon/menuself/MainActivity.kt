@@ -25,6 +25,7 @@ class MainActivity : AppCompatActivity() {
         if (!config.has("previousActivity")) {
             config.put("previousActivity", "NoonActivity")
         }
+
         File(filesDir, "config.json").writeText(config.toString())
         val map = mapOf(
             "NoonActivity" to NoonActivity::class.java,

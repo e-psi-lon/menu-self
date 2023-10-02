@@ -16,7 +16,21 @@ android {
         versionCode = System.getenv("GITHUB_RUN_NUMBER")?.toInt() ?: 1
         versionName = "0.7"
         versionName += if (System.getenv("GITHUB_SHA") != null) {
-            " (build ${System.getenv("GITHUB_SHA").take(8)})"
+            if (System.getenv("github.event_name") == "release") {
+                ""
+            } else if (System.getenv("github.event_name") == "push") {
+                " (build ${System.getenv("GITHUB_SHA")?.substring(0, 7)})"
+            } else if (System.getenv("github.event_name") == "workflow_dispatch") {
+                if (System.getenv("type") == "alpha") {
+                    " (alpha build ${System.getenv("GITHUB_SHA")?.substring(0, 7)})"
+                } else if (System.getenv("type") == "beta") {
+                    " (beta build ${System.getenv("GITHUB_SHA")?.substring(0, 7)})"
+                } else {
+                    " (build ${System.getenv("GITHUB_SHA")?.substring(0, 7)})"
+                }
+            } else {
+                ""
+            }
         } else {
             " (unknown build)"
         }

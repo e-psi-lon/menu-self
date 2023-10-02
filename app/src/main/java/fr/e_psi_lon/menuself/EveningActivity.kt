@@ -22,6 +22,7 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import java.io.File
 import java.util.Calendar
+import java.util.TimeZone
 
 class EveningActivity : AppCompatActivity() {
     private lateinit var layout: LinearLayout
@@ -55,7 +56,12 @@ class EveningActivity : AppCompatActivity() {
         dayView = findViewById(R.id.dateTextView)
         statusView = findViewById(R.id.statusTextView)
         menuLayout = findViewById(R.id.mealLayout)
-
+        // Si l'heure est 15h passée (heure de Paris), on affiche le menu du lendemain
+        if (Calendar.getInstance(TimeZone.getTimeZone("Europe/Paris"))
+                .get(Calendar.HOUR_OF_DAY) >= 15
+        ) {
+            currentDay = dayInWeek[dayInWeek.indexOf(currentDay) + 1]
+        }
         menuLayout.isRefreshing = true
         config = JSONObject(File(filesDir, "config.json").readText())
         if (config.getString("defaultActivity") == "previous") {

@@ -37,6 +37,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var moreInfoButton: Button
     private lateinit var initActivitySpinner: Spinner
     private lateinit var updateBranchSpinner: Spinner
+    private lateinit var madeBy: TextView
     private lateinit var config: JSONObject
     private lateinit var eveningMenu: Menu
     private lateinit var noonMenu: Menu
@@ -59,6 +60,7 @@ class SettingsActivity : AppCompatActivity() {
         moreInfoButton = findViewById(R.id.moreInfoButton)
         initActivitySpinner = findViewById(R.id.initActivitySpinner)
         updateBranchSpinner = findViewById(R.id.updateBranchSpinner)
+        madeBy = findViewById(R.id.madeBy)
         val channel = mapOf(
             "dev" to getString(R.string.dev),
             "alpha" to getString(R.string.alpha),
@@ -181,6 +183,12 @@ class SettingsActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show()
             }
+        }
+
+        madeBy.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.data = "https://github.com/e-psi-lon/menu-self".toUri()
+            startActivity(intent)
         }
 
         checkForUpdatesButton.setOnClickListener {
