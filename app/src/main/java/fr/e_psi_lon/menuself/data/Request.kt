@@ -2,12 +2,15 @@ package fr.e_psi_lon.menuself.data
 
 import android.app.DownloadManager
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.ConnectivityManager
 import androidx.core.net.toUri
 import androidx.fragment.app.FragmentActivity
-import fr.e_psi_lon.menuself.others.DownloadingProgress
 import fr.e_psi_lon.menuself.R
+import fr.e_psi_lon.menuself.others.DownloadingProgress
 import java.io.File
+import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -45,7 +48,32 @@ class Request {
             }
         }
 
-        fun post(url: String, data: MutableMap<Any, Any>, headers: MutableMap<Any, Any> = mutableMapOf()): String {
+        fun getImage(url: String, headers: Map<String, String> = emptyMap()): Bitmap? {
+            try {
+                val imageUrl = URL(url)
+                val connection = imageUrl.openConnection() as HttpURLConnection
+                connection.setRequestProperty(
+                    "User-Agent",
+                    "Mozilla/5.0"
+                ) // Exemple d'en-tête HTTP pour simuler un navigateur
+
+                for ((key, value) in headers) {
+                    connection.setRequestProperty(key, value)
+                }
+
+                val inputStream: InputStream = connection.inputStream
+                return BitmapFactory.decodeStream(inputStream)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            return null
+        }
+
+        fun post(
+            url: String,
+            data: MutableMap<Any, Any>,
+            headers: MutableMap<Any, Any> = mutableMapOf()
+        ): String {
             try {
                 val urlObject = URL(url)
                 var output = ""

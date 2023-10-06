@@ -16,20 +16,11 @@ android {
         versionCode = System.getenv("GITHUB_RUN_NUMBER")?.toInt() ?: 1
         versionName = "0.7"
         versionName += if (System.getenv("GITHUB_SHA") != null) {
-            if (System.getenv("github.event_name") == "release") {
-                ""
-            } else if (System.getenv("github.event_name") == "push") {
-                " (build ${System.getenv("GITHUB_SHA")?.substring(0, 7)})"
-            } else if (System.getenv("github.event_name") == "workflow_dispatch") {
-                if (System.getenv("type") == "alpha") {
-                    " (alpha build ${System.getenv("GITHUB_SHA")?.substring(0, 7)})"
-                } else if (System.getenv("type") == "beta") {
-                    " (beta build ${System.getenv("GITHUB_SHA")?.substring(0, 7)})"
-                } else {
-                    " (build ${System.getenv("GITHUB_SHA")?.substring(0, 7)})"
-                }
-            } else {
-                ""
+            when (project.properties["channel"]?.toString()) {
+                "release" -> ""
+                "alpha" -> " (alpha build ${System.getenv("GITHUB_SHA")?.substring(0, 7)})"
+                "beta" -> " (beta build ${System.getenv("GITHUB_SHA")?.substring(0, 7)})"
+                else -> " (build ${System.getenv("GITHUB_SHA")?.substring(0, 7)})"
             }
         } else {
             " (unknown build)"
@@ -77,6 +68,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     implementation("com.google.android.material:material:1.9.0")
+    implementation("de.hdodenhof:circleimageview:3.1.0")
     implementation("org.jsoup:jsoup:1.14.3")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

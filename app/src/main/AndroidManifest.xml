@@ -40,7 +40,9 @@
         <activity
             android:name="fr.e_psi_lon.menuself.activity.ChangelogHistoryActivity"
             android:exported="true" />
-
+        <activity
+            android:name="fr.e_psi_lon.menuself.activity.ContributorsActivity"
+            android:exported="true" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

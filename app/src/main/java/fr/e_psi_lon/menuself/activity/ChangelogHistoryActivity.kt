@@ -1,9 +1,7 @@
 package fr.e_psi_lon.menuself.activity
 
 
-import android.content.Context
 import android.content.Intent
-import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
@@ -12,8 +10,8 @@ import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import fr.e_psi_lon.menuself.BuildConfig
-import fr.e_psi_lon.menuself.data.Menu
 import fr.e_psi_lon.menuself.R
+import fr.e_psi_lon.menuself.data.Menu
 import fr.e_psi_lon.menuself.data.Request
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -45,7 +43,7 @@ class ChangelogHistoryActivity : AppCompatActivity() {
             noonMenu = Menu.fromJson(intent.getStringExtra("noonMenu")!!)
         }
 
-        if (isNetworkAvailable()) {
+        if (Request.isNetworkAvailable(this)) {
             GlobalScope.launch(Dispatchers.IO) {
                 loadHistory()
             }
@@ -134,10 +132,4 @@ class ChangelogHistoryActivity : AppCompatActivity() {
         }
     }
 
-    private fun isNetworkAvailable(): Boolean {
-        val connectivityManager =
-            getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val activeNetworkInfo = connectivityManager.activeNetwork
-        return activeNetworkInfo != null
-    }
 }

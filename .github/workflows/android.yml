@@ -62,7 +62,7 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/src
           chmod +x gradlew
-          ./gradlew build
+          ./gradlew build -Pchannel=${{ steps.channel.outputs.channel }}
           cp app/build/outputs/apk/release/app-release.apk ../builds-${{ steps.channel.outputs.channel }}/app-release.apk
 
       - name: Upload APK

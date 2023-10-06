@@ -16,12 +16,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
-import fr.e_psi_lon.menuself.others.AutoUpdater
 import fr.e_psi_lon.menuself.BuildConfig
 import fr.e_psi_lon.menuself.MainActivity
-import fr.e_psi_lon.menuself.data.Menu
 import fr.e_psi_lon.menuself.R
+import fr.e_psi_lon.menuself.data.Menu
 import fr.e_psi_lon.menuself.data.Request
+import fr.e_psi_lon.menuself.others.AutoUpdater
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -41,9 +41,9 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var latestChangelogButton: Button
     private lateinit var changelogHistoryButton: Button
     private lateinit var moreInfoButton: Button
+    private lateinit var contributorsButton: Button
     private lateinit var initActivitySpinner: Spinner
     private lateinit var updateBranchSpinner: Spinner
-    private lateinit var madeBy: TextView
     private lateinit var config: JSONObject
     private lateinit var eveningMenu: Menu
     private lateinit var noonMenu: Menu
@@ -66,7 +66,7 @@ class SettingsActivity : AppCompatActivity() {
         moreInfoButton = findViewById(R.id.moreInfoButton)
         initActivitySpinner = findViewById(R.id.initActivitySpinner)
         updateBranchSpinner = findViewById(R.id.updateBranchSpinner)
-        madeBy = findViewById(R.id.madeBy)
+        contributorsButton = findViewById(R.id.contributorsButton)
         val channel = mapOf(
             "dev" to getString(R.string.dev),
             "alpha" to getString(R.string.alpha),
@@ -191,12 +191,6 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
-        madeBy.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.data = "https://github.com/e-psi-lon/menu-self".toUri()
-            startActivity(intent)
-        }
-
         checkForUpdatesButton.setOnClickListener {
             if (Request.isNetworkAvailable(applicationContext)) {
                 GlobalScope.launch(Dispatchers.IO) {
@@ -270,6 +264,20 @@ class SettingsActivity : AppCompatActivity() {
         }
         changelogHistoryButton.setOnClickListener {
             val intent = Intent(this, ChangelogHistoryActivity::class.java)
+            if (::eveningMenu.isInitialized) {
+                intent.putExtra("eveningMenu", eveningMenu.toJson())
+            }
+            if (::noonMenu.isInitialized) {
+                intent.putExtra("noonMenu", noonMenu.toJson())
+            }
+            startActivity(intent).apply {
+                @Suppress("DEPRECATION")
+                overridePendingTransition(R.anim.slide_in_top, R.anim.dont_move)
+            }.also { finish() }
+        }
+
+        contributorsButton.setOnClickListener {
+            val intent = Intent(this, ContributorsActivity::class.java)
             if (::eveningMenu.isInitialized) {
                 intent.putExtra("eveningMenu", eveningMenu.toJson())
             }

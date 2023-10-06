@@ -62,4 +62,9 @@
     <string name="alpha">Alpha</string>
     <string name="beta">Beta</string>
     <string name="stable">Stable</string>
+    <string name="contributors">Contributeurs</string>
+    <string name="contributions">Contributions : %s</string>
+    <string name="error_loading_contributors">Error lors du chargement des contributeurs</string>
+    <string name="loading_contributors">Chargement des contributeurs</string>
+    <string name="contributor_image">Photo de profil du contributeur</string>
 </resources>

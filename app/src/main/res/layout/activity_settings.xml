@@ -119,6 +119,17 @@
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
+                <Button
+                    android:id="@+id/contributorsButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorBackground"
+                    android:text="@string/contributors"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorOnSecondary"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
                 <LinearLayout
                     android:id="@+id/initActivityLayout"
                     android:layout_width="match_parent"
@@ -191,17 +202,6 @@
                         android:textColor="@color/colorOnSecondary"
                         android:textSize="20sp"
                         android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/madeBy"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/made_by"
-                        android:textAlignment="center"
-                        android:textColor="@color/colorOnSecondary"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
-
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>

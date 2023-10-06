@@ -45,7 +45,7 @@
     <string name="changelog_history">Changelog History</string>
     <string name="exit">Exit</string>
     <string name="loading_history">Loading Changelog History</string>
-    <string name="changelogHistoryError">Error while getting history</string>
+    <string name="changelogHistoryError">Error while loading history</string>
     <string name="changelog_is">The latest changelog is :</string>
     <string name="actual">Actual</string>
     <string name="published">Published on %s</string>
@@ -63,4 +63,10 @@
     <string name="alpha">Alpha</string>
     <string name="beta">Beta</string>
     <string name="stable">Release</string>
+    <string name="contributors">Contributors</string>
+    <string name="contributions">Contributions: %s</string>
+    <string name="error_loading_contributors">Error while loading contributors</string>
+    <string name="loading_contributors">Loading contributors</string>
+    <string name="contributor_image">Contributor profile picture</string>
+
 </resources>
