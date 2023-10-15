@@ -13,13 +13,15 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import fr.e_psi_lon.menuself.BuildConfig
 import fr.e_psi_lon.menuself.R
-import fr.e_psi_lon.menuself.data.Request
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
+import fr.e_psi_lon.menuself.data.Request as menuRequest
 
 class AutoUpdater : DialogFragment() {
     private lateinit var hash: String
@@ -61,17 +63,24 @@ class AutoUpdater : DialogFragment() {
     }
 
     private fun getChangelog() {
-        val output = Request.get("https://api.github.com/repos/e-psi-lon/menu-self/commits/master")
+        val client = OkHttpClient()
+        var request = Request.Builder()
+            .url("https://api.github.com/repos/e-psi-lon/menu-self/commits/master")
+            .build()
+        val output = client.newCall(request).execute().body?.string()
         if (output == "") {
             changelog = context.getString(R.string.no_changelog)
             return
         }
-        val json = JSONObject(output)
-        val commits = Request.get(
-            "https://api.github.com/repos/e-psi-lon/menu-self/commits?sha=${
-                json.getString("sha")
-            }"
-        )
+        val json = output?.let { JSONObject(it) }
+        request = Request.Builder()
+            .url(
+                "https://api.github.com/repos/e-psi-lon/menu-self/commits?sha=${
+                    json!!.getString("sha")
+                }"
+            )
+            .build()
+        val commits = client.newCall(request).execute().body?.string()
         if (commits == "") {
             changelog = context.getString(R.string.no_changelog)
             return
@@ -101,31 +110,43 @@ class AutoUpdater : DialogFragment() {
     }
 
     private fun main(activity: FragmentActivity) {
-        val output =
-            Request.get("https://api.github.com/repos/e-psi-lon/menu-self/commits/builds-$updateChannel")
+        val client = OkHttpClient()
+        var request = Request.Builder()
+            .url("https://api.github.com/repos/e-psi-lon/menu-self/commits/builds-$updateChannel")
+            .build()
+        val output = client.newCall(request).execute().body?.string()
         if (output == "") {
             return
         }
-        val json = JSONObject(output)
-        val lastCommitHash = json.getJSONObject("commit").getString("message").split(" ")[1]
+        val json = output?.let { JSONObject(it) }
+        val lastCommitHash = json?.getJSONObject("commit")?.getString("message")?.split(" ")?.get(1)
         if (lastCommitHash != BuildConfig.GIT_COMMIT_HASH) {
-            val files = json.getJSONArray("files")
-            if (files.length() == 0) {
-                return
-            }
-            if (files.length() == 1 && files.getJSONObject(0)
-                    .getString("filename") == "app-release.apk"
-            ) {
-                val contentsUrl = files.getJSONObject(0).getString("contents_url")
-                val content = Request.get(contentsUrl)
-                if (content == "") {
+            val files = json?.getJSONArray("files")
+            if (files != null) {
+                if (files.length() == 0) {
                     return
                 }
-                val contentJson = JSONObject(content)
-                val downloadUrl = contentJson.getString("download_url")
-                val size = contentJson.getLong("size")
-                downloadApk(downloadUrl, activity, size)
+            }
+            if (files != null) {
+                if (files.length() == 1 && files.getJSONObject(0)
+                        .getString("filename") == "app-release.apk"
+                ) {
+                    val contentsUrl = files.getJSONObject(0).getString("contents_url")
+                    request = Request.Builder()
+                        .url(contentsUrl)
+                        .build()
+                    val content = client.newCall(request).execute().body?.string()
+                    if (content == "") {
+                        return
+                    }
+                    val contentJson = content?.let { JSONObject(it) }
+                    val downloadUrl = contentJson?.getString("download_url")
+                    val size = contentJson?.getLong("size")
+                    if (downloadUrl != null && size != null) {
+                        downloadApk(downloadUrl, activity, size)
+                    }
 
+                }
             }
         }
 
@@ -148,7 +169,7 @@ class AutoUpdater : DialogFragment() {
             }
         }
 
-        val output = Request.download(
+        val output = menuRequest.download(
             url,
             context,
             activity,
@@ -201,7 +222,6 @@ class AutoUpdater : DialogFragment() {
                 }
 
                 else -> {
-                    println("Unknown error is $e")
                     context.getString(R.string.unknown_error, e.message)
                 }
             }
@@ -217,23 +237,34 @@ class AutoUpdater : DialogFragment() {
 
     companion object {
         fun getLastCommitHash(channel: String): String {
-            val output =
-                Request.get("https://api.github.com/repos/e-psi-lon/menu-self/commits/builds-$channel")
+            val client = OkHttpClient()
+            val request = Request.Builder()
+                .url("https://api.github.com/repos/e-psi-lon/menu-self/commits/builds-$channel")
+                .build()
+            val output = client.newCall(request).execute().body?.string()
             if (output == "") {
                 return ""
             }
-            val json = JSONObject(output)
-            return json.getJSONObject("commit").getString("message").split(" ")[1]
+            val json = output?.let { JSONObject(it) }
+            return if (json != null) {
+                json.getJSONObject("commit").getString("message").split(" ")[1]
+            } else {
+                ""
+            }
         }
 
         fun checkForUpdates(activity: FragmentActivity, channel: String): Boolean {
-            val output =
-                Request.get("https://api.github.com/repos/e-psi-lon/menu-self/commits/builds-$channel")
+            val client = OkHttpClient()
+            val request = Request.Builder()
+                .url("https://api.github.com/repos/e-psi-lon/menu-self/commits/builds-$channel")
+                .build()
+            val output = client.newCall(request).execute().body?.string()
             if (output == "") {
                 return false
             }
-            val json = JSONObject(output)
-            val lastCommitHash = json.getJSONObject("commit").getString("message").split(" ")[1]
+            val json = output?.let { JSONObject(it) }
+            val lastCommitHash =
+                json?.getJSONObject("commit")?.getString("message")?.split(" ")?.get(1)
             return if (lastCommitHash != BuildConfig.GIT_COMMIT_HASH) {
                 AutoUpdater().apply {
                     setChannel(channel)

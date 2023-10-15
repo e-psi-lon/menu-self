@@ -17,7 +17,6 @@
     <string name="sunday">Sunday</string>
     <string name="loading_date">Loading…</string>
     <string name="settings">Settings</string>
-    <string name="made_by">Made by e_psi_lon</string>
     <string name="version">Version %s</string>
     <string name="no_day_data">No data for this day</string>
     <string name="no_menu_this_day">No menu on %s</string>
@@ -34,19 +33,16 @@
     <string name="downloading_progress">Downloading file %1$s : %2$s/%3$s</string>
     <string name="install_apk">Please install the %s file</string>
     <string name="install">Install</string>
-    <string name="reset_cache">Reset the cache</string>
     <string name="download_apk">Download latest apk</string>
     <string name="browser">Web Browser</string>
     <string name="app">In-app downloader</string>
     <string name="browser_or_app">How do you want to download the file ?</string>
     <string name="check_update">Check updates</string>
     <string name="up_to_date">The app is up to date</string>
-    <string name="changelog">View Changelog</string>
     <string name="changelog_history">Changelog History</string>
     <string name="exit">Exit</string>
     <string name="loading_history">Loading Changelog History</string>
     <string name="changelogHistoryError">Error while loading history</string>
-    <string name="changelog_is">The latest changelog is :</string>
     <string name="actual">Actual</string>
     <string name="published">Published on %s</string>
     <string name="more">And more…</string>
@@ -58,7 +54,7 @@
     <string name="more_menu_info_text_no_menu">No data for the menu</string>
     <string name="restart_where_you_left">Restart where you left</string>
     <string name="init_activity">Restart from :</string>
-    <string name="update_channel">Update channel</string>
+    <string name="update_channel">Update channel :</string>
     <string name="dev">Dev</string>
     <string name="alpha">Alpha</string>
     <string name="beta">Beta</string>
@@ -68,5 +64,18 @@
     <string name="error_loading_contributors">Error while loading contributors</string>
     <string name="loading_contributors">Loading contributors</string>
     <string name="contributor_image">Contributor profile picture</string>
-
+    <string name="no_when_pronote">No data when fetching from Pronote</string>
+    <string name="pronote_connection_button">Connect to Pronote</string>
+    <string name="pronote_password">Pronote password :</string>
+    <string name="pronote_username">Pronote username :</string>
+    <string name="pronote_connection">Pronote Connection</string>
+    <string name="use_pronote">Use Pronote :</string>
+    <string name="pronote_connection_error">Error while connecting to Pronote</string>
+    <string name="and">and</string>
+    <string name="assembled_on_site">Assembled on site</string>
+    <string name="high_environmental_value">High environmental value</string>
+    <string name="organic">Organic</string>
+    <string name="home_made_chef_recipe">Home made - Chef recipe</string>
+    <string name="gluten">Gluten</string>
+    <string name="local_products">Local products</string>
 </resources>

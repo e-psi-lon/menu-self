@@ -4,10 +4,16 @@ import org.json.JSONObject
 
 data class Day(
     val name: String = "",
-    val meals: List<String> = listOf()
+    val meals: List<String> = listOf(),
+    val date: Map<String, Int> = mapOf(
+        "year" to 0,
+        "month" to 0,
+        "day" to 0
+    )
 ) {
+
     override fun toString(): String {
-        return "$name: $meals"
+        return "$name: $meals (${date["day"]}/${date["month"]}/${date["year"]})"
     }
 
     fun toJson(): String {
@@ -16,8 +22,23 @@ data class Day(
                 prefix = "[",
                 postfix = "]"
             ) { "\"$it\"" }
-        }}"
+        }, \"date\": {\"year\": ${date["year"]}, \"month\": ${date["month"]}, \"day\": ${date["day"]}}}"
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (other is Day) {
+            return name == other.name && meals == other.meals && date == other.date
+        }
+        return false
+    }
+
+    override fun hashCode(): Int {
+        var result = name.hashCode()
+        result = 31 * result + meals.hashCode()
+        result = 31 * result + date.hashCode()
+        return result
+    }
+
 
     companion object {
         fun fromJson(json: String): Day {
@@ -28,7 +49,12 @@ data class Day(
             }
             return Day(
                 jsonObject.getString("name"),
-                meals
+                meals,
+                mapOf(
+                    "year" to jsonObject.getJSONObject("date").getInt("year"),
+                    "month" to jsonObject.getJSONObject("date").getInt("month"),
+                    "day" to jsonObject.getJSONObject("date").getInt("day")
+                )
             )
         }
     }

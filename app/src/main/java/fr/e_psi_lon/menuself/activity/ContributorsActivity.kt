@@ -14,11 +14,10 @@ import androidx.core.net.toUri
 import de.hdodenhof.circleimageview.CircleImageView
 import fr.e_psi_lon.menuself.R
 import fr.e_psi_lon.menuself.data.Menu
-import fr.e_psi_lon.menuself.data.Request
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import fr.e_psi_lon.menuself.data.Request as menuRequest
+import kotlinx.coroutines.*
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import org.json.JSONArray
 
 class ContributorsActivity : AppCompatActivity() {
@@ -26,10 +25,8 @@ class ContributorsActivity : AppCompatActivity() {
     private lateinit var scrollLinearLayout: LinearLayout
     private lateinit var scrollView: ScrollView
     private lateinit var exitButton: ImageButton
-    private lateinit var eveningMenu: Menu
-    private lateinit var noonMenu: Menu
+    private var menus: MutableMap<String, Menu> = mutableMapOf()
 
-    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_contributors)
@@ -37,105 +34,137 @@ class ContributorsActivity : AppCompatActivity() {
         contributorsLoading = findViewById(R.id.loadingContributors)
         scrollView = findViewById(R.id.contributorsList)
         exitButton = findViewById(R.id.exitButton)
-        if (intent.hasExtra("eveningMenu")) {
-            eveningMenu = Menu.fromJson(intent.getStringExtra("eveningMenu")!!)
+        if (intent.hasExtra("evening")) {
+            menus["evening"] = Menu.fromJson(intent.getStringExtra("evening")!!)
         }
-        if (intent.hasExtra("noonMenu")) {
-            noonMenu = Menu.fromJson(intent.getStringExtra("noonMenu")!!)
+        if (intent.hasExtra("noon")) {
+            menus["noon"] = Menu.fromJson(intent.getStringExtra("noon")!!)
         }
 
         scrollLinearLayout.isVerticalScrollBarEnabled = false
-        if (Request.isNetworkAvailable(this)) {
-            GlobalScope.launch(Dispatchers.IO) {
-                try {
-                    loadContent()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    runOnUiThread {
-                        contributorsLoading.text = getString(R.string.error_loading_contributors)
-                        contributorsLoading.visibility = View.VISIBLE
-                        scrollView.visibility = View.GONE
-                        scrollLinearLayout.visibility = View.GONE
-                    }
-                }
-            }
+        if (menuRequest.isNetworkAvailable(this)) {
+            loadContent()
         } else {
-            contributorsLoading.text = getString(R.string.no_internet)
-            contributorsLoading.visibility = View.VISIBLE
-            scrollLinearLayout.visibility = View.GONE
-            scrollView.visibility = View.GONE
+            showNoInternetError()
         }
 
         exitButton.setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)
-            if (::eveningMenu.isInitialized) {
-                intent.putExtra("eveningMenu", eveningMenu.toJson())
+            if (menus.containsKey("evening")) {
+                intent.putExtra("evening", menus["evening"]?.toJson())
             }
-            if (::noonMenu.isInitialized) {
-                intent.putExtra("noonMenu", noonMenu.toJson())
+            if (menus.containsKey("noon")) {
+                intent.putExtra("noon", menus["noon"]?.toJson())
             }
-            startActivity(intent).apply {
-                @Suppress("DEPRECATION")
-                overridePendingTransition(R.anim.dont_move, R.anim.slide_out_bottom)
-            }.also { finish() }
+            startActivity(intent)
+            @Suppress("DEPRECATION")
+            overridePendingTransition(R.anim.dont_move, R.anim.slide_out_bottom)
+            finish()
         }
-
     }
 
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        @Suppress("DEPRECATION")
+        super.onBackPressed()
+        val intent = Intent(this, SettingsActivity::class.java)
+        if (menus.containsKey("evening")) {
+            intent.putExtra("evening", menus["evening"]?.toJson())
+        }
+        if (menus.containsKey("noon")) {
+            intent.putExtra("noon", menus["noon"]?.toJson())
+        }
+        startActivity(intent)
+        @Suppress("DEPRECATION")
+        overridePendingTransition(R.anim.dont_move, R.anim.slide_out_bottom)
+        finish()
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
     private fun loadContent() {
-        val contributorsText =
-            Request.get("https://api.github.com/repos/e-psi-lon/menu-self/contributors")
-        println("contributorsText: $contributorsText")
-        println(contributorsText)
-        val contributors = JSONArray(contributorsText)
+        contributorsLoading.visibility = View.VISIBLE
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                val contributors = getContributors()
+                val contributorsInfo = parseContributors(contributors)
+                contributorsInfo.sortByDescending { it["contributions"] as Int }
+                withContext(Dispatchers.Main) {
+                    showContributors(contributorsInfo)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                withContext(Dispatchers.Main) {
+                    showError()
+                }
+            }
+        }
+    }
+
+    private fun getContributors(): JSONArray {
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url("https://api.github.com/repos/e-psi-lon/menu-self/contributors")
+            .build()
+        val response = client.newCall(request).execute()
+        val contributorsText = response.body?.string() ?: ""
+        return JSONArray(contributorsText)
+    }
+
+    private fun parseContributors(contributors: JSONArray): MutableList<Map<String, Any?>> {
         val contributorsInfo = mutableListOf<Map<String, Any?>>()
         for (i in 0 until contributors.length()) {
             val contributor = contributors.getJSONObject(i)
             val contributorInfo = mapOf(
                 "login" to contributor.getString("login"),
-                "avatar" to Request.getImage(contributor.getString("avatar_url")),
+                "avatar" to menuRequest.getImage(contributor.getString("avatar_url")),
                 "html_url" to contributor.getString("html_url"),
                 "contributions" to contributor.getInt("contributions")
             )
             contributorsInfo.add(contributorInfo)
         }
-        contributorsInfo.sortByDescending { it["contributions"] as Int }
-        runOnUiThread {
-            contributorsLoading.visibility = View.GONE
-            scrollView.visibility = View.VISIBLE
-            scrollLinearLayout.visibility = View.VISIBLE
-            for (contributor in contributorsInfo) {
-                val contributorLayout =
-                    layoutInflater.inflate(R.layout.contributor, scrollLinearLayout)
-                val contributorName =
-                    contributorLayout.findViewById<TextView>(R.id.contributor_name)
-                println("TextView checked")
-                val contributorAvatar =
-                    contributorLayout.findViewById<CircleImageView>(R.id.contributor_image)
-                println("CircleImageView checked")
-                val contributorContributions =
-                    contributorLayout.findViewById<TextView>(R.id.contribution_count)
-                println("TextView (count) checked")
-                contributorName.text = contributor["login"] as String
-                println("Name set")
-                val image = contributor["avatar"] as Bitmap? ?: BitmapFactory.decodeResource(
-                    resources,
-                    R.mipmap.no_image
-                )
-                println("Image configured")
-                contributorAvatar.setImageBitmap(image)
-                println("Image set")
-                contributorContributions.text =
-                    getString(R.string.contributions, contributor["contributions"] as String)
-                println("Contributions set")
-                contributorAvatar.setOnClickListener {
-                    val intent = Intent(Intent.ACTION_VIEW)
-                    intent.data = contributor["html_url"].toString().toUri()
-                    startActivity(intent)
-                }
-                println("Listener set")
+        return contributorsInfo
+    }
+
+    private fun showContributors(contributorsInfo: MutableList<Map<String, Any?>>) {
+        contributorsLoading.visibility = View.GONE
+        scrollView.visibility = View.VISIBLE
+        scrollLinearLayout.visibility = View.VISIBLE
+        for (contributor in contributorsInfo) {
+            val contributorLayout =
+                layoutInflater.inflate(R.layout.contributor, scrollLinearLayout)
+            val contributorName =
+                contributorLayout.findViewById<TextView>(R.id.contributor_name)
+            val contributorAvatar =
+                contributorLayout.findViewById<CircleImageView>(R.id.contributor_image)
+            val contributorContributions =
+                contributorLayout.findViewById<TextView>(R.id.contribution_count)
+            contributorName.text = contributor["login"] as String
+            val image = contributor["avatar"] as Bitmap? ?: BitmapFactory.decodeResource(
+                resources,
+                R.mipmap.no_image
+            )
+            contributorAvatar.setImageBitmap(image)
+            contributorContributions.text =
+                getString(R.string.contributions, contributor["contributions"] as String)
+            contributorAvatar.setOnClickListener {
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.data = contributor["html_url"].toString().toUri()
+                startActivity(intent)
             }
-            println("Contributors loaded")
         }
+    }
+
+    private fun showError() {
+        contributorsLoading.text = getString(R.string.error_loading_contributors)
+        contributorsLoading.visibility = View.VISIBLE
+        scrollView.visibility = View.GONE
+        scrollLinearLayout.visibility = View.GONE
+    }
+
+    private fun showNoInternetError() {
+        contributorsLoading.text = getString(R.string.no_internet)
+        contributorsLoading.visibility = View.VISIBLE
+        scrollLinearLayout.visibility = View.GONE
+        scrollView.visibility = View.GONE
     }
 }

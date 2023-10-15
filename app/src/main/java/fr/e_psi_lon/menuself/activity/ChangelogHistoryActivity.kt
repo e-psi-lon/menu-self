@@ -12,21 +12,23 @@ import androidx.appcompat.app.AppCompatActivity
 import fr.e_psi_lon.menuself.BuildConfig
 import fr.e_psi_lon.menuself.R
 import fr.e_psi_lon.menuself.data.Menu
-import fr.e_psi_lon.menuself.data.Request
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.TimeZone
+import fr.e_psi_lon.menuself.data.Request as menuRequest
 
 class ChangelogHistoryActivity : AppCompatActivity() {
     private lateinit var changelogHistoryLoading: TextView
     private lateinit var changelogHistory: ListView
     private lateinit var exitButton: ImageButton
-    private lateinit var eveningMenu: Menu
-    private lateinit var noonMenu: Menu
+    private var menus: MutableMap<String, Menu> = mutableMapOf()
 
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -36,16 +38,18 @@ class ChangelogHistoryActivity : AppCompatActivity() {
         changelogHistoryLoading = findViewById(R.id.historyStatus)
         changelogHistory = findViewById(R.id.changelogHistoryList)
         exitButton = findViewById(R.id.exitButton)
-        if (intent.hasExtra("eveningMenu")) {
-            eveningMenu = Menu.fromJson(intent.getStringExtra("eveningMenu")!!)
+        if (intent.hasExtra("evening")) {
+            menus["evening"] = Menu.fromJson(intent.getStringExtra("evening")!!)
         }
-        if (intent.hasExtra("noonMenu")) {
-            noonMenu = Menu.fromJson(intent.getStringExtra("noonMenu")!!)
+        if (intent.hasExtra("noon")) {
+            menus["noon"] = Menu.fromJson(intent.getStringExtra("noon")!!)
         }
 
-        if (Request.isNetworkAvailable(this)) {
-            GlobalScope.launch(Dispatchers.IO) {
-                loadHistory()
+        if (menuRequest.isNetworkAvailable(this)) {
+            runBlocking {
+                GlobalScope.launch(Dispatchers.IO) {
+                    loadHistory()
+                }
             }
         } else {
             changelogHistoryLoading.text = getString(R.string.no_internet)
@@ -55,11 +59,11 @@ class ChangelogHistoryActivity : AppCompatActivity() {
 
         exitButton.setOnClickListener {
             val intent = Intent(this, SettingsActivity::class.java)
-            if (::eveningMenu.isInitialized) {
-                intent.putExtra("eveningMenu", eveningMenu.toJson())
+            if (menus.containsKey("evening")) {
+                intent.putExtra("evening", menus["evening"]!!.toJson())
             }
-            if (::noonMenu.isInitialized) {
-                intent.putExtra("noonMenu", noonMenu.toJson())
+            if (::changelogHistory.isInitialized) {
+                intent.putExtra("noon", menus["noon"]!!.toJson())
             }
             startActivity(intent).apply {
                 @Suppress("DEPRECATION")
@@ -69,15 +73,37 @@ class ChangelogHistoryActivity : AppCompatActivity() {
 
     }
 
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        @Suppress("DEPRECATION")
+        super.onBackPressed()
+        val intent = Intent(this, SettingsActivity::class.java)
+        if (menus.containsKey("evening")) {
+            intent.putExtra("evening", menus["evening"]?.toJson())
+        }
+        if (menus.containsKey("noon")) {
+            intent.putExtra("noon", menus["noon"]?.toJson())
+        }
+        startActivity(intent).apply {
+            @Suppress("DEPRECATION")
+            overridePendingTransition(R.anim.dont_move, R.anim.slide_out_bottom)
+        }.also { finish() }
+    }
+
     private fun loadHistory() {
         try {
-            val master =
-                Request.get("https://api.github.com/repos/e-psi-lon/menu-self/branches/master")
+            val client = OkHttpClient()
+            var request = Request.Builder()
+                .url("https://api.github.com/repos/e-psi-lon/menu-self/branches/master")
+                .build()
+            val master = client.newCall(request).execute().body!!.string()
             val masterJson = JSONObject(master)
             val masterCommit = masterJson.getJSONObject("commit")
             val masterCommitSha = masterCommit.getString("sha")
-            val commits =
-                Request.get("https://api.github.com/repos/e-psi-lon/menu-self/commits?sha=$masterCommitSha&per_page=100")
+            request = Request.Builder()
+                .url("https://api.github.com/repos/e-psi-lon/menu-self/commits?sha=$masterCommitSha&per_page=100")
+                .build()
+            val commits = client.newCall(request).execute().body!!.string()
             val commitsJson = JSONArray(commits)
             val changelogHistoryList = ArrayList<String>()
             for (i in 0 until commitsJson.length()) {

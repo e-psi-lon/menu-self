@@ -27,27 +27,6 @@ class Request {
             return "%.2f".format(size2) + " " + units[i]
         }
 
-        fun get(url: String, headers: MutableMap<Any, Any> = mutableMapOf()): String {
-            try {
-                val urlObject = URL(url)
-
-                var output = ""
-                with(urlObject.openConnection() as HttpURLConnection) {
-                    if (responseCode != 200) {
-                        return ""
-                    }
-                    inputStream.bufferedReader().use {
-                        it.lines().forEach { line ->
-                            output += line + "\n"
-                        }
-                    }
-                }
-                return output
-            } catch (e: Exception) {
-                return ""
-            }
-        }
-
         fun getImage(url: String, headers: Map<String, String> = emptyMap()): Bitmap? {
             try {
                 val imageUrl = URL(url)
@@ -55,7 +34,7 @@ class Request {
                 connection.setRequestProperty(
                     "User-Agent",
                     "Mozilla/5.0"
-                ) // Exemple d'en-tête HTTP pour simuler un navigateur
+                )
 
                 for ((key, value) in headers) {
                     connection.setRequestProperty(key, value)
@@ -67,43 +46,6 @@ class Request {
                 e.printStackTrace()
             }
             return null
-        }
-
-        fun post(
-            url: String,
-            data: MutableMap<Any, Any>,
-            headers: MutableMap<Any, Any> = mutableMapOf()
-        ): String {
-            try {
-                val urlObject = URL(url)
-                var output = ""
-                with(urlObject.openConnection() as HttpURLConnection) {
-                    requestMethod = "POST"
-                    for (header in headers) {
-                        setRequestProperty(header.key.toString(), header.value.toString())
-                    }
-                    val postData = StringBuilder()
-                    for (datum in data) {
-                        if (postData.isNotEmpty()) {
-                            postData.append('&')
-                        }
-                        postData.append(datum.key)
-                        postData.append('=')
-                        postData.append(datum.value)
-                    }
-                    val postDataBytes = postData.toString().toByteArray(charset("UTF-8"))
-                    doOutput = true
-                    outputStream.write(postDataBytes)
-                    inputStream.bufferedReader().use {
-                        it.lines().forEach { line ->
-                            output += line + "\n"
-                        }
-                    }
-                }
-                return output
-            } catch (e: Exception) {
-                return ""
-            }
         }
 
         fun download(

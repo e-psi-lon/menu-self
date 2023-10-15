@@ -17,7 +17,6 @@
     <string name="sunday">Dimanche</string>
     <string name="loading_date">Chargement…</string>
     <string name="settings">Paramètres</string>
-    <string name="made_by">Fait par e_psi_lon</string>
     <string name="version">Version %s</string>
     <string name="no_day_data">Aucune donnée pour ce jour</string>
     <string name="no_menu_this_day">Aucun menu le %s</string>
@@ -33,19 +32,16 @@
     <string name="downloading_progress">Téléchargement du fichier %1$s : %2$s/%3$s</string>
     <string name="install_apk">Veuillez installer le fichier %s</string>
     <string name="install">Installer</string>
-    <string name="reset_cache">Réinitialiser le cache</string>
     <string name="download_apk">Télécharger la dernière version de l\'apk</string>
     <string name="browser">Navigateur Internet</string>
     <string name="app">Téléchargeur interne</string>
     <string name="browser_or_app">Commment voulez vous télécharger le fichier ?</string>
     <string name="check_update">Vérifier les mises à jour</string>
     <string name="up_to_date">L\'application est à jour</string>
-    <string name="changelog">Voir les derniers changements</string>
     <string name="changelog_history">Historique des changements</string>
     <string name="exit">Quitter</string>
     <string name="loading_history">Chargement de l\'historique des changements</string>
     <string name="changelogHistoryError">Erreur lors de l\'obtention de l\'historique</string>
-    <string name="changelog_is">Les derniers changements sont :</string>
     <string name="actual">Actuelle</string>
     <string name="published">Publié le %s</string>
     <string name="more">Et plus…</string>
@@ -57,7 +53,7 @@
     <string name="more_menu_info_text_no_menu">Aucune donnée pour le menu</string>
     <string name="restart_where_you_left">Reprendre là où vous vous êtes arrêté</string>
     <string name="init_activity">Au démarrage :</string>
-    <string name="update_channel">Canal de mise à jour</string>
+    <string name="update_channel">Canal de mise à jour :</string>
     <string name="dev">Développement</string>
     <string name="alpha">Alpha</string>
     <string name="beta">Beta</string>
@@ -67,4 +63,18 @@
     <string name="error_loading_contributors">Error lors du chargement des contributeurs</string>
     <string name="loading_contributors">Chargement des contributeurs</string>
     <string name="contributor_image">Photo de profil du contributeur</string>
+    <string name="no_when_pronote">Pas de données quand les infos sont récupérées depuis Pronote</string>
+    <string name="pronote_connection_button">Se connecter à Pronote</string>
+    <string name="pronote_connection">Connexion à Pronote</string>
+    <string name="pronote_username">Nom d\'utilisateur Pronote :</string>
+    <string name="pronote_password">Mot de passe Pronote :</string>
+    <string name="use_pronote">Utiliser Pronote :</string>
+    <string name="pronote_connection_error">Erreur lors de la connexion à Pronote</string>
+    <string name="and">et</string>
+    <string name="assembled_on_site">Assemblé sur place</string>
+    <string name="high_environmental_value">Haute valeur environnementale</string>
+    <string name="organic">Bio</string>
+    <string name="home_made_chef_recipe">Fait maison - Recette du chef</string>
+    <string name="gluten">Gluten</string>
+    <string name="local_products">Produits locaux</string>
 </resources>

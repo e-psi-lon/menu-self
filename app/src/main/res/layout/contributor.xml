@@ -12,7 +12,6 @@
         android:layout_height="wrap_content"
         android:layout_weight="3">
 
-        <!-- L'image doit être complètement ronde (modification de la forme sous la contrainte du View) -->
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/contributor_image"
             android:layout_width="wrap_content"

@@ -65,17 +65,6 @@
                     android:textStyle="bold" />
 
                 <Button
-                    android:id="@+id/resetCacheButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/colorBackground"
-                    android:text="@string/reset_cache"
-                    android:textAlignment="center"
-                    android:textColor="@color/colorOnSecondary"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-                <Button
                     android:id="@+id/downloadApkButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -92,17 +81,6 @@
                     android:layout_height="wrap_content"
                     android:background="@color/colorBackground"
                     android:text="@string/check_update"
-                    android:textAlignment="center"
-                    android:textColor="@color/colorOnSecondary"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-                <Button
-                    android:id="@+id/changelogButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/colorBackground"
-                    android:text="@string/changelog"
                     android:textAlignment="center"
                     android:textColor="@color/colorOnSecondary"
                     android:textSize="20sp"
@@ -155,6 +133,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
+                        android:minHeight="48dp"
                         android:spinnerMode="dropdown" />
                 </LinearLayout>
 
@@ -183,7 +162,40 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
+                        android:minHeight="48dp"
                         android:spinnerMode="dropdown" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@color/colorBackground"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_weight="5"
+                        android:text="@string/use_pronote"
+                        android:textAlignment="textStart"
+                        android:textColor="@color/colorOnSecondary"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:id="@+id/usePronoteSwitch"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_weight="5"
+                        android:textAlignment="textStart"
+                        android:textColor="@color/colorOnSecondary"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
 
                 <LinearLayout

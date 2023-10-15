@@ -1,5 +1,6 @@
 package fr.e_psi_lon.menuself.activity
 
+import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.content.Intent
 import android.os.Bundle
@@ -8,6 +9,7 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.Spinner
@@ -15,19 +17,23 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SwitchCompat
 import androidx.core.net.toUri
 import fr.e_psi_lon.menuself.BuildConfig
-import fr.e_psi_lon.menuself.MainActivity
 import fr.e_psi_lon.menuself.R
 import fr.e_psi_lon.menuself.data.Menu
-import fr.e_psi_lon.menuself.data.Request
 import fr.e_psi_lon.menuself.others.AutoUpdater
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.io.File
+import fr.e_psi_lon.menuself.data.Request as menuRequest
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var settingsButton: ImageButton
@@ -35,20 +41,19 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var noonButton: ImageButton
     private lateinit var versionView: TextView
     private lateinit var layout: LinearLayout
-    private lateinit var resetCacheButton: Button
     private lateinit var downloadLatestApkButton: Button
     private lateinit var checkForUpdatesButton: Button
-    private lateinit var latestChangelogButton: Button
     private lateinit var changelogHistoryButton: Button
     private lateinit var moreInfoButton: Button
     private lateinit var contributorsButton: Button
     private lateinit var initActivitySpinner: Spinner
     private lateinit var updateBranchSpinner: Spinner
+    private lateinit var usePronote: SwitchCompat
     private lateinit var config: JSONObject
-    private lateinit var eveningMenu: Menu
-    private lateinit var noonMenu: Menu
+    private var menus: MutableMap<String, Menu> = mutableMapOf()
     private var appVersionName: String = BuildConfig.VERSION_NAME
 
+    @SuppressLint("InflateParams")
     @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,15 +63,14 @@ class SettingsActivity : AppCompatActivity() {
         eveningButton = findViewById(R.id.eveningButton)
         settingsButton = findViewById(R.id.settingsButton)
         versionView = findViewById(R.id.version)
-        resetCacheButton = findViewById(R.id.resetCacheButton)
         downloadLatestApkButton = findViewById(R.id.downloadApkButton)
         checkForUpdatesButton = findViewById(R.id.checkUpdateButton)
-        latestChangelogButton = findViewById(R.id.changelogButton)
         changelogHistoryButton = findViewById(R.id.changelogHistoryButton)
         moreInfoButton = findViewById(R.id.moreInfoButton)
         initActivitySpinner = findViewById(R.id.initActivitySpinner)
         updateBranchSpinner = findViewById(R.id.updateBranchSpinner)
         contributorsButton = findViewById(R.id.contributorsButton)
+        usePronote = findViewById(R.id.usePronoteSwitch)
         val channel = mapOf(
             "dev" to getString(R.string.dev),
             "alpha" to getString(R.string.alpha),
@@ -95,11 +99,11 @@ class SettingsActivity : AppCompatActivity() {
         updateBranchSpinner.adapter = channelAdapter
 
         versionView.text = getString(R.string.version, appVersionName)
-        if (intent.hasExtra("eveningMenu")) {
-            eveningMenu = Menu.fromJson(intent.getStringExtra("eveningMenu")!!)
+        if (intent.hasExtra("evening")) {
+            menus["evening"] = Menu.fromJson(intent.getStringExtra("evening")!!)
         }
-        if (intent.hasExtra("noonMenu")) {
-            noonMenu = Menu.fromJson(intent.getStringExtra("noonMenu")!!)
+        if (intent.hasExtra("noon")) {
+            menus["noon"] = Menu.fromJson(intent.getStringExtra("noon")!!)
         }
         config = JSONObject(File(filesDir, "config.json").readText())
         if (config.getString("defaultActivity") == "previous") {
@@ -109,7 +113,7 @@ class SettingsActivity : AppCompatActivity() {
         initActivitySpinner.setSelection(
             activity.keys.toList().indexOf(config.getString("defaultActivity"))
         )
-        if (intent.hasExtra("init") && Request.isNetworkAvailable(applicationContext)) {
+        if (intent.hasExtra("init") && menuRequest.isNetworkAvailable(applicationContext)) {
             GlobalScope.launch(Dispatchers.IO) {
                 AutoUpdater.checkForUpdates(
                     this@SettingsActivity,
@@ -119,45 +123,45 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         moreInfoButton.setOnClickListener {
-            if (Request.isNetworkAvailable(applicationContext)) {
+            if (menuRequest.isNetworkAvailable(applicationContext)) {
                 val builder = AlertDialog.Builder(this)
                 builder.apply {
                     setTitle(R.string.more_menu_info)
-                    if (::eveningMenu.isInitialized) {
-                        if (eveningMenu.redactionMessage != null) {
+                    if (menus.containsKey("evening")) {
+                        if (menus["evening"]?.redactionMessage != null) {
                             setMessage(
                                 getString(
                                     R.string.more_menu_info_text_redaction_message,
-                                    eveningMenu.lastUpdate,
-                                    eveningMenu.nextUpdate,
-                                    eveningMenu.redactionMessage
+                                    menus["evening"]?.lastUpdate ?: "",
+                                    menus["evening"]?.nextUpdate ?: "",
+                                    menus["evening"]?.redactionMessage ?: ""
                                 )
                             )
                         } else {
                             setMessage(
                                 getString(
                                     R.string.more_menu_info_text,
-                                    eveningMenu.lastUpdate,
-                                    eveningMenu.nextUpdate
+                                    menus["evening"]?.lastUpdate ?: "",
+                                    menus["evening"]?.nextUpdate ?: ""
                                 )
                             )
                         }
-                    } else if (::noonMenu.isInitialized) {
-                        if (noonMenu.redactionMessage != null) {
+                    } else if (menus.containsKey("noon")) {
+                        if (menus["noon"]?.redactionMessage != null) {
                             setMessage(
                                 getString(
                                     R.string.more_menu_info_text_redaction_message,
-                                    noonMenu.lastUpdate,
-                                    noonMenu.nextUpdate,
-                                    noonMenu.redactionMessage
+                                    menus["noon"]?.lastUpdate ?: "",
+                                    menus["noon"]?.nextUpdate ?: "",
+                                    menus["noon"]?.redactionMessage ?: ""
                                 )
                             )
                         } else {
                             setMessage(
                                 getString(
                                     R.string.more_menu_info_text,
-                                    noonMenu.lastUpdate,
-                                    noonMenu.nextUpdate
+                                    menus["noon"]?.lastUpdate ?: "",
+                                    menus["noon"]?.nextUpdate ?: ""
                                 )
                             )
                         }
@@ -176,23 +180,18 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
-        resetCacheButton.setOnClickListener {
-            val cacheDir = File("Android/data/fr.e_psi_lon.menuself/cache")
-            cacheDir.deleteRecursively()
-            cacheDir.mkdir()
-            changePage(MainActivity::class.java, mapOf(), false)
-        }
-
         downloadLatestApkButton.setOnClickListener {
-            if (Request.isNetworkAvailable(applicationContext)) {
+            if (menuRequest.isNetworkAvailable(applicationContext)) {
                 askUserForBrowserOrApp().show()
             } else {
                 Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show()
             }
         }
 
+
+
         checkForUpdatesButton.setOnClickListener {
-            if (Request.isNetworkAvailable(applicationContext)) {
+            if (menuRequest.isNetworkAvailable(applicationContext)) {
                 GlobalScope.launch(Dispatchers.IO) {
                     if (!AutoUpdater.checkForUpdates(
                             this@SettingsActivity,
@@ -215,60 +214,33 @@ class SettingsActivity : AppCompatActivity() {
 
         noonButton.setOnClickListener {
             val extras = mutableMapOf<String, String>()
-            if (::eveningMenu.isInitialized) {
-                extras["eveningMenu"] = eveningMenu.toJson()
+            if (menus.containsKey("evening")) {
+                extras["evening"] = menus["evening"]!!.toJson()
             }
-            if (::noonMenu.isInitialized) {
-                extras["noonMenu"] = noonMenu.toJson()
+            if (menus.containsKey("noon")) {
+                extras["noon"] = menus["noon"]!!.toJson()
             }
             changePage(NoonActivity::class.java, extras)
         }
 
         eveningButton.setOnClickListener {
             val extras = mutableMapOf<String, String>()
-            if (::eveningMenu.isInitialized) {
-                extras["eveningMenu"] = eveningMenu.toJson()
+            if (menus.containsKey("evening")) {
+                extras["evening"] = menus["evening"]!!.toJson()
             }
-            if (::noonMenu.isInitialized) {
-                extras["noonMenu"] = noonMenu.toJson()
+            if (menus.containsKey("noon")) {
+                extras["noon"] = menus["noon"]!!.toJson()
             }
             changePage(EveningActivity::class.java, extras)
         }
-        latestChangelogButton.setOnClickListener {
-            if (Request.isNetworkAvailable(applicationContext)) {
-                GlobalScope.launch(Dispatchers.IO) {
-                    val output =
-                        Request.get("https://api.github.com/repos/e-psi-lon/menu-self/commits/master")
-                    val changelog = if (output == "") {
-                        getString(R.string.no_changelog)
-                    } else {
-                        val json = JSONObject(output)
-                        val commit = json.getJSONObject("commit")
-                        commit.getString("message")
-                    }
-                    runOnUiThread {
-                        val builder = AlertDialog.Builder(this@SettingsActivity)
-                        builder.apply {
-                            setTitle(R.string.changelog_is)
-                            setMessage(changelog)
-                            setPositiveButton(R.string.ok) { dialog, _ ->
-                                dialog.cancel()
-                            }
-                        }
-                        builder.create().show()
-                    }
-                }
-            } else {
-                Toast.makeText(this, getString(R.string.no_internet), Toast.LENGTH_SHORT).show()
-            }
-        }
+
         changelogHistoryButton.setOnClickListener {
             val intent = Intent(this, ChangelogHistoryActivity::class.java)
-            if (::eveningMenu.isInitialized) {
-                intent.putExtra("eveningMenu", eveningMenu.toJson())
+            if (menus.containsKey("evening")) {
+                intent.putExtra("evening", menus["evening"]!!.toJson())
             }
-            if (::noonMenu.isInitialized) {
-                intent.putExtra("noonMenu", noonMenu.toJson())
+            if (menus.containsKey("noon")) {
+                intent.putExtra("noon", menus["noon"]!!.toJson())
             }
             startActivity(intent).apply {
                 @Suppress("DEPRECATION")
@@ -278,11 +250,11 @@ class SettingsActivity : AppCompatActivity() {
 
         contributorsButton.setOnClickListener {
             val intent = Intent(this, ContributorsActivity::class.java)
-            if (::eveningMenu.isInitialized) {
-                intent.putExtra("eveningMenu", eveningMenu.toJson())
+            if (menus.containsKey("evening")) {
+                intent.putExtra("evening", menus["evening"]!!.toJson())
             }
-            if (::noonMenu.isInitialized) {
-                intent.putExtra("noonMenu", noonMenu.toJson())
+            if (menus.containsKey("noon")) {
+                intent.putExtra("noon", menus["noon"]!!.toJson())
             }
             startActivity(intent).apply {
                 @Suppress("DEPRECATION")
@@ -321,22 +293,104 @@ class SettingsActivity : AppCompatActivity() {
 
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
+
+        if (config.has("usePronote")) {
+            usePronote.isChecked = config.getBoolean("usePronote")
+        } else {
+            usePronote.isChecked = false
+        }
+        usePronote.setOnCheckedChangeListener { _, isChecked ->
+            if (!menuRequest.isNetworkAvailable(applicationContext)) {
+                Toast.makeText(
+                    this,
+                    getString(R.string.no_internet),
+                    Toast.LENGTH_SHORT
+                ).show()
+                usePronote.isChecked = false
+                return@setOnCheckedChangeListener
+            }
+            config.put("usePronote", isChecked)
+            File(filesDir, "config.json").writeText(config.toString())
+            if (isChecked && !config.has("pronoteUsername") && !config.has("pronotePassword")) {
+                val dialogView = layoutInflater.inflate(R.layout.pronote_connection, null)
+                val builder = AlertDialog.Builder(this)
+                builder.apply {
+                    setView(dialogView)
+                    setCancelable(true)
+                    setPositiveButton(R.string.pronote_connection_button) { dialog, _ ->
+                        val username = dialogView.findViewById<EditText>(R.id.pronote_username)
+                        val password = dialogView.findViewById<EditText>(R.id.pronote_password)
+                        if (username.text.toString() != "" && password.text.toString() != "") {
+                            GlobalScope.launch(Dispatchers.IO) {
+                                val client = OkHttpClient()
+                                val request = Request.Builder()
+                                    .url(
+                                        "https://api-04.getpapillon.xyz/generatetoken"
+                                    )
+                                    .post(
+                                        JSONObject(
+                                            mapOf(
+                                                "username" to username.text.toString(),
+                                                "password" to password.text.toString(),
+                                                "url" to "https://0410002e.index-education.net/pronote/eleve.html",
+                                                "ent" to "ac_orleans_tours"
+                                            )
+                                        ).toString()
+                                            .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+                                    )
+                                    .build()
+                                val response = client.newCall(request).execute()
+                                if (response.code != 200) {
+                                    runOnUiThread {
+                                        Toast.makeText(
+                                            this@SettingsActivity,
+                                            getString(R.string.pronote_connection_error),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                } else {
+                                    config.put("pronoteUsername", username.text.toString())
+                                    config.put("pronotePassword", password.text.toString())
+                                    File(filesDir, "config.json").writeText(config.toString())
+                                    dialog.cancel()
+
+                                }
+                            }
+                        } else {
+                            Toast.makeText(
+                                this@SettingsActivity,
+                                getString(R.string.pronote_connection_error),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                    show()
+                }
+            }
+        }
     }
 
     private fun getUrl(): List<String> {
-        val repoOutput =
-            Request.get(
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url(
                 "https://api.github.com/repos/e-psi-lon/menu-self/commits/builds-${
                     config.getString(
                         "updateChannel"
                     )
                 }"
             )
+            .build()
+        val repoOutput = client.newCall(request).execute().body?.string() ?: ""
         return try {
             val repoJson = JSONObject(repoOutput)
             val contentUrl =
                 repoJson.getJSONArray("files").getJSONObject(0).getString("contents_url")
-            val contentOutput = Request.get(contentUrl)
+            val contentOutput = client.newCall(
+                Request.Builder()
+                    .url(contentUrl)
+                    .build()
+            ).execute().body?.string() ?: ""
             val contentJson = JSONObject(contentOutput)
             listOf(contentJson.getString("download_url"), contentJson.getLong("size").toString())
         } catch (e: Exception) {
@@ -369,7 +423,7 @@ class SettingsActivity : AppCompatActivity() {
                         if (url[0] == "") {
                             return@launch
                         }
-                        Request.download(
+                        menuRequest.download(
                             url[0],
                             this@SettingsActivity.applicationContext,
                             this@SettingsActivity,
@@ -385,6 +439,13 @@ class SettingsActivity : AppCompatActivity() {
             }
             builder.create()
         }
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        @Suppress("DEPRECATION")
+        super.onBackPressed()
+        finishAffinity()
     }
 
     private fun changePage(page: Class<*>, extras: Map<String, String>, animation: Boolean = true) {

@@ -17,6 +17,10 @@ import org.jsoup.nodes.Element
 
 class EveningActivity : MenuActivity(21, 1) {
     override fun fetchMenuData() = CoroutineScope(Dispatchers.IO).launch {
+        if (menus["evening"] != Menu()) {
+            showMenu(currentDay)
+            return@launch
+        }
         val doc: Document =
             Jsoup.connect("https://standarddelunivers.wordpress.com/2022/06/28/menu-de-la-semaine/")
                 .get()
@@ -41,7 +45,8 @@ class EveningActivity : MenuActivity(21, 1) {
                                 when (img.attr("data-image-title")) {
                                     "vegetarien" -> getString(R.string.vegetarian)
                                     "pates" -> getString(R.string.home_made)
-                                    else -> ""
+                                    "gluten" -> getString(R.string.gluten)
+                                    else -> img.attr("data-image-title")
                                 }
                             )
                         }
@@ -80,18 +85,48 @@ class EveningActivity : MenuActivity(21, 1) {
             }
         }
 
-        eveningMenu = Menu(
-            Day(days[0], contentPerDay[0]),
-            Day(days[1], contentPerDay[1]),
-            Day(days[2], contentPerDay[2]),
-            Day(days[3], contentPerDay[3]),
+        menus["evening"] = Menu(
+            Day(
+                days[0],
+                contentPerDay[0],
+                mapOf(
+                    "year" to days[0].split(" ")[1].split("/")[2].toInt(),
+                    "month" to days[0].split(" ")[1].split("/")[1].toInt(),
+                    "day" to days[0].split(" ")[1].split("/")[0].toInt()
+                )
+            ),
+            Day(
+                days[1],
+                contentPerDay[1],
+                mapOf(
+                    "year" to days[1].split(" ")[1].split("/")[2].toInt(),
+                    "month" to days[1].split(" ")[1].split("/")[1].toInt(),
+                    "day" to days[1].split(" ")[1].split("/")[0].toInt()
+                )
+            ),
+            Day(
+                days[2],
+                contentPerDay[2],
+                mapOf(
+                    "year" to days[2].split(" ")[1].split("/")[2].toInt(),
+                    "month" to days[2].split(" ")[1].split("/")[1].toInt(),
+                    "day" to days[2].split(" ")[1].split("/")[0].toInt()
+                )
+            ),
+            Day(
+                days[3],
+                contentPerDay[3],
+                mapOf(
+                    "year" to days[3].split(" ")[1].split("/")[2].toInt(),
+                    "month" to days[3].split(" ")[1].split("/")[1].toInt(),
+                    "day" to days[3].split(" ")[1].split("/")[0].toInt()
+                )
+            ),
             lastMenuUpdate,
             nextMenuUpdate,
             redactionMessage
         )
         showMenu(currentDay)
-
-
     }
 
     override fun showMenu(day: String) = CoroutineScope(Dispatchers.Main).launch {
@@ -119,7 +154,7 @@ class EveningActivity : MenuActivity(21, 1) {
             menuLayout.isRefreshing = false
             return@launch
         }
-        if (eveningMenu.getDay(getFrench(day)).name == "") {
+        if (menus["evening"]?.getDay(getFrench(day))?.name == "") {
             dayView.text = getTranslatedString(currentDay)
             menuListView.visibility = View.GONE
             statusView.text = getString(R.string.no_day_data)
@@ -128,22 +163,25 @@ class EveningActivity : MenuActivity(21, 1) {
             return@launch
         }
 
-        if (eveningMenu.getDay(getFrench(day)).meals.isEmpty()) {
-            dayView.text = eveningMenu.getDay(getFrench(day)).name
+        if (menus["evening"]?.getDay(getFrench(day))?.meals?.isEmpty() == true) {
+            dayView.text =
+                menus["evening"]?.getDay(getFrench(day))?.name ?: getTranslatedString(day)
             menuListView.visibility = View.GONE
             statusView.text =
-                getString(R.string.no_menu_this_day, eveningMenu.getDay(getFrench(day)).name)
+                getString(R.string.no_menu_this_day, menus["evening"]?.getDay(getFrench(day))?.name)
             statusView.visibility = View.VISIBLE
             menuLayout.isRefreshing = false
             return@launch
         }
-
         try {
-            dayView.text = eveningMenu.getDay(getFrench(day)).name
-            menuListView.adapter = ArrayAdapter(
-                this@EveningActivity,
-                android.R.layout.simple_list_item_1, eveningMenu.getDay(getFrench(day)).meals
-            )
+            dayView.text =
+                menus["evening"]?.getDay(getFrench(day))?.name ?: getTranslatedString(day)
+            menuListView.adapter = menus["evening"]?.getDay(getFrench(day))?.let {
+                ArrayAdapter(
+                    this@EveningActivity,
+                    android.R.layout.simple_list_item_1, it.meals
+                )
+            }
             menuListView.visibility = View.VISIBLE
             menuListView.isEnabled = true
             statusView.visibility = View.GONE
