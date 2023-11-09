@@ -14,11 +14,11 @@ import androidx.core.net.toUri
 import de.hdodenhof.circleimageview.CircleImageView
 import fr.e_psi_lon.menuself.R
 import fr.e_psi_lon.menuself.data.Menu
-import fr.e_psi_lon.menuself.data.Request as menuRequest
 import kotlinx.coroutines.*
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONArray
+import fr.e_psi_lon.menuself.data.Request as menuRequest
 
 class ContributorsActivity : AppCompatActivity() {
     private lateinit var contributorsLoading: TextView

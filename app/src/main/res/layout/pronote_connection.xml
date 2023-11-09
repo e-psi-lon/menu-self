@@ -13,55 +13,40 @@
         android:text="@string/pronote_connection"
         android:textSize="20sp" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        android:labelFor="@id/pronote_username"
+        android:text="@string/pronote_username"
+        android:textSize="20sp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginBottom="20dp"
-            android:labelFor="@id/pronote_username"
-            android:text="@string/pronote_username"
-            android:textSize="20sp" />
-
-        <EditText
-            android:id="@+id/pronote_username"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp"
-            android:autofillHints=""
-            android:inputType="textUri" />
-    </LinearLayout>
-
-    <LinearLayout
+    <EditText
+        android:id="@+id/pronote_username"
         android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_margin="20dp"
+        android:autofillHints=""
+        android:inputType="textUri" />
+
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        android:labelFor="@id/pronote_password"
+        android:text="@string/pronote_password"
+        android:textSize="20sp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginBottom="20dp"
-            android:labelFor="@id/pronote_password"
-            android:text="@string/pronote_password"
-            android:textSize="20sp" />
+    <EditText
+        android:id="@+id/pronote_password"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_margin="20dp"
+        android:autofillHints=""
+        android:inputType="textPassword" />
 
-        <EditText
-            android:id="@+id/pronote_password"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp"
-            android:autofillHints=""
-            android:inputType="textPassword" />
-    </LinearLayout>
 </LinearLayout>

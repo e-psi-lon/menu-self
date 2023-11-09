@@ -21,6 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -50,8 +51,8 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
     private val dayInWeek: List<String> =
         listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
     internal var currentDay: String = getDayOfWeek()
+    internal var gotDay: Day = Day()
 
-    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         Logger.getLogger(OkHttpClient.Companion::class.java.name).level = Level.FINE
         super.onCreate(savedInstanceState)
@@ -80,19 +81,6 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
         if (config.getString("defaultActivity") == "previous") {
             config.put("previousActivity", this::class.java.simpleName)
             File(filesDir, "config.json").writeText(config.toString())
-        }
-
-        if (menuRequest.isNetworkAvailable(this.applicationContext) && intent.hasExtra("init")) {
-            GlobalScope.launch(Dispatchers.IO) {
-                try {
-                    AutoUpdater.checkForUpdates(
-                        this@MenuActivity,
-                        config.getString("updateChannel")
-                    )
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
         }
         if (pageIndex == 0) {
             noonButton.setBackgroundColor(getColor(R.color.colorSelectedPageBackground))
@@ -128,7 +116,6 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
                 dayView.text = getTranslatedString(currentDay)
             }
         }
-
         eveningButton.setOnClickListener {
             if (pageIndex == 1) {
                 return@setOnClickListener
@@ -217,6 +204,21 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
         }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
+    fun checkForUpdates() {
+        if (menuRequest.isNetworkAvailable(this.applicationContext) && intent.hasExtra("init")) {
+            GlobalScope.launch(Dispatchers.IO) {
+                try {
+                    AutoUpdater.checkForUpdates(
+                        this@MenuActivity,
+                        config.getString("updateChannel")
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+    }
     private fun changePage(page: Class<*>, extras: Map<String, String>) {
         val intent = Intent(this, page)
         for (extra in extras) {
@@ -240,6 +242,7 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
         }
     }
 
+
     private fun getMeal(mealToParse: JSONArray): MutableList<String> {
         val meals = mutableListOf<String>()
         for (i in 0 until mealToParse.length()) {
@@ -250,6 +253,7 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
             val labelsString = mutableListOf<String>()
             if (labels.length() > 0) {
                 for (j in 0 until labels.length()) {
+                    @Suppress("SpellCheckingInspection")
                     val translated = when (labels.getJSONObject(j).getString("name")) {
                         "Végétarien" -> getString(R.string.vegetarian)
                         "Fait maison" -> getString(R.string.home_made)
@@ -281,6 +285,9 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
     }
 
     private fun getOrCheckToken(config: JSONObject): String {
+        if (config.has("usePronote") && !config.getBoolean("usePronote")) {
+            return ""
+        }
         if (config.has("pronoteToken")) {
             val token = config.getString("pronoteToken")
             val client = OkHttpClient()
@@ -324,6 +331,30 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
                 ""
             }
         }
+    }
+
+    private fun parseMeal(mealData: JSONObject): MutableList<String> {
+        val meals = mutableListOf<String>()
+
+        fun addMealFromKey(key: String) {
+            if (mealData.has(key) && !mealData.isNull(key)) {
+                if (meals.isNotEmpty()) {
+                    meals.add("~~")
+                }
+                meals.addAll(getMeal(mealData.getJSONArray(key)))
+            }
+        }
+        for (key in listOf(
+            "first_meal",
+            "main_meal",
+            "side_meal",
+            "other_meal",
+            "cheese",
+            "dessert"
+        )) {
+            addMealFromKey(key)
+        }
+        return meals
     }
 
     private fun fetchMenuFromPronote() = CoroutineScope(Dispatchers.IO).launch {
@@ -379,6 +410,7 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
                 .url("https://api-04.getpapillon.xyz/menu?token=$token&dateFrom=$dateFrom&dateTo=$dateTo")
                 .build()
             val pronoteMenu = client.newCall(request).execute().body?.string() ?: ""
+            @Suppress("SpellCheckingInspection")
             if (pronoteMenu == "" || pronoteMenu == "\"notfound\"" || pronoteMenu == "[]") {
                 try {
                     menus["evening"] = Menu()
@@ -397,160 +429,19 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
                 val meals = mutableListOf<String>()
                 val meals2 = mutableListOf<String>()
                 if (pronoteMenuJson.getJSONObject(i).getJSONObject("type").getBoolean("is_lunch")) {
-                    if (pronoteMenuJson.getJSONObject(i)
-                            .has("first_meal") && !pronoteMenuJson.getJSONObject(i)
-                            .isNull("first_meal")
-                    ) {
-                        meals.addAll(
-                            getMeal(
-                                pronoteMenuJson.getJSONObject(i).getJSONArray("first_meal")
-                            )
+                    meals.addAll(
+                        parseMeal(
+                            pronoteMenuJson.getJSONObject(i)
                         )
-                    }
-                    if (pronoteMenuJson.getJSONObject(i)
-                            .has("main_meal") && !pronoteMenuJson.getJSONObject(i)
-                            .isNull("main_meal")
-                    ) {
-                        if (meals.size > 0) {
-                            meals.add("~~")
-                        }
-                        meals.addAll(
-                            getMeal(
-                                pronoteMenuJson.getJSONObject(i).getJSONArray("main_meal")
-                            )
-                        )
-                    }
-                    if (pronoteMenuJson.getJSONObject(i)
-                            .has("side_meal") && !pronoteMenuJson.getJSONObject(i)
-                            .isNull("side_meal")
-                    ) {
-                        if (meals.size > 0) {
-                            meals.add("~~")
-                        }
-                        meals.addAll(
-                            getMeal(
-                                pronoteMenuJson.getJSONObject(i).getJSONArray("side_meal")
-                            )
-                        )
-                    }
-
-                    if (pronoteMenuJson.getJSONObject(i)
-                            .has("other_meal") && !pronoteMenuJson.getJSONObject(i)
-                            .isNull("other_meal")
-                    ) {
-                        if (meals.size > 0) {
-                            meals.add("~~")
-                        }
-                        meals.addAll(
-                            getMeal(
-                                pronoteMenuJson.getJSONObject(i).getJSONArray("other_meal")
-                            )
-                        )
-                    }
-
-                    if (pronoteMenuJson.getJSONObject(i)
-                            .has("cheese") && !pronoteMenuJson.getJSONObject(i).isNull("cheese")
-                    ) {
-                        if (meals.size > 0) {
-                            meals.add("~~")
-                        }
-                        meals.addAll(
-                            getMeal(
-                                pronoteMenuJson.getJSONObject(i).getJSONArray("cheese")
-                            )
-                        )
-                    }
-                    if (pronoteMenuJson.getJSONObject(i)
-                            .has("dessert") && !pronoteMenuJson.getJSONObject(i).isNull("dessert")
-                    ) {
-                        if (meals.size > 0) {
-                            meals.add("~~")
-                        }
-                        meals.addAll(
-                            getMeal(
-                                pronoteMenuJson.getJSONObject(i).getJSONArray("dessert")
-                            )
-                        )
-                    }
+                    )
                 } else if (pronoteMenuJson.getJSONObject(i).getJSONObject("type")
                         .getBoolean("is_dinner")
                 ) {
-                    if (pronoteMenuJson.getJSONObject(i)
-                            .has("first_meal") && !pronoteMenuJson.getJSONObject(i)
-                            .isNull("first_meal")
-                    ) {
-                        meals2.addAll(
-                            getMeal(
-                                pronoteMenuJson.getJSONObject(i).getJSONArray("first_meal")
-                            )
+                    meals2.addAll(
+                        parseMeal(
+                            pronoteMenuJson.getJSONObject(i)
                         )
-                    }
-                    if (pronoteMenuJson.getJSONObject(i)
-                            .has("main_meal") && !pronoteMenuJson.getJSONObject(i)
-                            .isNull("main_meal")
-                    ) {
-                        if (meals2.size > 0) {
-                            meals2.add("~~")
-                        }
-                        meals2.addAll(
-                            getMeal(
-                                pronoteMenuJson.getJSONObject(i).getJSONArray("main_meal")
-                            )
-                        )
-                    }
-                    if (pronoteMenuJson.getJSONObject(i)
-                            .has("side_meal") && !pronoteMenuJson.getJSONObject(i)
-                            .isNull("side_meal")
-                    ) {
-                        if (meals2.size > 0) {
-                            meals2.add("~~")
-                        }
-                        meals2.addAll(
-                            getMeal(
-                                pronoteMenuJson.getJSONObject(i).getJSONArray("side_meal")
-                            )
-                        )
-                    }
-                    if (pronoteMenuJson.getJSONObject(i)
-                            .has("other_meal") && !pronoteMenuJson.getJSONObject(i)
-                            .isNull("other_meal")
-                    ) {
-                        if (meals2.size > 0) {
-                            meals2.add("~~")
-                        }
-                        meals2.addAll(
-                            getMeal(
-                                pronoteMenuJson.getJSONObject(i).getJSONArray("other_meal")
-                            )
-                        )
-                    }
-                    if (pronoteMenuJson.getJSONObject(i)
-                            .has("cheese") && !pronoteMenuJson.getJSONObject(i).isNull("cheese")
-                    ) {
-                        if (meals2.size > 0) {
-                            meals2.add("~~")
-                        }
-                        meals2.addAll(
-                            getMeal(
-                                pronoteMenuJson.getJSONObject(i).getJSONArray("cheese")
-                            )
-                        )
-                    }
-                    if (pronoteMenuJson.getJSONObject(i)
-                            .has("dessert") && !pronoteMenuJson.getJSONObject(i).isNull("dessert")
-                    ) {
-                        if (meals2.size > 0) {
-                            meals2.add("~~")
-                        }
-                        meals2.addAll(
-                            getMeal(
-                                pronoteMenuJson.getJSONObject(i).getJSONArray("dessert")
-                            )
-                        )
-                    }
-
-
-
+                    )
                 }
                 val calendar = Calendar.getInstance().apply {
                     set(
@@ -567,35 +458,31 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
                         pronoteMenuJson.getJSONObject(i).getString("date").split("-")[1]
                     }/${pronoteMenuJson.getJSONObject(i).getString("date").split("-")[0]}"
 
-                if (meals.size > 0) {
-                    lunchDays.add(
-                        Day(
-                            formattedDate, meals, mapOf(
-                                "year" to pronoteMenuJson.getJSONObject(i).getString("date")
-                                    .split("-")[0].toInt(),
-                                "month" to pronoteMenuJson.getJSONObject(i).getString("date")
-                                    .split("-")[1].toInt(),
-                                "day" to pronoteMenuJson.getJSONObject(i).getString("date")
-                                    .split("-")[2].toInt()
-                            )
+                lunchDays.add(
+                    Day(
+                        formattedDate, meals, mapOf(
+                            "year" to pronoteMenuJson.getJSONObject(i).getString("date")
+                                .split("-")[0].toInt(),
+                            "month" to pronoteMenuJson.getJSONObject(i).getString("date")
+                                .split("-")[1].toInt(),
+                            "day" to pronoteMenuJson.getJSONObject(i).getString("date")
+                                .split("-")[2].toInt()
                         )
                     )
-                }
+                )
 
-                if (meals2.size > 0) {
-                    dinnerDays.add(
-                        Day(
-                            formattedDate, meals2, mapOf(
-                                "year" to pronoteMenuJson.getJSONObject(i).getString("date")
-                                    .split("-")[0].toInt(),
-                                "month" to pronoteMenuJson.getJSONObject(i).getString("date")
-                                    .split("-")[1].toInt(),
-                                "day" to pronoteMenuJson.getJSONObject(i).getString("date")
-                                    .split("-")[2].toInt()
-                            )
+                dinnerDays.add(
+                    Day(
+                        formattedDate, meals2, mapOf(
+                            "year" to pronoteMenuJson.getJSONObject(i).getString("date")
+                                .split("-")[0].toInt(),
+                            "month" to pronoteMenuJson.getJSONObject(i).getString("date")
+                                .split("-")[1].toInt(),
+                            "day" to pronoteMenuJson.getJSONObject(i).getString("date")
+                                .split("-")[2].toInt()
                         )
                     )
-                }
+                )
             }
 
             if (listOf(4, 5).contains(lunchDays.size)) {
@@ -648,6 +535,7 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
                 }
             }
             showMenu(currentDay)
+            checkForUpdates()
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -669,7 +557,7 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
         finishAffinity()
     }
 
-    open fun fetchMenuData(): Job {
+    open fun fetchMenuData(specificDay: String = ""): Job {
         return CoroutineScope(Dispatchers.IO).launch {}
     }
 

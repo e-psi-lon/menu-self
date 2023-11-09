@@ -16,7 +16,7 @@ import org.jsoup.nodes.Element
 
 
 class EveningActivity : MenuActivity(21, 1) {
-    override fun fetchMenuData() = CoroutineScope(Dispatchers.IO).launch {
+    override fun fetchMenuData(specificDay: String) = CoroutineScope(Dispatchers.IO).launch {
         if (menus["evening"] != Menu()) {
             showMenu(currentDay)
             return@launch
@@ -85,48 +85,62 @@ class EveningActivity : MenuActivity(21, 1) {
             }
         }
 
-        menus["evening"] = Menu(
-            Day(
-                days[0],
-                contentPerDay[0],
+        if (specificDay != "") {
+            gotDay = Day(
+                days[specificDay.toInt()],
+                contentPerDay[specificDay.toInt()],
                 mapOf(
-                    "year" to days[0].split(" ")[1].split("/")[2].toInt(),
-                    "month" to days[0].split(" ")[1].split("/")[1].toInt(),
-                    "day" to days[0].split(" ")[1].split("/")[0].toInt()
+                    "year" to specificDay.split(" ")[1].split("/")[2].toInt(),
+                    "month" to specificDay.split(" ")[1].split("/")[1].toInt(),
+                    "day" to specificDay.split(" ")[1].split("/")[0].toInt()
                 )
-            ),
-            Day(
-                days[1],
-                contentPerDay[1],
-                mapOf(
-                    "year" to days[1].split(" ")[1].split("/")[2].toInt(),
-                    "month" to days[1].split(" ")[1].split("/")[1].toInt(),
-                    "day" to days[1].split(" ")[1].split("/")[0].toInt()
-                )
-            ),
-            Day(
-                days[2],
-                contentPerDay[2],
-                mapOf(
-                    "year" to days[2].split(" ")[1].split("/")[2].toInt(),
-                    "month" to days[2].split(" ")[1].split("/")[1].toInt(),
-                    "day" to days[2].split(" ")[1].split("/")[0].toInt()
-                )
-            ),
-            Day(
-                days[3],
-                contentPerDay[3],
-                mapOf(
-                    "year" to days[3].split(" ")[1].split("/")[2].toInt(),
-                    "month" to days[3].split(" ")[1].split("/")[1].toInt(),
-                    "day" to days[3].split(" ")[1].split("/")[0].toInt()
-                )
-            ),
-            lastMenuUpdate,
-            nextMenuUpdate,
-            redactionMessage
-        )
-        showMenu(currentDay)
+            )
+            return@launch
+        } else {
+            menus["evening"] = Menu(
+                Day(
+                    days[0],
+                    contentPerDay[0],
+                    mapOf(
+                        "year" to days[0].split(" ")[1].split("/")[2].toInt(),
+                        "month" to days[0].split(" ")[1].split("/")[1].toInt(),
+                        "day" to days[0].split(" ")[1].split("/")[0].toInt()
+                    )
+                ),
+                Day(
+                    days[1],
+                    contentPerDay[1],
+                    mapOf(
+                        "year" to days[1].split(" ")[1].split("/")[2].toInt(),
+                        "month" to days[1].split(" ")[1].split("/")[1].toInt(),
+                        "day" to days[1].split(" ")[1].split("/")[0].toInt()
+                    )
+                ),
+                Day(
+                    days[2],
+                    contentPerDay[2],
+                    mapOf(
+                        "year" to days[2].split(" ")[1].split("/")[2].toInt(),
+                        "month" to days[2].split(" ")[1].split("/")[1].toInt(),
+                        "day" to days[2].split(" ")[1].split("/")[0].toInt()
+                    )
+                ),
+                Day(
+                    days[3],
+                    contentPerDay[3],
+                    mapOf(
+                        "year" to days[3].split(" ")[1].split("/")[2].toInt(),
+                        "month" to days[3].split(" ")[1].split("/")[1].toInt(),
+                        "day" to days[3].split(" ")[1].split("/")[0].toInt()
+                    )
+                ),
+                lastMenuUpdate,
+                nextMenuUpdate,
+                redactionMessage
+            )
+            showMenu(currentDay)
+            checkForUpdates()
+        }
     }
 
     override fun showMenu(day: String) = CoroutineScope(Dispatchers.Main).launch {

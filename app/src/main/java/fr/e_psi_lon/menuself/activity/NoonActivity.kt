@@ -16,7 +16,7 @@ import org.jsoup.nodes.Element
 
 
 class NoonActivity : MenuActivity(15, 0) {
-    override fun fetchMenuData() = CoroutineScope(Dispatchers.IO).launch {
+    override fun fetchMenuData(specificDay: String) = CoroutineScope(Dispatchers.IO).launch {
         if (menus["noon"] != Menu()) {
             showMenu(currentDay)
             return@launch
@@ -157,61 +157,73 @@ class NoonActivity : MenuActivity(15, 0) {
                 redactionMessage = p.previousElementSibling()?.text()
             }
         }
-
-
-        menus["noon"] = Menu(
-            Day(
-                days[0],
-                contentPerDay[0],
+        println("Specific day: $specificDay")
+        if (specificDay != "") {
+            gotDay = Day(
+                days[specificDay.toInt()],
+                contentPerDay[specificDay.toInt()],
                 mapOf(
-                    "year" to days[0].split(" ")[1].split("/")[2].toInt(),
-                    "month" to days[0].split(" ")[1].split("/")[1].toInt(),
-                    "day" to days[0].split(" ")[1].split("/")[0].toInt()
-                )
-            ),
-            Day(
-                days[1],
-                contentPerDay[1],
-                mapOf(
-                    "year" to days[1].split(" ")[1].split("/")[2].toInt(),
-                    "month" to days[1].split(" ")[1].split("/")[1].toInt(),
-                    "day" to days[1].split(" ")[1].split("/")[0].toInt()
-                )
-            ),
-            Day(
-                days[2],
-                contentPerDay[2],
-                mapOf(
-                    "year" to days[2].split(" ")[1].split("/")[2].toInt(),
-                    "month" to days[2].split(" ")[1].split("/")[1].toInt(),
-                    "day" to days[2].split(" ")[1].split("/")[0].toInt()
-                )
-            ),
-            Day(
-                days[3],
-                contentPerDay[3],
-                mapOf(
-                    "year" to days[3].split(" ")[1].split("/")[2].toInt(),
-                    "month" to days[3].split(" ")[1].split("/")[1].toInt(),
-                    "day" to days[3].split(" ")[1].split("/")[0].toInt()
-                )
-            ),
-            lastMenuUpdate,
-            nextMenuUpdate,
-            redactionMessage,
-            Day(
-                days[4],
-                contentPerDay[4],
-                mapOf(
-                    "year" to days[4].split(" ")[1].split("/")[2].toInt(),
-                    "month" to days[4].split(" ")[1].split("/")[1].toInt(),
-                    "day" to days[4].split(" ")[1].split("/")[0].toInt()
+                    "year" to days[specificDay.toInt()].split(" ")[1].split("/")[2].toInt(),
+                    "month" to days[specificDay.toInt()].split(" ")[1].split("/")[1].toInt(),
+                    "day" to days[specificDay.toInt()].split(" ")[1].split("/")[0].toInt()
                 )
             )
-        )
-        showMenu(currentDay)
-
-
+            println("Got day: $gotDay")
+            return@launch
+        } else {
+            menus["noon"] = Menu(
+                Day(
+                    days[0],
+                    contentPerDay[0],
+                    mapOf(
+                        "year" to days[0].split(" ")[1].split("/")[2].toInt(),
+                        "month" to days[0].split(" ")[1].split("/")[1].toInt(),
+                        "day" to days[0].split(" ")[1].split("/")[0].toInt()
+                    )
+                ),
+                Day(
+                    days[1],
+                    contentPerDay[1],
+                    mapOf(
+                        "year" to days[1].split(" ")[1].split("/")[2].toInt(),
+                        "month" to days[1].split(" ")[1].split("/")[1].toInt(),
+                        "day" to days[1].split(" ")[1].split("/")[0].toInt()
+                    )
+                ),
+                Day(
+                    days[2],
+                    contentPerDay[2],
+                    mapOf(
+                        "year" to days[2].split(" ")[1].split("/")[2].toInt(),
+                        "month" to days[2].split(" ")[1].split("/")[1].toInt(),
+                        "day" to days[2].split(" ")[1].split("/")[0].toInt()
+                    )
+                ),
+                Day(
+                    days[3],
+                    contentPerDay[3],
+                    mapOf(
+                        "year" to days[3].split(" ")[1].split("/")[2].toInt(),
+                        "month" to days[3].split(" ")[1].split("/")[1].toInt(),
+                        "day" to days[3].split(" ")[1].split("/")[0].toInt()
+                    )
+                ),
+                lastMenuUpdate,
+                nextMenuUpdate,
+                redactionMessage,
+                Day(
+                    days[4],
+                    contentPerDay[4],
+                    mapOf(
+                        "year" to days[4].split(" ")[1].split("/")[2].toInt(),
+                        "month" to days[4].split(" ")[1].split("/")[1].toInt(),
+                        "day" to days[4].split(" ")[1].split("/")[0].toInt()
+                    )
+                )
+            )
+            showMenu(currentDay)
+            checkForUpdates()
+        }
     }
 
     override fun showMenu(day: String) = CoroutineScope(Dispatchers.Main).launch {

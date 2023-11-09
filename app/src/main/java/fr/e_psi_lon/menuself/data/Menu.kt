@@ -64,27 +64,50 @@ data class Menu(
     companion object {
         fun fromJson(json: String): Menu {
             val jsonObject = JSONObject(json)
-            return if (jsonObject.has("day5")) {
-                Menu(
-                    Day.fromJson(jsonObject.getString("day1")),
-                    Day.fromJson(jsonObject.getString("day2")),
-                    Day.fromJson(jsonObject.getString("day3")),
-                    Day.fromJson(jsonObject.getString("day4")),
-                    jsonObject.getString("lastUpdate"),
-                    jsonObject.getString("nextUpdate"),
-                    jsonObject.getString("redactionMessage"),
-                    Day.fromJson(jsonObject.getString("day5"))
-                )
+            return if (jsonObject.has("redactionMessage")) {
+                if (jsonObject.has("day5")) {
+                    Menu(
+                        Day.fromJson(jsonObject.getString("day1")),
+                        Day.fromJson(jsonObject.getString("day2")),
+                        Day.fromJson(jsonObject.getString("day3")),
+                        Day.fromJson(jsonObject.getString("day4")),
+                        jsonObject.getString("lastUpdate"),
+                        jsonObject.getString("nextUpdate"),
+                        jsonObject.getString("redactionMessage"),
+                        Day.fromJson(jsonObject.getString("day5"))
+                    )
+                } else {
+                    Menu(
+                        Day.fromJson(jsonObject.getString("day1")),
+                        Day.fromJson(jsonObject.getString("day2")),
+                        Day.fromJson(jsonObject.getString("day3")),
+                        Day.fromJson(jsonObject.getString("day4")),
+                        jsonObject.getString("lastUpdate"),
+                        jsonObject.getString("nextUpdate"),
+                        jsonObject.getString("redactionMessage")
+                    )
+                }
             } else {
-                Menu(
-                    Day.fromJson(jsonObject.getString("day1")),
-                    Day.fromJson(jsonObject.getString("day2")),
-                    Day.fromJson(jsonObject.getString("day3")),
-                    Day.fromJson(jsonObject.getString("day4")),
-                    jsonObject.getString("lastUpdate"),
-                    jsonObject.getString("nextUpdate"),
-                    jsonObject.getString("redactionMessage")
-                )
+                if (jsonObject.has("day5")) {
+                    Menu(
+                        Day.fromJson(jsonObject.getString("day1")),
+                        Day.fromJson(jsonObject.getString("day2")),
+                        Day.fromJson(jsonObject.getString("day3")),
+                        Day.fromJson(jsonObject.getString("day4")),
+                        jsonObject.getString("lastUpdate"),
+                        jsonObject.getString("nextUpdate"),
+                        day5 = Day.fromJson(jsonObject.getString("day5"))
+                    )
+                } else {
+                    Menu(
+                        Day.fromJson(jsonObject.getString("day1")),
+                        Day.fromJson(jsonObject.getString("day2")),
+                        Day.fromJson(jsonObject.getString("day3")),
+                        Day.fromJson(jsonObject.getString("day4")),
+                        jsonObject.getString("lastUpdate"),
+                        jsonObject.getString("nextUpdate")
+                    )
+                }
             }
         }
     }

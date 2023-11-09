@@ -78,4 +78,9 @@
     <string name="home_made_chef_recipe">Home made - Chef recipe</string>
     <string name="gluten">Gluten</string>
     <string name="local_products">Local products</string>
+    <string name="disconnect_pronote">Disconnect from Pronote</string>
+    <string name="pronote_disconnected">Disconnected from Pronote</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="disconnect_from_pronote_message">Are you sure you want to disconnect from Pronote ?</string>
 </resources>

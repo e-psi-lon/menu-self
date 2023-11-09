@@ -198,6 +198,18 @@
                         android:textStyle="bold" />
                 </LinearLayout>
 
+                <Button
+                    android:id="@+id/disconnectPronoteButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorBackground"
+                    android:text="@string/disconnect_pronote"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorOnSecondary"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

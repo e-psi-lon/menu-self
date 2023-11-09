@@ -49,6 +49,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var initActivitySpinner: Spinner
     private lateinit var updateBranchSpinner: Spinner
     private lateinit var usePronote: SwitchCompat
+    private lateinit var disconnectFromPronote: Button
     private lateinit var config: JSONObject
     private var menus: MutableMap<String, Menu> = mutableMapOf()
     private var appVersionName: String = BuildConfig.VERSION_NAME
@@ -71,6 +72,7 @@ class SettingsActivity : AppCompatActivity() {
         updateBranchSpinner = findViewById(R.id.updateBranchSpinner)
         contributorsButton = findViewById(R.id.contributorsButton)
         usePronote = findViewById(R.id.usePronoteSwitch)
+        disconnectFromPronote = findViewById(R.id.disconnectPronoteButton)
         val channel = mapOf(
             "dev" to getString(R.string.dev),
             "alpha" to getString(R.string.alpha),
@@ -97,7 +99,6 @@ class SettingsActivity : AppCompatActivity() {
         initActivitySpinner.adapter = activityAdapter
         channelAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         updateBranchSpinner.adapter = channelAdapter
-
         versionView.text = getString(R.string.version, appVersionName)
         if (intent.hasExtra("evening")) {
             menus["evening"] = Menu.fromJson(intent.getStringExtra("evening")!!)
@@ -113,6 +114,11 @@ class SettingsActivity : AppCompatActivity() {
         initActivitySpinner.setSelection(
             activity.keys.toList().indexOf(config.getString("defaultActivity"))
         )
+        disconnectFromPronote.visibility = if (config.getBoolean("usePronote")) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
         if (intent.hasExtra("init") && menuRequest.isNetworkAvailable(applicationContext)) {
             GlobalScope.launch(Dispatchers.IO) {
                 AutoUpdater.checkForUpdates(
@@ -297,9 +303,19 @@ class SettingsActivity : AppCompatActivity() {
         if (config.has("usePronote")) {
             usePronote.isChecked = config.getBoolean("usePronote")
         } else {
+            config.put("usePronote", false)
             usePronote.isChecked = false
         }
         usePronote.setOnCheckedChangeListener { _, isChecked ->
+            if (!isChecked && config.getBoolean("usePronote")) {
+                menus["evening"] = Menu()
+                menus["noon"] = Menu()
+            }
+            if (!isChecked) {
+                config.put("usePronote", false)
+                File(filesDir, "config.json").writeText(config.toString())
+                disconnectFromPronote.visibility = View.GONE
+            }
             if (!menuRequest.isNetworkAvailable(applicationContext)) {
                 Toast.makeText(
                     this,
@@ -309,8 +325,6 @@ class SettingsActivity : AppCompatActivity() {
                 usePronote.isChecked = false
                 return@setOnCheckedChangeListener
             }
-            config.put("usePronote", isChecked)
-            File(filesDir, "config.json").writeText(config.toString())
             if (isChecked && !config.has("pronoteUsername") && !config.has("pronotePassword")) {
                 val dialogView = layoutInflater.inflate(R.layout.pronote_connection, null)
                 val builder = AlertDialog.Builder(this)
@@ -347,13 +361,15 @@ class SettingsActivity : AppCompatActivity() {
                                             getString(R.string.pronote_connection_error),
                                             Toast.LENGTH_SHORT
                                         ).show()
+                                        usePronote.isChecked = false
                                     }
                                 } else {
                                     config.put("pronoteUsername", username.text.toString())
                                     config.put("pronotePassword", password.text.toString())
+                                    config.put("usePronote", true)
                                     File(filesDir, "config.json").writeText(config.toString())
                                     dialog.cancel()
-
+                                    disconnectFromPronote.visibility = View.VISIBLE
                                 }
                             }
                         } else {
@@ -362,10 +378,37 @@ class SettingsActivity : AppCompatActivity() {
                                 getString(R.string.pronote_connection_error),
                                 Toast.LENGTH_SHORT
                             ).show()
+                            usePronote.isChecked = false
                         }
                     }
                     show()
                 }
+            }
+        }
+
+        disconnectFromPronote.setOnClickListener {
+            val builder = AlertDialog.Builder(this)
+            builder.apply {
+                setTitle(R.string.disconnect_pronote)
+                setMessage(R.string.disconnect_from_pronote_message)
+                setPositiveButton(R.string.yes) { _, _ ->
+                    config.remove("pronoteUsername")
+                    config.remove("pronotePassword")
+                    File(filesDir, "config.json").writeText(config.toString())
+                    disconnectFromPronote.visibility = View.GONE
+                    usePronote.isChecked = false
+                    menus["evening"] = Menu()
+                    menus["noon"] = Menu()
+                    Toast.makeText(
+                        this@SettingsActivity,
+                        getString(R.string.pronote_disconnected),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                setNegativeButton(R.string.cancel) { dialog, _ ->
+                    dialog.cancel()
+                }
+                show()
             }
         }
     }
