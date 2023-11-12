@@ -253,7 +253,11 @@ class AutoUpdater : DialogFragment() {
             }
         }
 
-        fun checkForUpdates(activity: FragmentActivity, channel: String): Boolean {
+        fun checkForUpdates(
+            activity: FragmentActivity,
+            channel: String,
+            start: Boolean = true
+        ): Boolean {
             val client = OkHttpClient()
             val request = Request.Builder()
                 .url("https://api.github.com/repos/e-psi-lon/menu-self/commits/builds-$channel")
@@ -266,6 +270,9 @@ class AutoUpdater : DialogFragment() {
             val lastCommitHash =
                 json?.getJSONObject("commit")?.getString("message")?.split(" ")?.get(1)
             return if (lastCommitHash != BuildConfig.GIT_COMMIT_HASH) {
+                if (!start) {
+                    return true
+                }
                 AutoUpdater().apply {
                     setChannel(channel)
                     show(activity.supportFragmentManager, "update")

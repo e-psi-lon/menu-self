@@ -10,9 +10,12 @@ import fr.e_psi_lon.menuself.data.Request
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
+import java.io.File
+import java.util.Calendar
 
 
 class EveningActivity : MenuActivity(21, 1) {
@@ -206,7 +209,32 @@ class EveningActivity : MenuActivity(21, 1) {
         } finally {
             menuLayout.isRefreshing = false
         }
+
+        val eveningMenu = menus["evening"]?.toJson()
+        val noonMenu = menus["noon"]?.toJson()
+        val calendar = Calendar.getInstance()
+        val date = "${calendar.get(Calendar.DAY_OF_MONTH)}-${calendar.get(Calendar.MONTH)}-${
+            calendar.get(
+                Calendar.YEAR
+            )
+        }_${calendar.get(Calendar.HOUR_OF_DAY)}:${calendar.get(Calendar.MINUTE)}:${
+            calendar.get(
+                Calendar.SECOND
+            )
+        }"
+        val file = File(
+            applicationContext.filesDir,
+            "menus.json"
+        )
+        if (!file.exists()) {
+            withContext(Dispatchers.IO) {
+                file.createNewFile()
+            }
+        }
+        val json =
+            "{\"date\":\"$date\"${if (eveningMenu != null) ",\"evening_menu\":$eveningMenu" else ""}${if (noonMenu != null) ",\"noon_menu\":$noonMenu" else ""}}"
+        withContext(Dispatchers.IO) {
+            file.writeText(json)
+        }
     }
-
-
 }

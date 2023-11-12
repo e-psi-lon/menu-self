@@ -293,8 +293,27 @@ class SettingsActivity : AppCompatActivity() {
                 pos: Int,
                 id: Long
             ) {
-                config.put("updateChannel", channel.keys.toList()[pos])
-                File(filesDir, "config.json").writeText(config.toString())
+                if (config.getString("updateChannel") == channel.keys.toList()[pos]) {
+                    return
+                }
+                val builder = AlertDialog.Builder(this@SettingsActivity)
+                builder.apply {
+                    setTitle(R.string.change_update_channel)
+                    setPositiveButton(R.string.yes) { _, _ ->
+                        config.put("updateChannel", channel.keys.toList()[pos])
+                        File(filesDir, "config.json").writeText(config.toString())
+                        GlobalScope.launch(Dispatchers.IO) {
+                            AutoUpdater.checkForUpdates(
+                                this@SettingsActivity,
+                                config.getString("updateChannel")
+                            )
+                        }
+                    }
+                    setNegativeButton(R.string.cancel) { dialog, _ ->
+                        dialog.cancel()
+                    }
+                    show()
+                }
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {}

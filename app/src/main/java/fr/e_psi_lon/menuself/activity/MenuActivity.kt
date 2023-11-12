@@ -219,6 +219,7 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
             }
         }
     }
+
     private fun changePage(page: Class<*>, extras: Map<String, String>) {
         val intent = Intent(this, page)
         for (extra in extras) {
@@ -358,6 +359,40 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
     }
 
     private fun fetchMenuFromPronote() = CoroutineScope(Dispatchers.IO).launch {
+        val menusFile = File(applicationContext.filesDir, "menus.json")
+        val json = if (menusFile.exists()) {
+            JSONObject(menusFile.readText())
+        } else {
+            JSONObject()
+        }
+        if (json.toString() != "{}") {
+            val today = Calendar.getInstance()
+            val date = json.getString("date")
+            val todayString =
+                "${today.get(Calendar.DAY_OF_MONTH)}-${today.get(Calendar.MONTH)}-${
+                    today.get(
+                        Calendar.YEAR
+                    )
+                }"
+            if (date == todayString) {
+                if (json.has("noon_menu")) {
+                    menus["noon"] = Menu.fromJson(json.getString("noon_menu"))
+                }
+                if (json.has("evening_menu")) {
+                    menus["evening"] = Menu.fromJson(json.getString("evening_menu"))
+                }
+            }
+            if (pageIndex == 0 && menus.containsKey("noon") && menus["noon"] != Menu()) {
+                showMenu(currentDay)
+                checkForUpdates()
+                return@launch
+            }
+            if (pageIndex == 1 && menus.containsKey("evening") && menus["evening"] != Menu()) {
+                showMenu(currentDay)
+                checkForUpdates()
+                return@launch
+            }
+        }
         val client = OkHttpClient()
         if (!config.has("pronoteUsername") || !config.has("pronotePassword")) {
             try {
