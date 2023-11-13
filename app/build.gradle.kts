@@ -14,7 +14,7 @@ android {
         minSdk = 24
         targetSdk = 34
         versionCode = System.getenv("GITHUB_RUN_NUMBER")?.toInt() ?: 1
-        versionName = "1.0"
+        versionName = "1.0.1"
         versionName += if (System.getenv("GITHUB_SHA") != null) {
             when (project.properties["channel"]?.toString()) {
                 "release" -> ""

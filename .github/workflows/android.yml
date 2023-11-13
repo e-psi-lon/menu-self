@@ -44,11 +44,29 @@ jobs:
           echo "::set-output name=channel::$channel"
         shell: bash
 
-      - name: Checkout builds-channel
-        uses: actions/checkout@v2
+      - name: Checkout builds-dev
+        uses: actions/checkout@v3
         with:
-          ref: "builds-${{ steps.channel.outputs.channel }}"
-          path: "builds-${{ steps.channel.outputs.channel }}"
+          ref: "builds-dev"
+          path: "builds-dev"
+
+      - name: Checkout builds-alpha
+        uses: actions/checkout@v3
+        with:
+          ref: "builds-alpha"
+          path: "builds-alpha"
+
+      - name: Checkout builds-beta
+        uses: actions/checkout@v3
+        with:
+          ref: "builds-beta"
+          path: "builds-beta"
+
+      - name: Checkout builds-stable
+        uses: actions/checkout@v3
+        with:
+          ref: "builds-stable"
+          path: "builds-stable"
 
       - name: set up JDK 17
         uses: actions/setup-java@v3
@@ -63,16 +81,88 @@ jobs:
           cd $GITHUB_WORKSPACE/src
           chmod +x gradlew
           ./gradlew build -Pchannel=${{ steps.channel.outputs.channel }}
-          cp app/build/outputs/apk/release/app-release.apk ../builds-${{ steps.channel.outputs.channel }}/app-release.apk
+          cp app/build/outputs/apk/release/app-release.apk ../builds-dev/app-release.apk
+          cp app/build/outputs/apk/release/app-release.apk ../builds-alpha/app-release.apk
+          cp app/build/outputs/apk/release/app-release.apk ../builds-beta/app-release.apk
+          cp app/build/outputs/apk/release/app-release.apk ../builds-stable/app-release.apk
+          
 
       - name: Upload APK
         uses: actions/upload-artifact@v3
         with:
           name: app-release
           path: app/build/outputs/apk/release/app-release.apk
-      - name: Push builds-channel
+
+      - name: Push to dev branch
+        if: steps.channel.outputs.channel == 'dev'
         run: |
-          cd $GITHUB_WORKSPACE/builds-${{ steps.channel.outputs.channel }}
+          cd $GITHUB_WORKSPACE/builds-dev
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git add .
+          git commit -m "Build $GITHUB_SHA" || exit 0
+          git push
+
+      - name: Push to alpha and dev branch
+        if: steps.channel.outputs.channel == 'alpha'
+        run: |
+          cd $GITHUB_WORKSPACE/builds-alpha
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git add .
+          git commit -m "Build $GITHUB_SHA" || exit 0 
+          git push
+          cd $GITHUB_WORKSPACE/builds-dev
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git add .
+          git commit -m "Build $GITHUB_SHA" || exit 0
+          git push
+
+      - name: Push to beta, alpha and dev branch
+        if: steps.channel.outputs.channel == 'beta'
+        run: |
+          cd $GITHUB_WORKSPACE/builds-beta
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git add .
+          git commit -m "Build $GITHUB_SHA" || exit 0
+          git push
+          cd $GITHUB_WORKSPACE/builds-alpha
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git add .
+          git commit -m "Build $GITHUB_SHA" || exit 0
+          git push
+          cd $GITHUB_WORKSPACE/builds-dev
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git add .
+          git commit -m "Build $GITHUB_SHA" || exit 0
+          git push  
+
+      - name: Push to all branches
+        if: steps.channel.outputs.channel == 'stable'
+        run: |
+          cd $GITHUB_WORKSPACE/builds-stable
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git add .
+          git commit -m "Build $GITHUB_SHA" || exit 0
+          git push
+          cd $GITHUB_WORKSPACE/builds-beta
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git add .
+          git commit -m "Build $GITHUB_SHA" || exit 0
+          git push
+          cd $GITHUB_WORKSPACE/builds-alpha
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git add .
+          git commit -m "Build $GITHUB_SHA" || exit 0
+          git push
+          cd $GITHUB_WORKSPACE/builds-dev
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
           git add .

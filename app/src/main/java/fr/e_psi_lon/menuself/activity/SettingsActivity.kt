@@ -402,6 +402,10 @@ class SettingsActivity : AppCompatActivity() {
                     }
                     show()
                 }
+            } else if (isChecked) {
+                config.put("usePronote", true)
+                File(filesDir, "config.json").writeText(config.toString())
+                disconnectFromPronote.visibility = View.VISIBLE
             }
         }
 

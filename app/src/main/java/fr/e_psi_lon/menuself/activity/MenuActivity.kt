@@ -192,7 +192,7 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
                 try {
                     menus["evening"] = Menu()
                     menus["noon"] = Menu()
-                    fetchMenuFromPronote()
+                    fetchMenuFromPronote(true)
                 } catch (e: Exception) {
                     menuLayout.isRefreshing = false
                     statusView.text = getString(R.string.loading_error)
@@ -358,14 +358,14 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
         return meals
     }
 
-    private fun fetchMenuFromPronote() = CoroutineScope(Dispatchers.IO).launch {
+    private fun fetchMenuFromPronote(onReload: Boolean = false) = CoroutineScope(Dispatchers.IO).launch {
         val menusFile = File(applicationContext.filesDir, "menus.json")
         val json = if (menusFile.exists()) {
             JSONObject(menusFile.readText())
         } else {
             JSONObject()
         }
-        if (json.toString() != "{}") {
+        if (json.toString() != "{}" && !onReload) {
             val today = Calendar.getInstance()
             val date = json.getString("date")
             val todayString =
