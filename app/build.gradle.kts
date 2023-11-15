@@ -17,7 +17,7 @@ android {
         versionName = "1.1"
         versionName += if (System.getenv("GITHUB_SHA") != null) {
             when (project.properties["channel"]?.toString()) {
-                "release" -> ""
+                "stable" -> ""
                 "alpha" -> " (alpha build ${System.getenv("GITHUB_SHA")?.substring(0, 7)})"
                 "beta" -> " (beta build ${System.getenv("GITHUB_SHA")?.substring(0, 7)})"
                 else -> " (build ${System.getenv("GITHUB_SHA")?.substring(0, 7)})"
