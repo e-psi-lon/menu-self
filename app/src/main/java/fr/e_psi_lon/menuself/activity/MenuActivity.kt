@@ -570,7 +570,9 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
                 }
             }
             showMenu(currentDay)
-            checkForUpdates()
+            if (!onReload) {
+                checkForUpdates()
+            }
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -592,7 +594,7 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
         finishAffinity()
     }
 
-    open fun fetchMenuData(specificDay: String = ""): Job {
+    open fun fetchMenuData(specificDay: String = "", onReload: Boolean = false): Job {
         return CoroutineScope(Dispatchers.IO).launch {}
     }
 

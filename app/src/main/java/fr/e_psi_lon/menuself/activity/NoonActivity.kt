@@ -19,17 +19,18 @@ import java.util.Calendar
 
 
 class NoonActivity : MenuActivity(15, 0) {
-    override fun fetchMenuData(specificDay: String) = CoroutineScope(Dispatchers.IO).launch {
-        if (menus["noon"] != Menu()) {
-            showMenu(currentDay)
-            return@launch
-        }
-        val doc: Document =
-            Jsoup.connect("https://standarddelunivers.wordpress.com/2022/06/28/menu-de-la-semaine/")
-                .get()
-        val tables: MutableList<Element> = doc.select("table").toMutableList()
-            .subList(0, 3)
-        val days: MutableList<String> = mutableListOf()
+    override fun fetchMenuData(specificDay: String, onReload: Boolean) =
+        CoroutineScope(Dispatchers.IO).launch {
+            if (menus["noon"] != Menu()) {
+                showMenu(currentDay)
+                return@launch
+            }
+            val doc: Document =
+                Jsoup.connect("https://standarddelunivers.wordpress.com/2022/06/28/menu-de-la-semaine/")
+                    .get()
+            val tables: MutableList<Element> = doc.select("table").toMutableList()
+                .subList(0, 3)
+            val days: MutableList<String> = mutableListOf()
         val contentPerDay: MutableList<MutableList<String>> =
             mutableListOf(
                 mutableListOf(),
@@ -225,7 +226,9 @@ class NoonActivity : MenuActivity(15, 0) {
                 )
             )
             showMenu(currentDay)
-            checkForUpdates()
+            if (!onReload) {
+                checkForUpdates()
+            }
         }
     }
 

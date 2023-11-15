@@ -258,28 +258,32 @@ class AutoUpdater : DialogFragment() {
             channel: String,
             start: Boolean = true
         ): Boolean {
-            val client = OkHttpClient()
-            val request = Request.Builder()
-                .url("https://api.github.com/repos/e-psi-lon/menu-self/commits/builds-$channel")
-                .build()
-            val output = client.newCall(request).execute().body?.string()
-            if (output == "") {
+            try {
+                val client = OkHttpClient()
+                val request = Request.Builder()
+                    .url("https://api.github.com/repos/e-psi-lon/menu-self/commits/builds-$channel")
+                    .build()
+                val output = client.newCall(request).execute().body?.string()
+                if (output == "") {
+                    return false
+                }
+                val json = output?.let { JSONObject(it) }
+                val lastCommitHash =
+                    json?.getJSONObject("commit")?.getString("message")?.split(" ")?.get(1)
+                return if (lastCommitHash != BuildConfig.GIT_COMMIT_HASH) {
+                    if (!start) {
+                        return true
+                    }
+                    AutoUpdater().apply {
+                        setChannel(channel)
+                        show(activity.supportFragmentManager, "update")
+                    }
+                    true
+                } else
+                    false
+            } catch (e: Exception) {
                 return false
             }
-            val json = output?.let { JSONObject(it) }
-            val lastCommitHash =
-                json?.getJSONObject("commit")?.getString("message")?.split(" ")?.get(1)
-            return if (lastCommitHash != BuildConfig.GIT_COMMIT_HASH) {
-                if (!start) {
-                    return true
-                }
-                AutoUpdater().apply {
-                    setChannel(channel)
-                    show(activity.supportFragmentManager, "update")
-                }
-                true
-            } else
-                false
         }
     }
 }

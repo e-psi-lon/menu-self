@@ -311,6 +311,9 @@ class SettingsActivity : AppCompatActivity() {
                     }
                     setNegativeButton(R.string.cancel) { dialog, _ ->
                         dialog.cancel()
+                        updateBranchSpinner.setSelection(
+                            channel.keys.toList().indexOf(config.getString("updateChannel"))
+                        )
                     }
                     show()
                 }
@@ -387,8 +390,10 @@ class SettingsActivity : AppCompatActivity() {
                                     config.put("pronotePassword", password.text.toString())
                                     config.put("usePronote", true)
                                     File(filesDir, "config.json").writeText(config.toString())
-                                    dialog.cancel()
-                                    disconnectFromPronote.visibility = View.VISIBLE
+                                    dialog.dismiss()
+                                    runOnUiThread {
+                                        disconnectFromPronote.visibility = View.VISIBLE
+                                    }
                                 }
                             }
                         } else {
@@ -399,6 +404,9 @@ class SettingsActivity : AppCompatActivity() {
                             ).show()
                             usePronote.isChecked = false
                         }
+                    }
+                    this.setOnCancelListener {
+                        usePronote.isChecked = false
                     }
                     show()
                 }
