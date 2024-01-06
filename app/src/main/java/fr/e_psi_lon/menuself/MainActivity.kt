@@ -28,6 +28,10 @@ class MainActivity : AppCompatActivity() {
         if (!config.has("previousActivity")) {
             config.put("previousActivity", "NoonActivity")
         }
+        if (!config.has("usePronote")) {
+            config.put("usePronote", false)
+        }
+
 
         File(filesDir, "config.json").writeText(config.toString())
         val map = mapOf(
