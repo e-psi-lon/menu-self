@@ -285,54 +285,6 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
         return meals
     }
 
-    private fun getOrCheckToken(config: JSONObject): String {
-        if (config.has("usePronote") && !config.getBoolean("usePronote")) {
-            return ""
-        }
-        if (config.has("pronoteToken")) {
-            val token = config.getString("pronoteToken")
-            val client = OkHttpClient()
-            val request = Request.Builder()
-                .url("https://api-04.getpapillon.xyz/user?token=$token")
-                .build()
-            val response = client.newCall(request).execute()
-            return if (response.code == 200) {
-                token
-            } else {
-                config.remove("pronoteToken")
-                File(filesDir, "config.json").writeText(config.toString())
-                getOrCheckToken(config)
-            }
-        } else {
-            val username = config.getString("pronoteUsername")
-            val password = config.getString("pronotePassword")
-            val client = OkHttpClient()
-            val request = Request.Builder()
-                .url("https://api-04.getpapillon.xyz/generatetoken")
-                .post(
-                    JSONObject(
-                        mapOf(
-                            "username" to username,
-                            "password" to password,
-                            "url" to "https://0410002e.index-education.net/pronote/eleve.html",
-                            "ent" to "ac_orleans_tours"
-                        )
-                    )
-                        .toString()
-                        .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
-                )
-                .build()
-            val response = client.newCall(request).execute()
-            return if (response.code == 200) {
-                val token = JSONObject(response.body!!.string()).getString("token")
-                config.put("pronoteToken", token)
-                File(filesDir, "config.json").writeText(config.toString())
-                token
-            } else {
-                ""
-            }
-        }
-    }
 
     private fun parseMeal(mealData: JSONObject): MutableList<String> {
         val meals = mutableListOf<String>()
@@ -356,6 +308,55 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
             addMealFromKey(key)
         }
         return meals
+    }
+
+    private fun getOrCheckToken(config: JSONObject): String {
+        if (config.has("usePronote") && !config.getBoolean("usePronote")) {
+            return ""
+        }
+        if (config.has("pronoteToken")) {
+            val token = config.getString("pronoteToken")
+            val client = OkHttpClient()
+            val request = Request.Builder()
+                .url("${config.get("pronoteAPI")}/user?token=$token")
+                .build()
+            val response = client.newCall(request).execute()
+            return if (response.code == 200) {
+                token
+            } else {
+                config.remove("pronoteToken")
+                File(filesDir, "config.json").writeText(config.toString())
+                getOrCheckToken(config)
+            }
+        } else {
+            val username = config.getString("pronoteUsername")
+            val password = config.getString("pronotePassword")
+            val client = OkHttpClient()
+            val request = Request.Builder()
+                .url("${config.get("pronoteAPI")}/generatetoken")
+                .post(
+                    JSONObject(
+                        mapOf(
+                            "username" to username,
+                            "password" to password,
+                            "url" to "https://0410002e.index-education.net/pronote/eleve.html",
+                            "ent" to "ac_orleans_tours"
+                        )
+                    )
+                        .toString()
+                        .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+                )
+                .build()
+            val response = client.newCall(request).execute()
+            return if (response.code == 200) {
+                val token = JSONObject(response.body!!.string()).getString("token")
+                config.put("pronoteToken", token)
+                File(filesDir, "config.json").writeText(config.toString())
+                token
+            } else {
+                ""
+            }
+        }
     }
 
     private fun fetchMenuFromPronote(onReload: Boolean = false) = CoroutineScope(Dispatchers.IO).launch {
@@ -442,7 +443,7 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
                 "${it.get(Calendar.YEAR)}-${it.get(Calendar.MONTH) + 1}-${it.get(Calendar.DAY_OF_MONTH)}"
             }
             val request = Request.Builder()
-                .url("https://api-04.getpapillon.xyz/menu?token=$token&dateFrom=$dateFrom&dateTo=$dateTo")
+                .url("${config.get("pronoteAPI")}/menu?token=$token&dateFrom=$dateFrom&dateTo=$dateTo")
                 .build()
             val pronoteMenu = client.newCall(request).execute().body?.string() ?: ""
             @Suppress("SpellCheckingInspection")
@@ -641,4 +642,6 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
             else -> ""
         }
     }
+
+
 }

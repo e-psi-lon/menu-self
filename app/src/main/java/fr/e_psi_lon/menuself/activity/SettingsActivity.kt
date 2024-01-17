@@ -46,6 +46,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var changelogHistoryButton: Button
     private lateinit var moreInfoButton: Button
     private lateinit var contributorsButton: Button
+    private lateinit var changeApiUrl: Button
     private lateinit var initActivitySpinner: Spinner
     private lateinit var updateBranchSpinner: Spinner
     private lateinit var usePronote: SwitchCompat
@@ -71,6 +72,7 @@ class SettingsActivity : AppCompatActivity() {
         initActivitySpinner = findViewById(R.id.initActivitySpinner)
         updateBranchSpinner = findViewById(R.id.updateBranchSpinner)
         contributorsButton = findViewById(R.id.contributorsButton)
+        changeApiUrl = findViewById(R.id.changeAPIURLButton)
         usePronote = findViewById(R.id.usePronoteSwitch)
         disconnectFromPronote = findViewById(R.id.disconnectPronoteButton)
         val channel = mapOf(
@@ -268,6 +270,81 @@ class SettingsActivity : AppCompatActivity() {
             }.also { finish() }
         }
 
+        changeApiUrl.setOnClickListener {
+            val dialogView = layoutInflater.inflate(R.layout.change_api_url, null)
+            val builder = AlertDialog.Builder(this)
+            builder.apply {
+                dialogView.findViewById<EditText>(R.id.apiUrl).setText(
+                    config.getString("pronoteAPI")
+                )
+                setView(dialogView)
+                setCancelable(true)
+                setPositiveButton(R.string.change) { dialog, _ ->
+                    val url = dialogView.findViewById<EditText>(R.id.apiUrl)
+                    var urlText = url.text.toString()
+                    if (urlText != "") {
+                        if (!url.text.toString().startsWith("http")) {
+                            urlText = "https://${url.text}"
+                        }
+                        if (urlText.endsWith("/")) {
+                            urlText = urlText.substring(0, urlText.length - 1)
+                        }
+                        // On essaye d'obtenir un token pour vérifier que l'URL est valide
+                        GlobalScope.launch(Dispatchers.IO) {
+                            val client = OkHttpClient()
+                            val request = Request.Builder()
+                                .url(
+                                    "${urlText}/generatetoken"
+                                )
+                                .post(
+                                    JSONObject(
+                                        mapOf(
+                                            "username" to "demonstration",
+                                            "password" to "pronotevs",
+                                            "url" to "https://demo.index-education.net/pronote/eleve.html"
+                                        )
+                                    ).toString()
+                                        .toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
+                                )
+                                .build()
+                            val response = client.newCall(request).execute()
+                            if (response.code != 200) {
+                                runOnUiThread {
+                                    Toast.makeText(
+                                        this@SettingsActivity,
+                                        getString(R.string.change_api_url_error),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            } else {
+                                config.put("pronoteAPI", urlText)
+                                File(filesDir, "config.json").writeText(config.toString())
+                                runOnUiThread {
+                                    Toast.makeText(
+                                        this@SettingsActivity,
+                                        getString(R.string.change_api_url_success),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+
+                        }
+                        dialog.dismiss()
+                    } else {
+                        Toast.makeText(
+                            this@SettingsActivity,
+                            getString(R.string.change_api_url_error),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+                setNegativeButton(R.string.cancel) { dialog, _ ->
+                    dialog.cancel()
+                }
+                show()
+            }
+        }
+
         initActivitySpinner.onItemSelectedListener = object :
             AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
@@ -361,7 +438,7 @@ class SettingsActivity : AppCompatActivity() {
                                 val client = OkHttpClient()
                                 val request = Request.Builder()
                                     .url(
-                                        "https://api-04.getpapillon.xyz/generatetoken"
+                                        "${config.get("pronoteAPI")}/generatetoken"
                                     )
                                     .post(
                                         JSONObject(

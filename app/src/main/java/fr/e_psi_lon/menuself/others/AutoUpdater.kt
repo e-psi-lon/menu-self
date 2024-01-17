@@ -158,7 +158,12 @@ class AutoUpdater : DialogFragment() {
         if (outputFile.exists()) {
             outputFile.delete()
         }
-        outputFile = File(cacheDir, "app-release.apk")
+        // Le nom du fichier doit être explicite pour l'affichage de la popup d'installation
+        outputFile = File(cacheDir, "application.apk")
+        if (outputFile.exists()) {
+            outputFile.delete()
+        }
+        outputFile = File(cacheDir, "application.apk")
         fun onDownloadError() {
             activity.runOnUiThread {
                 Toast.makeText(

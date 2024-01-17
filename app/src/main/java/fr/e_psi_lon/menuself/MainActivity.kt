@@ -31,7 +31,9 @@ class MainActivity : AppCompatActivity() {
         if (!config.has("usePronote")) {
             config.put("usePronote", false)
         }
-
+        if (!config.has("pronoteAPI")) {
+            config.put("pronoteAPI", "https://api.getpapillon.xyz")
+        }
 
         File(filesDir, "config.json").writeText(config.toString())
         val map = mapOf(

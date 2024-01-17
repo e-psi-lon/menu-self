@@ -54,6 +54,7 @@ class NoonActivity : MenuActivity(15, 0) {
                             when (img.attr("data-image-title")) {
                                 "vegetarien" -> getString(R.string.vegetarian)
                                 "pates" -> getString(R.string.home_made)
+                                "gluten" -> getString(R.string.gluten)
                                 else -> img.attr("data-image-title")
                             }
                         )
@@ -75,6 +76,7 @@ class NoonActivity : MenuActivity(15, 0) {
                                 when (img.attr("data-image-title")) {
                                     "vegetarien" -> getString(R.string.vegetarian)
                                     "pates" -> getString(R.string.home_made)
+                                    "gluten" -> getString(R.string.gluten)
                                     else -> img.attr("data-image-title")
                                 }
                             )
@@ -94,6 +96,7 @@ class NoonActivity : MenuActivity(15, 0) {
                                 when (img.attr("data-image-title")) {
                                     "vegetarien" -> getString(R.string.vegetarian)
                                     "pates" -> getString(R.string.home_made)
+                                    "gluten" -> getString(R.string.gluten)
                                     else -> img.attr("data-image-title")
                                 }
                             )
@@ -116,6 +119,7 @@ class NoonActivity : MenuActivity(15, 0) {
                                 when (img.attr("data-image-title")) {
                                     "vegetarien" -> getString(R.string.vegetarian)
                                     "pates" -> getString(R.string.home_made)
+                                    "gluten" -> getString(R.string.gluten)
                                     else -> img.attr("data-image-title")
                                 }
                             )

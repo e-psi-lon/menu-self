@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/titleChangeApiUrl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="20dp"
+        android:text="@string/change_api_url"
+        android:textColor="@color/colorOnSecondary"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <!-- L'EditText doit faire la taille de l'écran -->
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/api_url"
+        android:layout_marginStart="20dp"
+        android:id="@+id/apiUrl"
+        android:textSize="20sp"
+        android:inputType="textUri"
+        android:autofillHints="" />
+
+
+
+
+</LinearLayout>

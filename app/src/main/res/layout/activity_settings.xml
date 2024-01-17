@@ -108,6 +108,17 @@
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
+                <Button
+                    android:id="@+id/changeAPIURLButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorBackground"
+                    android:text="@string/change_api_url"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorOnSecondary"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
                 <LinearLayout
                     android:id="@+id/initActivityLayout"
                     android:layout_width="match_parent"

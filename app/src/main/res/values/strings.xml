@@ -84,4 +84,9 @@
     <string name="no">No</string>
     <string name="disconnect_from_pronote_message">Are you sure you want to disconnect from Pronote ?</string>
     <string name="change_update_channel">Do you really want to change the update channel ?</string>
+    <string name="change_api_url">Change Pronote API URL</string>
+    <string name="api_url">API URL</string>
+    <string name="change">Change</string>
+    <string name="change_api_url_error">Error while changing API URL</string>
+    <string name="change_api_url_success">Successufully changed API URL</string>
 </resources>
