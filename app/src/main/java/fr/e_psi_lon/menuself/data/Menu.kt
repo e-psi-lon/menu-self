@@ -33,9 +33,9 @@ data class Menu(
     }
 
     fun toJson(): String {
-        return "{\"day1\": ${day1.toJson()}, \"day2\": ${day2.toJson()}, \"day3\": ${day3.toJson()}, \"day4\": ${day4.toJson()},${
+        return "{\"day1\": ${day1.toJson()}, \"day2\": ${day2.toJson()}, \"day3\": ${day3.toJson()}, \"day4\": ${day4.toJson()}${
             if (day5 != null) {
-                " \"day5\": ${day5.toJson()},"
+                ", \"day5\": ${day5.toJson()}"
             } else ""
         } ${if (redactionMessage != null) ", \"redactionMessage\": \"$redactionMessage\"" else ""}}"
     }
