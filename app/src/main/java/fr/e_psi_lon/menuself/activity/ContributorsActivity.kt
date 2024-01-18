@@ -14,7 +14,11 @@ import androidx.core.net.toUri
 import de.hdodenhof.circleimageview.CircleImageView
 import fr.e_psi_lon.menuself.R
 import fr.e_psi_lon.menuself.data.Menu
-import kotlinx.coroutines.*
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.json.JSONArray

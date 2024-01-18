@@ -140,17 +140,13 @@ class SettingsActivity : AppCompatActivity() {
                             setMessage(
                                 getString(
                                     R.string.more_menu_info_text_redaction_message,
-                                    menus["evening"]?.lastUpdate ?: "",
-                                    menus["evening"]?.nextUpdate ?: "",
                                     menus["evening"]?.redactionMessage ?: ""
                                 )
                             )
                         } else {
                             setMessage(
                                 getString(
-                                    R.string.more_menu_info_text,
-                                    menus["evening"]?.lastUpdate ?: "",
-                                    menus["evening"]?.nextUpdate ?: ""
+                                    R.string.more_menu_info_text
                                 )
                             )
                         }
@@ -159,17 +155,13 @@ class SettingsActivity : AppCompatActivity() {
                             setMessage(
                                 getString(
                                     R.string.more_menu_info_text_redaction_message,
-                                    menus["noon"]?.lastUpdate ?: "",
-                                    menus["noon"]?.nextUpdate ?: "",
                                     menus["noon"]?.redactionMessage ?: ""
                                 )
                             )
                         } else {
                             setMessage(
                                 getString(
-                                    R.string.more_menu_info_text,
-                                    menus["noon"]?.lastUpdate ?: "",
-                                    menus["noon"]?.nextUpdate ?: ""
+                                    R.string.more_menu_info_text
                                 )
                             )
                         }

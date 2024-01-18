@@ -11,9 +11,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.jsoup.nodes.Element
 import java.io.File
 import java.util.Calendar
 
@@ -26,139 +26,140 @@ class EveningActivity : MenuActivity(21, 1) {
                 return@launch
             }
             val doc: Document =
-                Jsoup.connect("https://standarddelunivers.wordpress.com/2022/06/28/menu-de-la-semaine/")
+                Jsoup.connect("https://filtreimages.neocities.org/menu-soir")
                     .get()
-            val tables: MutableList<Element> = doc.select("table").toMutableList()
-                .subList(doc.select("table").size - 2, doc.select("table").size)
-            val days: MutableList<String> = mutableListOf()
-        val contentPerDay: MutableList<MutableList<String>> =
-            mutableListOf(mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf())
-        var tableI = 0
-        for (table in tables) {
-            for (day in table.select("th")) {
-                days.add(day.text())
+            val script = doc.select("body").select("script")[0].data()
+            val days = mutableListOf<String>()
+            val contentPerDay = mutableListOf<List<String>>()
+            val tableHeadersRegex =
+                Regex("var tableHeaders = (\\{[^}]+\\});", RegexOption.MULTILINE)
+            val tableHeaders = tableHeadersRegex.find(script)?.groupValues?.get(1)
+                ?.replace(Regex("""(\d+):"""), """'$1':""")
+                ?.trimIndent()?.replace("\n", "")?.replace("  ", "")
+                ?.trim()?.replace(",}", "}")
+            val tableHeadersJson = tableHeaders?.let { JSONObject(it) }
+            for (i in 0 until tableHeadersJson?.length()!!) {
+                val date = tableHeadersJson.getString((i + 1).toString()).replace(
+                    "Menu de ",
+                    ""
+                ).split(" ")
+                val day = date[0]
+                val dateStr = date.subList(1, date.size).joinToString("/")
+                    .replace("Janvier", "01").replace("Février", "02")
+                    .replace("Mars", "03").replace("Avril", "04").replace("Mai", "05")
+                    .replace("Juin", "06").replace("Juillet", "07").replace("Août", "08")
+                    .replace("Septembre", "09").replace("Octobre", "10").replace("Novembre", "11")
+                    .replace("Décembre", "12")
+                days.add("$day $dateStr")
             }
-            var perDayI = 0
-            for (meal in table.select("td")) {
-                if (meal.select("img").isNotEmpty()) {
-                    if (meal.text() != "") {
-                        val images = meal.select("img")
-                        val imagesNames = mutableListOf<String>()
-                        for (img in images) {
-                            imagesNames.add(
-                                when (img.attr("data-image-title")) {
-                                    "vegetarien" -> getString(R.string.vegetarian)
-                                    "pates" -> getString(R.string.home_made)
-                                    "gluten" -> getString(R.string.gluten)
-                                    else -> img.attr("data-image-title")
-                                }
-                            )
+            val tableDataRegex = Regex("var tableData = (\\{[^}]+\\});", RegexOption.MULTILINE)
+            val tableData = tableDataRegex.find(script)?.groupValues?.get(1)
+                ?.replace(Regex("""(\d+):"""), """'$1':""")
+                ?.trimIndent()?.replace("\n", "")?.replace("  ", "")
+                ?.trim()?.replace(",}", "}")
+            val tableDataJson = tableData?.let { JSONObject(it) }
+            for (i in 0 until tableDataJson?.length()!!) {
+                val content = mutableListOf<String>()
+                for (j in 0 until tableDataJson.getJSONArray((i + 1).toString()).length()) {
+                    val element = tableDataJson.getJSONArray((i + 1).toString()).getString(j)
+                    val added = mutableListOf<String>()
+                    if (element.contains("<br>~~<br>")) {
+                        element.split("<br>~~<br>").forEach {
+                            val tags = mutableListOf<String>()
+                            if ("🍃" in it) {
+                                tags.add(getString(R.string.vegetarian))
+                                it.replace("🍃", "")
+                            }
+                            if ("🌾" in it) {
+                                tags.add(getString(R.string.gluten))
+                                it.replace("🌾", "")
+                            }
+                            if ("🏠" in it) {
+                                tags.add(getString(R.string.home_made))
+                                it.replace("🏠", "")
+                            }
+                            if (tags.isNotEmpty()) {
+                                added.add(it + " (" + tags.joinToString(", ") + ")")
+                            } else {
+                                added.add(it)
+                            }
                         }
-                        contentPerDay[perDayI + tableI].add(
-                            "${meal.text()} (${
-                                imagesNames.joinToString(
-                                    ", "
-                                )
-                            })"
-                        )
+                    } else {
+                        added.add(element)
                     }
-                    continue
+                    if (added.size >= 1) {
+                        content.addAll(added)
+                        content.add("~~")
+                    }
                 }
-                if (meal.text() != "") {
-                    contentPerDay[perDayI + tableI].add(meal.text())
-                }
-                perDayI++
-                if (perDayI == 2) {
-                    perDayI = 0
-                }
+                contentPerDay.add(content.toList())
             }
-            tableI += 2
-        }
-        var lastMenuUpdate = ""
-        var nextMenuUpdate = ""
-        var redactionMessage: String? = null
-        for (p in doc.select("p")) {
-            if (p.text().contains("Dernière mise à jour")) {
-                lastMenuUpdate = p.text().replace("Dernière mise à jour : ", "")
+            var redactionMessage: String? =
+                doc.select("body").select("section").select("div.white-box").select("p")[0].text()
+            if (redactionMessage == "") {
+                redactionMessage = null
             }
-            if (p.text().contains("Prochaine mise à jour")) {
-                nextMenuUpdate = p.text().replace("Prochaine mise à jour : ", "")
-            }
-            if (p.text() == "La Rédaction") {
-                redactionMessage = p.previousElementSibling()?.text()
-            }
-        }
 
-        if (specificDay != "") {
-            gotDay = Day(
-                days[specificDay.toInt()],
-                contentPerDay[specificDay.toInt()],
-                mapOf(
-                    "year" to specificDay.split(" ")[1].split("/")[2].toInt(),
-                    "month" to specificDay.split(" ")[1].split("/")[1].toInt(),
-                    "day" to specificDay.split(" ")[1].split("/")[0].toInt()
+            if (specificDay != "") {
+                gotDay = Day(
+                    days[specificDay.toInt()],
+                    contentPerDay[specificDay.toInt()],
+                    mapOf(
+                        "year" to specificDay.split(" ")[1].split("/")[2].toInt(),
+                        "month" to specificDay.split(" ")[1].split("/")[1].toInt(),
+                        "day" to specificDay.split(" ")[1].split("/")[0].toInt()
+                    )
                 )
-            )
-            return@launch
-        } else {
-            menus["evening"] = Menu(
-                Day(
-                    days[0],
-                    contentPerDay[0],
-                    mapOf(
-                        "year" to days[0].split(" ")[1].split("/")[2].toInt(),
-                        "month" to days[0].split(" ")[1].split("/")[1].toInt(),
-                        "day" to days[0].split(" ")[1].split("/")[0].toInt()
-                    )
-                ),
-                Day(
-                    days[1],
-                    contentPerDay[1],
-                    mapOf(
-                        "year" to days[1].split(" ")[1].split("/")[2].toInt(),
-                        "month" to days[1].split(" ")[1].split("/")[1].toInt(),
-                        "day" to days[1].split(" ")[1].split("/")[0].toInt()
-                    )
-                ),
-                Day(
-                    days[2],
-                    contentPerDay[2],
-                    mapOf(
-                        "year" to days[2].split(" ")[1].split("/")[2].toInt(),
-                        "month" to days[2].split(" ")[1].split("/")[1].toInt(),
-                        "day" to days[2].split(" ")[1].split("/")[0].toInt()
-                    )
-                ),
-                Day(
-                    days[3],
-                    contentPerDay[3],
-                    mapOf(
-                        "year" to days[3].split(" ")[1].split("/")[2].toInt(),
-                        "month" to days[3].split(" ")[1].split("/")[1].toInt(),
-                        "day" to days[3].split(" ")[1].split("/")[0].toInt()
-                    )
-                ),
-                lastMenuUpdate,
-                nextMenuUpdate,
-                redactionMessage
-            )
-            showMenu(currentDay)
-            if (!onReload) {
-                checkForUpdates()
+                return@launch
+            } else {
+                menus["evening"] = Menu(
+                    Day(
+                        days[0],
+                        contentPerDay[0],
+                        mapOf(
+                            "year" to days[0].split(" ")[1].split("/")[2].toInt(),
+                            "month" to days[0].split(" ")[1].split("/")[1].toInt(),
+                            "day" to days[0].split(" ")[1].split("/")[0].toInt()
+                        )
+                    ),
+                    Day(
+                        days[1],
+                        contentPerDay[1],
+                        mapOf(
+                            "year" to days[1].split(" ")[1].split("/")[2].toInt(),
+                            "month" to days[1].split(" ")[1].split("/")[1].toInt(),
+                            "day" to days[1].split(" ")[1].split("/")[0].toInt()
+                        )
+                    ),
+                    Day(
+                        days[2],
+                        contentPerDay[2],
+                        mapOf(
+                            "year" to days[2].split(" ")[1].split("/")[2].toInt(),
+                            "month" to days[2].split(" ")[1].split("/")[1].toInt(),
+                            "day" to days[2].split(" ")[1].split("/")[0].toInt()
+                        )
+                    ),
+                    Day(
+                        days[3],
+                        contentPerDay[3],
+                        mapOf(
+                            "year" to days[3].split(" ")[1].split("/")[2].toInt(),
+                            "month" to days[3].split(" ")[1].split("/")[1].toInt(),
+                            "day" to days[3].split(" ")[1].split("/")[0].toInt()
+                        )
+                    ),
+                    redactionMessage = redactionMessage
+                )
+                showMenu(currentDay)
+                if (!onReload) {
+                    checkForUpdates()
+                }
             }
         }
-    }
 
     override fun showMenu(day: String) = CoroutineScope(Dispatchers.Main).launch {
-        if (day == "Saturday" || day == "Sunday") {
-            dayView.text = getTranslatedString(day)
-            menuListView.visibility = View.GONE
-            statusView.text = getString(R.string.no_menu_this_day, getTranslatedString(day))
-            statusView.visibility = View.VISIBLE
-            menuLayout.isRefreshing = false
-            return@launch
-        }
-        if (day == "Friday") {
+        if (day == "Saturday" || day == "Sunday" || day == "Friday") {
             dayView.text = getTranslatedString(day)
             menuListView.visibility = View.GONE
             statusView.text = getString(R.string.no_menu_this_day, getTranslatedString(day))

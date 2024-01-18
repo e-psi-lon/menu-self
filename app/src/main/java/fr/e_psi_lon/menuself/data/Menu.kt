@@ -7,8 +7,6 @@ data class Menu(
     val day2: Day = Day(),
     val day3: Day = Day(),
     val day4: Day = Day(),
-    val lastUpdate: String = "",
-    val nextUpdate: String = "",
     val redactionMessage: String? = null,
     val day5: Day? = null
 
@@ -31,7 +29,7 @@ data class Menu(
             } else {
                 ""
             }
-        } (last update: $lastUpdate,\nnext update: $nextUpdate ${if (redactionMessage != null) ",\nredaction message: $redactionMessage" else ""})"
+        } (\n${if (redactionMessage != null) ",\nredaction message: $redactionMessage" else ""})"
     }
 
     fun toJson(): String {
@@ -39,12 +37,12 @@ data class Menu(
             if (day5 != null) {
                 " \"day5\": ${day5.toJson()},"
             } else ""
-        } \"lastUpdate\": \"$lastUpdate\", \"nextUpdate\": \"$nextUpdate\"${if (redactionMessage != null) ", \"redactionMessage\": \"$redactionMessage\"" else ""}}"
+        } ${if (redactionMessage != null) ", \"redactionMessage\": \"$redactionMessage\"" else ""}}"
     }
 
     override fun equals(other: Any?): Boolean {
         if (other is Menu) {
-            return day1 == other.day1 && day2 == other.day2 && day3 == other.day3 && day4 == other.day4 && day5 == other.day5 && lastUpdate == other.lastUpdate && nextUpdate == other.nextUpdate && redactionMessage == other.redactionMessage
+            return day1 == other.day1 && day2 == other.day2 && day3 == other.day3 && day4 == other.day4 && day5 == other.day5 && redactionMessage == other.redactionMessage
         }
         return false
     }
@@ -54,8 +52,6 @@ data class Menu(
         result = 31 * result + day2.hashCode()
         result = 31 * result + day3.hashCode()
         result = 31 * result + day4.hashCode()
-        result = 31 * result + lastUpdate.hashCode()
-        result = 31 * result + nextUpdate.hashCode()
         result = 31 * result + (redactionMessage?.hashCode() ?: 0)
         result = 31 * result + (day5?.hashCode() ?: 0)
         return result
@@ -71,8 +67,6 @@ data class Menu(
                         Day.fromJson(jsonObject.getString("day2")),
                         Day.fromJson(jsonObject.getString("day3")),
                         Day.fromJson(jsonObject.getString("day4")),
-                        jsonObject.getString("lastUpdate"),
-                        jsonObject.getString("nextUpdate"),
                         jsonObject.getString("redactionMessage"),
                         Day.fromJson(jsonObject.getString("day5"))
                     )
@@ -82,8 +76,6 @@ data class Menu(
                         Day.fromJson(jsonObject.getString("day2")),
                         Day.fromJson(jsonObject.getString("day3")),
                         Day.fromJson(jsonObject.getString("day4")),
-                        jsonObject.getString("lastUpdate"),
-                        jsonObject.getString("nextUpdate"),
                         jsonObject.getString("redactionMessage")
                     )
                 }
@@ -94,8 +86,6 @@ data class Menu(
                         Day.fromJson(jsonObject.getString("day2")),
                         Day.fromJson(jsonObject.getString("day3")),
                         Day.fromJson(jsonObject.getString("day4")),
-                        jsonObject.getString("lastUpdate"),
-                        jsonObject.getString("nextUpdate"),
                         day5 = Day.fromJson(jsonObject.getString("day5"))
                     )
                 } else {
@@ -104,8 +94,6 @@ data class Menu(
                         Day.fromJson(jsonObject.getString("day2")),
                         Day.fromJson(jsonObject.getString("day3")),
                         Day.fromJson(jsonObject.getString("day4")),
-                        jsonObject.getString("lastUpdate"),
-                        jsonObject.getString("nextUpdate")
                     )
                 }
             }
