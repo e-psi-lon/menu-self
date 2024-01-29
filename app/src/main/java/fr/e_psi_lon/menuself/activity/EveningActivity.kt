@@ -64,25 +64,27 @@ class EveningActivity : MenuActivity(21, 1) {
                     val element = tableDataJson.getJSONArray((i + 1).toString()).getString(j)
                     val added = mutableListOf<String>()
                     if (element.contains("<br>~~<br>")) {
-                        element.split("<br>~~<br>").forEach {
+                        element.split("<br>~~<br>").map {
+                            var tempString = it
                             val tags = mutableListOf<String>()
                             if ("🍃" in it) {
                                 tags.add(getString(R.string.vegetarian))
-                                it.replace("🍃", "")
+                                tempString = tempString.replace("🍃", "")
                             }
                             if ("🌾" in it) {
                                 tags.add(getString(R.string.gluten))
-                                it.replace("🌾", "")
+                                tempString = tempString.replace("🌾", "")
                             }
                             if ("🏠" in it) {
                                 tags.add(getString(R.string.home_made))
-                                it.replace("🏠", "")
+                                tempString = tempString.replace("🏠", "")
                             }
                             if (tags.isNotEmpty()) {
-                                added.add(it + " (" + tags.joinToString(", ") + ")")
+                                added.add(tempString + " (" + tags.joinToString(", ") + ")")
                             } else {
-                                added.add(it)
+                                added.add(tempString)
                             }
+                            tempString
                         }
                     } else {
                         added.add(element)

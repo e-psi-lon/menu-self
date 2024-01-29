@@ -45,8 +45,6 @@
     <string name="actual">Actuelle</string>
     <string name="published">Publié le %s</string>
     <string name="more">Et plus…</string>
-    <string name="vegetarian">Végétarien</string>
-    <string name="home_made">Fait maison</string>
     <string name="more_menu_info">Plus d\'informations sur le menu</string>
     <string name="more_menu_info_text">Rien à dire sur le menu</string>
     <string name="more_menu_info_text_redaction_message">Il y a un message de la rédaction :\n\n%s</string>
@@ -71,12 +69,6 @@
     <string name="use_pronote">Utiliser Pronote :</string>
     <string name="pronote_connection_error">Erreur lors de la connexion à Pronote</string>
     <string name="and">et</string>
-    <string name="assembled_on_site">Assemblé sur place</string>
-    <string name="high_environmental_value">Haute valeur environnementale</string>
-    <string name="organic">Bio</string>
-    <string name="home_made_chef_recipe">Fait maison - Recette du chef</string>
-    <string name="gluten">Gluten</string>
-    <string name="local_products">Produits locaux</string>
     <string name="disconnect_pronote">Se déconnecter de Pronote</string>
     <string name="pronote_disconnected">Déconnecté de Pronote</string>
     <string name="yes">Oui</string>
@@ -88,4 +80,6 @@
     <string name="change">Changer</string>
     <string name="change_api_url_error">Erreur lors du changement de l\'URL de l\'API</string>
     <string name="change_api_url_success">URL de l\'API changée avec succès</string>
+    <string name="label_emoji_explanation">Explication des labels</string>
+    <string name="emoji_explanation">Explication des emojis : \n\n🍃: Végétarien\n🏠: Fait maison\n🌿: Haute valeur environnementale\n🌱: Bio\n👨‍🍳: Recette de chef fait maison\n🌾: Gluten\n📍: Produits locaux\n🏡: Assemblé sur place</string>
 </resources>

@@ -45,6 +45,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var checkForUpdatesButton: Button
     private lateinit var changelogHistoryButton: Button
     private lateinit var moreInfoButton: Button
+    private lateinit var emojisExplanationButton: Button
     private lateinit var contributorsButton: Button
     private lateinit var changeApiUrl: Button
     private lateinit var initActivitySpinner: Spinner
@@ -69,6 +70,7 @@ class SettingsActivity : AppCompatActivity() {
         checkForUpdatesButton = findViewById(R.id.checkUpdateButton)
         changelogHistoryButton = findViewById(R.id.changelogHistoryButton)
         moreInfoButton = findViewById(R.id.moreInfoButton)
+        emojisExplanationButton = findViewById(R.id.emojiExplanationButton)
         initActivitySpinner = findViewById(R.id.initActivitySpinner)
         updateBranchSpinner = findViewById(R.id.updateBranchSpinner)
         contributorsButton = findViewById(R.id.contributorsButton)
@@ -127,6 +129,19 @@ class SettingsActivity : AppCompatActivity() {
                     this@SettingsActivity,
                     config.getString("updateChannel")
                 )
+            }
+        }
+
+        emojisExplanationButton.setOnClickListener {
+            val builder = AlertDialog.Builder(this)
+            builder.apply {
+                setMessage(R.string.emoji_explanation)
+                setPositiveButton(R.string.ok) { dialog, _ ->
+                    dialog.cancel()
+                }
+            }
+            runOnUiThread {
+                builder.create().show()
             }
         }
 

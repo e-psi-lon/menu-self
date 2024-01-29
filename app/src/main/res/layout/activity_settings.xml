@@ -65,6 +65,18 @@
                     android:textStyle="bold" />
 
                 <Button
+                    android:id="@+id/emojiExplanationButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorBackground"
+                    android:text="@string/label_emoji_explanation"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorOnSecondary"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+
+                <Button
                     android:id="@+id/downloadApkButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

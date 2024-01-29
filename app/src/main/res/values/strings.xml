@@ -46,8 +46,15 @@
     <string name="actual">Actual</string>
     <string name="published">Published on %s</string>
     <string name="more">And more…</string>
-    <string name="vegetarian">Vegetarian</string>
-    <string name="home_made">Home made</string>
+    <string name="vegetarian" translatable="false">🍃</string>
+    <string name="home_made" translatable="false">🏠</string>
+    <string name="high_environmental_value" translatable="false">🌿</string>
+    <string name="organic" translatable="false">🌱</string>
+    <string name="home_made_chef_recipe" translatable="false">👨‍🍳</string>
+    <string name="gluten" translatable="false">🌾</string>
+    <string name="local_products" translatable="false">📍</string>
+    <string name="assembled_on_site" translatable="false">🏡</string>
+    <string name="emoji_explanation">Emoji explanation: \n\n🍃: Vegetarian\n🏠: Home made\n🌿: High environmental value\n🌱: Organic\n👨‍🍳: Home made chef recipe\n🌾: Gluten\n📍: Local products\n🏡: Assembled on site</string>
     <string name="more_menu_info">More info about the menu</string>
     <string name="more_menu_info_text">Nothing about the menu</string>
     <string name="more_menu_info_text_redaction_message">There\'s a message from the redaction:\n\n%s</string>
@@ -72,12 +79,6 @@
     <string name="use_pronote">Use Pronote :</string>
     <string name="pronote_connection_error">Error while connecting to Pronote</string>
     <string name="and">and</string>
-    <string name="assembled_on_site">Assembled on site</string>
-    <string name="high_environmental_value">High environmental value</string>
-    <string name="organic">Organic</string>
-    <string name="home_made_chef_recipe">Home made - Chef recipe</string>
-    <string name="gluten">Gluten</string>
-    <string name="local_products">Local products</string>
     <string name="disconnect_pronote">Disconnect from Pronote</string>
     <string name="pronote_disconnected">Disconnected from Pronote</string>
     <string name="yes">Yes</string>
@@ -89,4 +90,5 @@
     <string name="change">Change</string>
     <string name="change_api_url_error">Error while changing API URL</string>
     <string name="change_api_url_success">Successfully changed API URL</string>
+    <string name="label_emoji_explanation">Label explanation</string>
 </resources>

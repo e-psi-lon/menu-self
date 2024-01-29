@@ -14,7 +14,7 @@ android {
         minSdk = 24
         targetSdk = 34
         versionCode = System.getenv("GITHUB_RUN_NUMBER")?.toInt() ?: 1
-        versionName = "1.2.1"
+        versionName = "1.2.2"
         versionName += if (System.getenv("GITHUB_SHA") != null) {
             when (project.properties["channel"]?.toString()) {
                 "stable" -> ""
