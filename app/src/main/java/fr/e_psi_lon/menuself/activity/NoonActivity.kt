@@ -19,7 +19,7 @@ import java.util.Calendar
 
 
 class NoonActivity : MenuActivity(15, 0) {
-    override fun fetchMenuData(specificDay: String, onReload: Boolean) =
+    override fun fetchMenuData(onReload: Boolean) =
         CoroutineScope(Dispatchers.IO).launch {
             if (menus["noon"] != Menu()) {
                 showMenu(currentDay)
@@ -49,7 +49,7 @@ class NoonActivity : MenuActivity(15, 0) {
                     .replace("Mars", "03").replace("Avril", "04").replace("Mai", "05")
                     .replace("Juin", "06").replace("Juillet", "07").replace("Août", "08")
                     .replace("Septembre", "09").replace("Octobre", "10").replace("Novembre", "11")
-                    .replace("Décembre", "12")
+                    .replace("Décembre", "12").replace("1er", "1")
                 days.add("$day $dateStr")
             }
             val tableDataRegex = Regex("var tableData = (\\{[^}]+\\});", RegexOption.MULTILINE)
@@ -99,72 +99,57 @@ class NoonActivity : MenuActivity(15, 0) {
             if (redactionMessage == "") {
                 redactionMessage = null
             }
-            println("Specific day: $specificDay")
-            if (specificDay != "") {
-                gotDay = Day(
-                    days[specificDay.toInt()],
-                    contentPerDay[specificDay.toInt()],
+            menus["noon"] = Menu(
+                Day(
+                    days[0],
+                    contentPerDay[0],
                     mapOf(
-                        "year" to days[specificDay.toInt()].split(" ")[1].split("/")[2].toInt(),
-                        "month" to days[specificDay.toInt()].split(" ")[1].split("/")[1].toInt(),
-                        "day" to days[specificDay.toInt()].split(" ")[1].split("/")[0].toInt()
+                        "year" to days[0].split(" ")[1].split("/")[2].toInt(),
+                        "month" to days[0].split(" ")[1].split("/")[1].toInt(),
+                        "day" to days[0].split(" ")[1].split("/")[0].toInt()
+                    )
+                ),
+                Day(
+                    days[1],
+                    contentPerDay[1],
+                    mapOf(
+                        "year" to days[1].split(" ")[1].split("/")[2].toInt(),
+                        "month" to days[1].split(" ")[1].split("/")[1].toInt(),
+                        "day" to days[1].split(" ")[1].split("/")[0].toInt()
+                    )
+                ),
+                Day(
+                    days[2],
+                    contentPerDay[2],
+                    mapOf(
+                        "year" to days[2].split(" ")[1].split("/")[2].toInt(),
+                        "month" to days[2].split(" ")[1].split("/")[1].toInt(),
+                        "day" to days[2].split(" ")[1].split("/")[0].toInt()
+                    )
+                ),
+                Day(
+                    days[3],
+                    contentPerDay[3],
+                    mapOf(
+                        "year" to days[3].split(" ")[1].split("/")[2].toInt(),
+                        "month" to days[3].split(" ")[1].split("/")[1].toInt(),
+                        "day" to days[3].split(" ")[1].split("/")[0].toInt()
+                    )
+                ),
+                redactionMessage,
+                Day(
+                    days[4],
+                    contentPerDay[4],
+                    mapOf(
+                        "year" to days[4].split(" ")[1].split("/")[2].toInt(),
+                        "month" to days[4].split(" ")[1].split("/")[1].toInt(),
+                        "day" to days[4].split(" ")[1].split("/")[0].toInt()
                     )
                 )
-                println("Got day: $gotDay")
-                return@launch
-            } else {
-                menus["noon"] = Menu(
-                    Day(
-                        days[0],
-                        contentPerDay[0],
-                        mapOf(
-                            "year" to days[0].split(" ")[1].split("/")[2].toInt(),
-                            "month" to days[0].split(" ")[1].split("/")[1].toInt(),
-                            "day" to days[0].split(" ")[1].split("/")[0].toInt()
-                        )
-                    ),
-                    Day(
-                        days[1],
-                        contentPerDay[1],
-                        mapOf(
-                            "year" to days[1].split(" ")[1].split("/")[2].toInt(),
-                            "month" to days[1].split(" ")[1].split("/")[1].toInt(),
-                            "day" to days[1].split(" ")[1].split("/")[0].toInt()
-                        )
-                    ),
-                    Day(
-                        days[2],
-                        contentPerDay[2],
-                        mapOf(
-                            "year" to days[2].split(" ")[1].split("/")[2].toInt(),
-                            "month" to days[2].split(" ")[1].split("/")[1].toInt(),
-                            "day" to days[2].split(" ")[1].split("/")[0].toInt()
-                        )
-                    ),
-                    Day(
-                        days[3],
-                        contentPerDay[3],
-                        mapOf(
-                            "year" to days[3].split(" ")[1].split("/")[2].toInt(),
-                            "month" to days[3].split(" ")[1].split("/")[1].toInt(),
-                            "day" to days[3].split(" ")[1].split("/")[0].toInt()
-                        )
-                    ),
-                    redactionMessage,
-                    Day(
-                        days[4],
-                        contentPerDay[4],
-                        mapOf(
-                            "year" to days[4].split(" ")[1].split("/")[2].toInt(),
-                            "month" to days[4].split(" ")[1].split("/")[1].toInt(),
-                            "day" to days[4].split(" ")[1].split("/")[0].toInt()
-                        )
-                    )
-                )
-                showMenu(currentDay)
-                if (!onReload) {
-                    checkForUpdates()
-                }
+            )
+            showMenu(currentDay)
+            if (!onReload) {
+                checkForUpdates()
             }
         }
 

@@ -158,7 +158,6 @@ class AutoUpdater : DialogFragment() {
         if (outputFile.exists()) {
             outputFile.delete()
         }
-        // Le nom du fichier doit être explicite pour l'affichage de la popup d'installation
         outputFile = File(cacheDir, "application.apk")
         if (outputFile.exists()) {
             outputFile.delete()

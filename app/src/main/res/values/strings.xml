@@ -88,5 +88,5 @@
     <string name="api_url">API URL</string>
     <string name="change">Change</string>
     <string name="change_api_url_error">Error while changing API URL</string>
-    <string name="change_api_url_success">Successufully changed API URL</string>
+    <string name="change_api_url_success">Successfully changed API URL</string>
 </resources>

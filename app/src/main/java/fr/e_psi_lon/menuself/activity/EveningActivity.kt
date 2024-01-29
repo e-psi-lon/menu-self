@@ -19,7 +19,7 @@ import java.util.Calendar
 
 
 class EveningActivity : MenuActivity(21, 1) {
-    override fun fetchMenuData(specificDay: String, onReload: Boolean) =
+    override fun fetchMenuData(onReload: Boolean) =
         CoroutineScope(Dispatchers.IO).launch {
             if (menus["evening"] != Menu()) {
                 showMenu(currentDay)
@@ -49,7 +49,7 @@ class EveningActivity : MenuActivity(21, 1) {
                     .replace("Mars", "03").replace("Avril", "04").replace("Mai", "05")
                     .replace("Juin", "06").replace("Juillet", "07").replace("Août", "08")
                     .replace("Septembre", "09").replace("Octobre", "10").replace("Novembre", "11")
-                    .replace("Décembre", "12")
+                    .replace("Décembre", "12").replace("1er", "1")
                 days.add("$day $dateStr")
             }
             val tableDataRegex = Regex("var tableData = (\\{[^}]+\\});", RegexOption.MULTILINE)
@@ -100,61 +100,48 @@ class EveningActivity : MenuActivity(21, 1) {
                 redactionMessage = null
             }
 
-            if (specificDay != "") {
-                gotDay = Day(
-                    days[specificDay.toInt()],
-                    contentPerDay[specificDay.toInt()],
+            menus["evening"] = Menu(
+                Day(
+                    days[0],
+                    contentPerDay[0],
                     mapOf(
-                        "year" to specificDay.split(" ")[1].split("/")[2].toInt(),
-                        "month" to specificDay.split(" ")[1].split("/")[1].toInt(),
-                        "day" to specificDay.split(" ")[1].split("/")[0].toInt()
+                        "year" to days[0].split(" ")[1].split("/")[2].toInt(),
+                        "month" to days[0].split(" ")[1].split("/")[1].toInt(),
+                        "day" to days[0].split(" ")[1].split("/")[0].toInt()
                     )
-                )
-                return@launch
-            } else {
-                menus["evening"] = Menu(
-                    Day(
-                        days[0],
-                        contentPerDay[0],
-                        mapOf(
-                            "year" to days[0].split(" ")[1].split("/")[2].toInt(),
-                            "month" to days[0].split(" ")[1].split("/")[1].toInt(),
-                            "day" to days[0].split(" ")[1].split("/")[0].toInt()
-                        )
-                    ),
-                    Day(
-                        days[1],
-                        contentPerDay[1],
-                        mapOf(
-                            "year" to days[1].split(" ")[1].split("/")[2].toInt(),
-                            "month" to days[1].split(" ")[1].split("/")[1].toInt(),
-                            "day" to days[1].split(" ")[1].split("/")[0].toInt()
-                        )
-                    ),
-                    Day(
-                        days[2],
-                        contentPerDay[2],
-                        mapOf(
-                            "year" to days[2].split(" ")[1].split("/")[2].toInt(),
-                            "month" to days[2].split(" ")[1].split("/")[1].toInt(),
-                            "day" to days[2].split(" ")[1].split("/")[0].toInt()
-                        )
-                    ),
-                    Day(
-                        days[3],
-                        contentPerDay[3],
-                        mapOf(
-                            "year" to days[3].split(" ")[1].split("/")[2].toInt(),
-                            "month" to days[3].split(" ")[1].split("/")[1].toInt(),
-                            "day" to days[3].split(" ")[1].split("/")[0].toInt()
-                        )
-                    ),
-                    redactionMessage = redactionMessage
-                )
-                showMenu(currentDay)
-                if (!onReload) {
-                    checkForUpdates()
-                }
+                ),
+                Day(
+                    days[1],
+                    contentPerDay[1],
+                    mapOf(
+                        "year" to days[1].split(" ")[1].split("/")[2].toInt(),
+                        "month" to days[1].split(" ")[1].split("/")[1].toInt(),
+                        "day" to days[1].split(" ")[1].split("/")[0].toInt()
+                    )
+                ),
+                Day(
+                    days[2],
+                    contentPerDay[2],
+                    mapOf(
+                        "year" to days[2].split(" ")[1].split("/")[2].toInt(),
+                        "month" to days[2].split(" ")[1].split("/")[1].toInt(),
+                        "day" to days[2].split(" ")[1].split("/")[0].toInt()
+                    )
+                ),
+                Day(
+                    days[3],
+                    contentPerDay[3],
+                    mapOf(
+                        "year" to days[3].split(" ")[1].split("/")[2].toInt(),
+                        "month" to days[3].split(" ")[1].split("/")[1].toInt(),
+                        "day" to days[3].split(" ")[1].split("/")[0].toInt()
+                    )
+                ),
+                redactionMessage = redactionMessage
+            )
+            showMenu(currentDay)
+            if (!onReload) {
+                checkForUpdates()
             }
         }
 

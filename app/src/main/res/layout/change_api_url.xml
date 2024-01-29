@@ -15,7 +15,6 @@
         android:textSize="20sp"
         android:textStyle="bold" />
 
-    <!-- L'EditText doit faire la taille de l'écran -->
     <EditText
         android:id="@+id/apiUrl"
         android:layout_width="wrap_content"

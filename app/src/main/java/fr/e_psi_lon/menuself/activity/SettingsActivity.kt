@@ -281,9 +281,10 @@ class SettingsActivity : AppCompatActivity() {
                         if (urlText.endsWith("/")) {
                             urlText = urlText.substring(0, urlText.length - 1)
                         }
-                        // On essaye d'obtenir un token pour vérifier que l'URL est valide
                         GlobalScope.launch(Dispatchers.IO) {
                             val client = OkHttpClient()
+
+                            @Suppress("SpellCheckingInspection")
                             val request = Request.Builder()
                                 .url(
                                     "${urlText}/generatetoken"

@@ -51,7 +51,6 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
     private val dayInWeek: List<String> =
         listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
     internal var currentDay: String = getDayOfWeek()
-    internal var gotDay: Day = Day()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Logger.getLogger(OkHttpClient.Companion::class.java.name).level = Level.FINE
@@ -332,6 +331,8 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
             val username = config.getString("pronoteUsername")
             val password = config.getString("pronotePassword")
             val client = OkHttpClient()
+
+            @Suppress("SpellCheckingInspection")
             val request = Request.Builder()
                 .url("${config.get("pronoteAPI")}/generatetoken")
                 .post(
@@ -598,7 +599,7 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
         finishAffinity()
     }
 
-    open fun fetchMenuData(specificDay: String = "", onReload: Boolean = false): Job {
+    open fun fetchMenuData(onReload: Boolean = false): Job {
         return CoroutineScope(Dispatchers.IO).launch {}
     }
 

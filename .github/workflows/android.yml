@@ -1,3 +1,4 @@
+#file: noinspection Annotator
 name: Build
 
 on:
@@ -85,7 +86,7 @@ jobs:
           cp app/build/outputs/apk/release/app-release.apk ../builds-alpha/app-release.apk
           cp app/build/outputs/apk/release/app-release.apk ../builds-beta/app-release.apk
           cp app/build/outputs/apk/release/app-release.apk ../builds-stable/app-release.apk
-          
+
 
       - name: Upload APK
         uses: actions/upload-artifact@v3
