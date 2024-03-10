@@ -6,29 +6,29 @@
     android:orientation="vertical">
 
     <ImageButton
-        android:id="@+id/exitButton"
+        android:id="@+id/exit_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:background="@null"
         android:contentDescription="@string/exit"
         android:src="@drawable/ic_cross"
-        app:tint="@color/colorSecondary" />
+        app:tint="@color/color_secondary" />
 
     <TextView
-        android:id="@+id/changelogHistory"
+        android:id="@+id/changelog_history"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
         android:text="@string/contributors"
         android:textAlignment="center"
-        android:textColor="@color/colorOnSecondary"
+        android:textColor="@color/color_on_secondary"
         android:textSize="24sp"
         android:textStyle="bold" />
 
 
     <LinearLayout
-        android:id="@+id/historyLayout"
+        android:id="@+id/history_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_gravity="center_vertical"
@@ -37,7 +37,7 @@
         android:orientation="horizontal">
 
         <ScrollView
-            android:id="@+id/contributorsList"
+            android:id="@+id/contributors_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
@@ -47,7 +47,7 @@
             android:visibility="gone">
 
             <LinearLayout
-                android:id="@+id/contributorsListLayout"
+                android:id="@+id/contributors_list_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical" />
@@ -55,12 +55,12 @@
         </ScrollView>
 
         <TextView
-            android:id="@+id/loadingContributors"
+            android:id="@+id/loading_contributors"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/loading_contributors"
             android:textAlignment="center"
-            android:textColor="@color/colorOnSecondary"
+            android:textColor="@color/color_on_secondary"
             android:textSize="45sp"
             android:textStyle="bold" />
     </LinearLayout>

@@ -49,16 +49,16 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
         Logger.getLogger(OkHttpClient.Companion::class.java.name).level = Level.FINE
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        layout = findViewById(R.id.mainLayout)
-        noonButton = findViewById(R.id.noonButton)
-        eveningButton = findViewById(R.id.eveningButton)
-        settingsButton = findViewById(R.id.settingsButton)
-        menuListView = findViewById(R.id.menuListView)
-        dayPlusButton = findViewById(R.id.nextButton)
-        dayMinusButton = findViewById(R.id.previousButton)
-        dayView = findViewById(R.id.dateTextView)
-        statusView = findViewById(R.id.statusTextView)
-        menuLayout = findViewById(R.id.mealLayout)
+        layout = findViewById(R.id.main_layout)
+        noonButton = findViewById(R.id.noon_button)
+        eveningButton = findViewById(R.id.evening_button)
+        settingsButton = findViewById(R.id.settings_button)
+        menuListView = findViewById(R.id.menu_list_view)
+        dayPlusButton = findViewById(R.id.next_button)
+        dayMinusButton = findViewById(R.id.previous_button)
+        dayView = findViewById(R.id.date_text_view)
+        statusView = findViewById(R.id.status_text_view)
+        menuLayout = findViewById(R.id.meal_layout)
         if (Calendar.getInstance(TimeZone.getTimeZone("Europe/Paris"))
                 .get(Calendar.HOUR_OF_DAY) >= hour
         ) {
@@ -75,13 +75,13 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
             File(filesDir, "config.json").writeText(config.toString())
         }
         if (pageIndex == 0) {
-            noonButton.setBackgroundColor(getColor(R.color.colorSelectedPageBackground))
-            eveningButton.setBackgroundColor(getColor(R.color.colorSecondaryVariant))
+            noonButton.setBackgroundColor(getColor(R.color.color_selected_page_background))
+            eveningButton.setBackgroundColor(getColor(R.color.color_secondary_variant))
         } else {
-            eveningButton.setBackgroundColor(getColor(R.color.colorSelectedPageBackground))
-            noonButton.setBackgroundColor(getColor(R.color.colorSecondaryVariant))
+            eveningButton.setBackgroundColor(getColor(R.color.color_selected_page_background))
+            noonButton.setBackgroundColor(getColor(R.color.color_secondary_variant))
         }
-        settingsButton.setBackgroundColor(getColor(R.color.colorSecondaryVariant))
+        settingsButton.setBackgroundColor(getColor(R.color.color_secondary_variant))
         if (intent.hasExtra(if (pageIndex == 0) "noon" else "evening")) {
             menus[if (pageIndex == 0) "noon" else "evening"] =
                 Menu.fromJson(intent.getStringExtra(if (pageIndex == 0) "noon" else "evening")!!)

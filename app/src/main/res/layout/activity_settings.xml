@@ -9,13 +9,13 @@
 
 
     <TextView
-        android:id="@+id/appNameTextView"
+        android:id="@+id/app_name_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
         android:text="@string/app_name"
         android:textAlignment="center"
-        android:textColor="@color/colorOnSecondary"
+        android:textColor="@color/color_on_secondary"
         android:textSize="24sp"
         android:textStyle="bold" />
 
@@ -26,7 +26,7 @@
         android:padding="16dp"
         android:text="@string/settings"
         android:textAlignment="center"
-        android:textColor="@color/colorOnSecondary"
+        android:textColor="@color/color_on_secondary"
         android:textSize="20sp"
         android:textStyle="bold" />
 
@@ -54,89 +54,89 @@
                 android:orientation="vertical">
 
                 <Button
-                    android:id="@+id/moreInfoButton"
+                    android:id="@+id/more_info_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/colorBackground"
+                    android:background="@color/color_background"
                     android:text="@string/more_menu_info"
                     android:textAlignment="center"
-                    android:textColor="@color/colorOnSecondary"
+                    android:textColor="@color/color_on_secondary"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
                 <Button
-                    android:id="@+id/emojiExplanationButton"
+                    android:id="@+id/emoji_explanation_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/colorBackground"
+                    android:background="@color/color_background"
                     android:text="@string/label_emoji_explanation"
                     android:textAlignment="center"
-                    android:textColor="@color/colorOnSecondary"
+                    android:textColor="@color/color_on_secondary"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
 
                 <Button
-                    android:id="@+id/downloadApkButton"
+                    android:id="@+id/download_apk_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/colorBackground"
+                    android:background="@color/color_background"
                     android:text="@string/download_apk"
                     android:textAlignment="center"
-                    android:textColor="@color/colorOnSecondary"
+                    android:textColor="@color/color_on_secondary"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
                 <Button
-                    android:id="@+id/checkUpdateButton"
+                    android:id="@+id/check_update_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/colorBackground"
+                    android:background="@color/color_background"
                     android:text="@string/check_update"
                     android:textAlignment="center"
-                    android:textColor="@color/colorOnSecondary"
+                    android:textColor="@color/color_on_secondary"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
                 <Button
-                    android:id="@+id/changelogHistoryButton"
+                    android:id="@+id/changelog_history_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/colorBackground"
+                    android:background="@color/color_background"
                     android:text="@string/changelog_history"
                     android:textAlignment="center"
-                    android:textColor="@color/colorOnSecondary"
+                    android:textColor="@color/color_on_secondary"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
                 <Button
-                    android:id="@+id/contributorsButton"
+                    android:id="@+id/contributors_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/colorBackground"
+                    android:background="@color/color_background"
                     android:text="@string/contributors"
                     android:textAlignment="center"
-                    android:textColor="@color/colorOnSecondary"
+                    android:textColor="@color/color_on_secondary"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
                 <Button
-                    android:id="@+id/changeAPIURLButton"
+                    android:id="@+id/changeAPI_URL_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/colorBackground"
+                    android:background="@color/color_background"
                     android:text="@string/change_api_url"
                     android:textAlignment="center"
-                    android:textColor="@color/colorOnSecondary"
+                    android:textColor="@color/color_on_secondary"
                     android:textSize="20sp"
                     android:textStyle="bold" />
 
                 <LinearLayout
-                    android:id="@+id/initActivityLayout"
+                    android:id="@+id/init_activity_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:background="@color/colorBackground"
+                    android:background="@color/color_background"
                     android:orientation="horizontal"
                     android:padding="16dp">
 
@@ -147,12 +147,12 @@
                         android:layout_weight="5"
                         android:text="@string/init_activity"
                         android:textAlignment="textStart"
-                        android:textColor="@color/colorOnSecondary"
+                        android:textColor="@color/color_on_secondary"
                         android:textSize="20sp"
                         android:textStyle="bold" />
 
                     <Spinner
-                        android:id="@+id/initActivitySpinner"
+                        android:id="@+id/init_activity_spinner"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -161,11 +161,11 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/updateBranchLayout"
+                    android:id="@+id/update_branch_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:background="@color/colorBackground"
+                    android:background="@color/color_background"
                     android:orientation="horizontal"
                     android:padding="16dp">
 
@@ -176,12 +176,12 @@
                         android:layout_weight="5"
                         android:text="@string/update_channel"
                         android:textAlignment="textStart"
-                        android:textColor="@color/colorOnSecondary"
+                        android:textColor="@color/color_on_secondary"
                         android:textSize="20sp"
                         android:textStyle="bold" />
 
                     <Spinner
-                        android:id="@+id/updateBranchSpinner"
+                        android:id="@+id/update_branch_spinner"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="5"
@@ -193,7 +193,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:background="@color/colorBackground"
+                    android:background="@color/color_background"
                     android:orientation="horizontal"
                     android:padding="16dp">
 
@@ -204,31 +204,31 @@
                         android:layout_weight="5"
                         android:text="@string/use_pronote"
                         android:textAlignment="textStart"
-                        android:textColor="@color/colorOnSecondary"
+                        android:textColor="@color/color_on_secondary"
                         android:textSize="20sp"
                         android:textStyle="bold" />
 
                     <androidx.appcompat.widget.SwitchCompat
-                        android:id="@+id/usePronoteSwitch"
+                        android:id="@+id/use_pronote_switch"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
                         android:layout_marginEnd="10dp"
                         android:layout_weight="5"
                         android:textAlignment="textStart"
-                        android:textColor="@color/colorOnSecondary"
+                        android:textColor="@color/color_on_secondary"
                         android:textSize="20sp"
                         android:textStyle="bold" />
                 </LinearLayout>
 
                 <Button
-                    android:id="@+id/disconnectPronoteButton"
+                    android:id="@+id/disconnect_pronote_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/colorBackground"
+                    android:background="@color/color_background"
                     android:text="@string/disconnect_pronote"
                     android:textAlignment="center"
-                    android:textColor="@color/colorOnSecondary"
+                    android:textColor="@color/color_on_secondary"
                     android:textSize="20sp"
                     android:textStyle="bold"
                     android:visibility="gone" />
@@ -246,7 +246,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/version"
                         android:textAlignment="center"
-                        android:textColor="@color/colorOnSecondary"
+                        android:textColor="@color/color_on_secondary"
                         android:textSize="20sp"
                         android:textStyle="bold" />
                 </LinearLayout>
@@ -255,17 +255,17 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/bottomBarLayout"
+        android:id="@+id/bottom_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="@color/colorSecondaryVariant"
+        android:background="@color/color_secondary_variant"
         android:gravity="center"
         android:orientation="horizontal"
         android:weightSum="3">
 
         <ImageButton
-            android:id="@+id/noonButton"
+            android:id="@+id/noon_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -277,7 +277,7 @@
             app:tint="@color/sun" />
 
         <ImageButton
-            android:id="@+id/eveningButton"
+            android:id="@+id/evening_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -289,11 +289,11 @@
             app:tint="@color/moon" />
 
         <ImageButton
-            android:id="@+id/settingsButton"
+            android:id="@+id/settings_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@color/colorSelectedPageBackground"
+            android:background="@color/color_selected_page_background"
             android:contentDescription="@string/settings_button"
             android:padding="8dp"
             android:scaleType="fitCenter"

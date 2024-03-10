@@ -2,12 +2,12 @@
 <resources>
     <!-- Base application theme -->
     <style name="MenuSelf" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/dynamic_colorPrimary</item>
-        <item name="colorPrimaryVariant">@color/dynamic_colorPrimaryVariant</item>
-        <item name="colorSecondary">@color/dynamic_colorSecondary</item>
-        <item name="colorSecondaryVariant">@color/dynamic_colorSecondaryVariant</item>
-        <item name="android:statusBarColor">@color/dynamic_colorPrimaryVariant</item>
-        <item name="android:navigationBarColor">@color/dynamic_colorPrimaryVariant</item>
+        <item name="colorPrimary">@color/dynamic_color_primary</item>
+        <item name="colorPrimaryVariant">@color/dynamic_color_primary_variant</item>
+        <item name="colorSecondary">@color/dynamic_color_secondary</item>
+        <item name="colorSecondaryVariant">@color/dynamic_color_secondary_variant</item>
+        <item name="android:statusBarColor">@color/dynamic_color_primary_variant</item>
+        <item name="android:navigationBarColor">@color/dynamic_color_primary_variant</item>
     </style>
     <!-- Other styles -->
 

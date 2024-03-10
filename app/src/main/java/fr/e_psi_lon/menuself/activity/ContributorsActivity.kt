@@ -34,10 +34,10 @@ class ContributorsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_contributors)
-        scrollLinearLayout = findViewById(R.id.contributorsListLayout)
-        contributorsLoading = findViewById(R.id.loadingContributors)
-        scrollView = findViewById(R.id.contributorsList)
-        exitButton = findViewById(R.id.exitButton)
+        scrollLinearLayout = findViewById(R.id.contributors_list_layout)
+        contributorsLoading = findViewById(R.id.loading_contributors)
+        scrollView = findViewById(R.id.contributors_list)
+        exitButton = findViewById(R.id.exit_button)
         if (intent.hasExtra("evening")) {
             menus["evening"] = Menu.fromJson(intent.getStringExtra("evening")!!)
         }

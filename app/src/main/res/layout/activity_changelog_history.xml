@@ -6,7 +6,7 @@
     android:orientation="vertical">
 
     <ImageButton
-        android:id="@+id/exitButton"
+        android:id="@+id/exit_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
@@ -16,19 +16,19 @@
         app:tint="@color/colorSecondary" />
 
     <TextView
-        android:id="@+id/changelogHistory"
+        android:id="@+id/changelog_history"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
         android:text="@string/changelog_history"
         android:textAlignment="center"
-        android:textColor="@color/colorOnSecondary"
+        android:textColor="@color/color_on_secondary"
         android:textSize="24sp"
         android:textStyle="bold" />
 
 
     <LinearLayout
-        android:id="@+id/historyLayout"
+        android:id="@+id/history_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_gravity="center_vertical"
@@ -37,7 +37,7 @@
         android:orientation="horizontal">
 
         <ListView
-            android:id="@+id/changelogHistoryList"
+            android:id="@+id/changelog_history_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
@@ -47,12 +47,12 @@
             android:visibility="gone" />
 
         <TextView
-            android:id="@+id/historyStatus"
+            android:id="@+id/history_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/loading_history"
             android:textAlignment="center"
-            android:textColor="@color/colorOnSecondary"
+            android:textColor="@color/color_on_secondary"
             android:textSize="45sp"
             android:textStyle="bold" />
     </LinearLayout>

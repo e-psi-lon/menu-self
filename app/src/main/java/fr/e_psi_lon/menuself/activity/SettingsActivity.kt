@@ -62,21 +62,21 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
         layout = findViewById(R.id.mainLayout)
-        noonButton = findViewById(R.id.noonButton)
-        eveningButton = findViewById(R.id.eveningButton)
-        settingsButton = findViewById(R.id.settingsButton)
+        noonButton = findViewById(R.id.noon_button)
+        eveningButton = findViewById(R.id.evening_button)
+        settingsButton = findViewById(R.id.settings_button)
         versionView = findViewById(R.id.version)
-        downloadLatestApkButton = findViewById(R.id.downloadApkButton)
-        checkForUpdatesButton = findViewById(R.id.checkUpdateButton)
-        changelogHistoryButton = findViewById(R.id.changelogHistoryButton)
-        moreInfoButton = findViewById(R.id.moreInfoButton)
-        emojisExplanationButton = findViewById(R.id.emojiExplanationButton)
-        initActivitySpinner = findViewById(R.id.initActivitySpinner)
-        updateBranchSpinner = findViewById(R.id.updateBranchSpinner)
-        contributorsButton = findViewById(R.id.contributorsButton)
-        changeApiUrl = findViewById(R.id.changeAPIURLButton)
-        usePronote = findViewById(R.id.usePronoteSwitch)
-        disconnectFromPronote = findViewById(R.id.disconnectPronoteButton)
+        downloadLatestApkButton = findViewById(R.id.download_apk_button)
+        checkForUpdatesButton = findViewById(R.id.check_update_button)
+        changelogHistoryButton = findViewById(R.id.changelog_history_button)
+        moreInfoButton = findViewById(R.id.more_info_button)
+        emojisExplanationButton = findViewById(R.id.emoji_explanation_button)
+        initActivitySpinner = findViewById(R.id.init_activity_spinner)
+        updateBranchSpinner = findViewById(R.id.update_branch_spinner)
+        contributorsButton = findViewById(R.id.contributors_button)
+        changeApiUrl = findViewById(R.id.changeAPI_URL_button)
+        usePronote = findViewById(R.id.use_pronote_switch)
+        disconnectFromPronote = findViewById(R.id.disconnect_pronote_button)
         val channel = mapOf(
             "dev" to getString(R.string.dev),
             "alpha" to getString(R.string.alpha),
@@ -281,13 +281,13 @@ class SettingsActivity : AppCompatActivity() {
             val dialogView = layoutInflater.inflate(R.layout.change_api_url, null)
             val builder = AlertDialog.Builder(this)
             builder.apply {
-                dialogView.findViewById<EditText>(R.id.apiUrl).setText(
+                dialogView.findViewById<EditText>(R.id.api_url).setText(
                     config.getString("pronoteAPI")
                 )
                 setView(dialogView)
                 setCancelable(true)
                 setPositiveButton(R.string.change) { dialog, _ ->
-                    val url = dialogView.findViewById<EditText>(R.id.apiUrl)
+                    val url = dialogView.findViewById<EditText>(R.id.api_url)
                     var urlText = url.text.toString()
                     if (urlText != "") {
                         if (!url.text.toString().startsWith("http")) {

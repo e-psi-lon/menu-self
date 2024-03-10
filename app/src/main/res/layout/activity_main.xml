@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/mainLayout"
+    android:id="@+id/main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="bottom"
@@ -9,59 +9,59 @@
 
 
     <TextView
-        android:id="@+id/appNameTextView"
+        android:id="@+id/app_name_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
         android:text="@string/app_name"
         android:textAlignment="center"
-        android:textColor="@color/colorOnSecondary"
+        android:textColor="@color/color_on_secondary"
         android:textSize="24sp"
         android:textStyle="bold" />
 
     <LinearLayout
-        android:id="@+id/dateLayout"
+        android:id="@+id/date_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:gravity="center">
 
         <ImageButton
-            android:id="@+id/previousButton"
+            android:id="@+id/previous_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/previous"
             android:src="@drawable/chevron_left"
-            app:tint="@color/colorOnSecondary" />
+            app:tint="@color/color_on_secondary" />
 
         <TextView
-            android:id="@+id/dateTextView"
+            android:id="@+id/date_text_view"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:padding="8dp"
             android:text="@string/loading_date"
             android:textAlignment="center"
-            android:textColor="@color/colorOnSecondary"
+            android:textColor="@color/color_on_secondary"
             android:textSize="20sp"
             android:textStyle="bold" />
 
         <ImageButton
-            android:id="@+id/nextButton"
+            android:id="@+id/next_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/next"
             android:src="@drawable/chevron_right"
-            app:tint="@color/colorOnSecondary" />
+            app:tint="@color/color_on_secondary" />
     </LinearLayout>
 
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/mealLayout"
+        android:id="@+id/meal_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_gravity="center_vertical"
@@ -75,7 +75,7 @@
             android:orientation="vertical">
 
             <ListView
-                android:id="@+id/menuListView"
+                android:id="@+id/menu_list_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top"
@@ -85,34 +85,34 @@
                 android:visibility="gone" />
 
             <TextView
-                android:id="@+id/statusTextView"
+                android:id="@+id/status_text_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/loading"
                 android:textAlignment="center"
-                android:textColor="@color/colorOnSecondary"
+                android:textColor="@color/color_on_secondary"
                 android:textSize="50sp"
                 android:textStyle="bold" />
         </LinearLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <LinearLayout
-        android:id="@+id/bottomBarLayout"
+        android:id="@+id/bottom_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="@color/colorSecondaryVariant"
+        android:background="@color/color_secondary_variant"
         android:gravity="center"
         android:orientation="horizontal"
         android:weightSum="3">
 
 
         <ImageButton
-            android:id="@+id/noonButton"
+            android:id="@+id/noon_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@color/colorSelectedPageBackground"
+            android:background="@color/color_selected_page_background"
             android:contentDescription="@string/noon"
             android:padding="8dp"
             android:scaleType="fitCenter"
@@ -121,7 +121,7 @@
 
 
         <ImageButton
-            android:id="@+id/eveningButton"
+            android:id="@+id/evening_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -134,7 +134,7 @@
 
 
         <ImageButton
-            android:id="@+id/settingsButton"
+            android:id="@+id/settings_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

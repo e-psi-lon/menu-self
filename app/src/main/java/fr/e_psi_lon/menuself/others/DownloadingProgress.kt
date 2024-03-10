@@ -42,8 +42,8 @@ class DownloadingProgress : DialogFragment() {
         while (dialog == null) {
             Thread.sleep(100)
         }
-        titleDownloading = dialog!!.findViewById(R.id.titleDownloading)
-        progressBar = dialog!!.findViewById(R.id.progressBar)
+        titleDownloading = dialog!!.findViewById(R.id.title_downloading)
+        progressBar = dialog!!.findViewById(R.id.progress_bar)
         cancelButton = dialog!!.findViewById(R.id.cancel)
         cancelButton.setOnClickListener {
             onCancel(dialog!!)

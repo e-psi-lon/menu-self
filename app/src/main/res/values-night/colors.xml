@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Static colors -->
-    <color name="colorPrimary">#0D0D0D</color>
-    <color name="colorPrimaryVariant">#C0C0C0</color>
-    <color name="colorSecondary">#D0D0D0</color>
-    <color name="colorSecondaryVariant">#616161</color>
+    <color name="color_primary">#0D0D0D</color>
+    <color name="color_primary_variant">#C0C0C0</color>
+    <color name="color_secondary">#D0D0D0</color>
+    <color name="color_secondary_variant">#616161</color>
     <!-- Background color -->
-    <color name="colorBackground">#0D0D0D</color>
+    <color name="color_background">#0D0D0D</color>
 
     <!-- Other colors -->
-    <color name="colorSelectedPageBackground">#777777</color>
+    <color name="color_selected_page_background">#777777</color>
 
 
     <!-- Dynamic colors (Material You) -->
-    <color name="dynamic_colorPrimary">@color/colorPrimary</color>
-    <color name="dynamic_colorPrimaryVariant">@color/colorPrimaryVariant</color>
-    <color name="dynamic_colorSecondary">@color/colorSecondary</color>
-    <color name="dynamic_colorSecondaryVariant">@color/colorSecondaryVariant</color>
+    <color name="dynamic_color_primary">@color/color_primary</color>
+    <color name="dynamic_color_primary_variant">@color/color_primary_variant</color>
+    <color name="dynamic_color_secondary">@color/color_secondary</color>
+    <color name="dynamic_color_secondary_variant">@color/color_secondary_variant</color>
 
     <!-- Other colors (bis) -->
-    <color name="colorOnPrimary">#000000</color>
-    <color name="colorOnSecondary">#FFFFFF</color>
+    <color name="color_on_primary">#000000</color>
+    <color name="color_on_secondary">#FFFFFF</color>
 
     <!-- Other dynamic colors (Material You) -->
-    <color name="dynamic_colorOnPrimary">@color/colorOnPrimary</color>
-    <color name="dynamic_colorOnSecondary">@color/colorOnSecondary</color>
+    <color name="dynamic_color_on_primary">@color/color_on_primary</color>
+    <color name="dynamic_color_on_secondary">@color/color_on_secondary</color>
 </resources>
