@@ -13,7 +13,7 @@
         android:background="@null"
         android:contentDescription="@string/exit"
         android:src="@drawable/ic_cross"
-        app:tint="@color/colorSecondary" />
+        app:tint="@color/color_secondary" />
 
     <TextView
         android:id="@+id/changelog_history"

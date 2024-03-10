@@ -61,7 +61,7 @@ class SettingsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
-        layout = findViewById(R.id.mainLayout)
+        layout = findViewById(R.id.main_layout)
         noonButton = findViewById(R.id.noon_button)
         eveningButton = findViewById(R.id.evening_button)
         settingsButton = findViewById(R.id.settings_button)
@@ -74,7 +74,7 @@ class SettingsActivity : AppCompatActivity() {
         initActivitySpinner = findViewById(R.id.init_activity_spinner)
         updateBranchSpinner = findViewById(R.id.update_branch_spinner)
         contributorsButton = findViewById(R.id.contributors_button)
-        changeApiUrl = findViewById(R.id.changeAPI_URL_button)
+        changeApiUrl = findViewById(R.id.change_API_URL_button)
         usePronote = findViewById(R.id.use_pronote_switch)
         disconnectFromPronote = findViewById(R.id.disconnect_pronote_button)
         val channel = mapOf(

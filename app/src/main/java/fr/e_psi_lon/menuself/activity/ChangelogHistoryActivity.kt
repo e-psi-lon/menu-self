@@ -36,7 +36,7 @@ class ChangelogHistoryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_changelog_history)
         changelogHistoryLoading = findViewById(R.id.history_status)
-        changelogHistory = findViewById(R.id.changelog_history)
+        changelogHistory = findViewById(R.id.changelog_history_list)
         exitButton = findViewById(R.id.exit_button)
         if (intent.hasExtra("evening")) {
             menus["evening"] = Menu.fromJson(intent.getStringExtra("evening")!!)

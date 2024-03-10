@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/mainLayout"
+    android:id="@+id/main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="bottom"
@@ -121,7 +121,7 @@
                     android:textStyle="bold" />
 
                 <Button
-                    android:id="@+id/changeAPI_URL_button"
+                    android:id="@+id/change_API_URL_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/color_background"
