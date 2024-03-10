@@ -15,16 +15,16 @@
     <color name="settings">#FFFFFF</color>
 
     <!-- Dynamic colors (Material You) -->
-    <color name="dynamic_color_primary">@color/colorPrimary</color>
-    <color name="dynamic_color_primary_variant">@color/colorPrimaryVariant</color>
-    <color name="dynamic_color_secondary">@color/colorSecondary</color>
-    <color name="dynamic_color_secondary_variant">@color/colorSecondaryVariant</color>
+    <color name="dynamic_color_primary">@color/color_primary</color>
+    <color name="dynamic_color_primary_variant">@color/color_primary_variant</color>
+    <color name="dynamic_color_secondary">@color/color_secondary</color>
+    <color name="dynamic_color_secondary_variant">@color/color_secondary_variant</color>
 
     <!-- Other colors (bis) -->
     <color name="color_on_primary">#FFFFFF</color>
     <color name="color_on_secondary">#000000</color>
 
     <!-- Other dynamic colors (Material You) -->
-    <color name="dynamic_color_on_primary">@color/colorOnPrimary</color>
-    <color name="dynamic_color_on_secondary">@color/colorOnSecondary</color>
+    <color name="dynamic_color_on_primary">@color/color_on_primary</color>
+    <color name="dynamic_color_on_secondary">@color/color_on_secondary</color>
 </resources>
