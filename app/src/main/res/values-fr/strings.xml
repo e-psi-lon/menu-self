@@ -23,7 +23,7 @@
     <string name="update_available">Mise à jour disponible\nChangements : %s</string>
     <string name="install_update">Installer la mise à jour</string>
     <string name="cancel">Annuler</string>
-    <string name="no_changelog">Pas de changements (Si vous voyez ceci en vérifiant les mises à jours, attendez quelques instants et réessayez)</string>
+    <string name="no_changelog">Pas de changements (Si vous voyez ceci en vérifiant les mises à jour, attendez quelques instants et réessayez)</string>
     <string name="permission_denied">L\'application n\'as pas la permission (%s) nécessaire pour se mettre à jour</string>
     <string name="unknown_error">Une erreur est survenue lors de la mise à jour :\n%s</string>
     <string name="settings_button">Page des paramètres</string>
@@ -47,7 +47,7 @@
     <string name="more">Et plus…</string>
     <string name="more_menu_info">Plus d\'informations sur le menu</string>
     <string name="more_menu_info_text">Rien à dire sur le menu</string>
-    <string name="more_menu_info_text_redaction_message">Il y a un message de la rédaction :\n\n%s</string>
+    <string name="more_menu_info_text_information">Il y a un message d\'information :\n\n%s</string>
     <string name="more_menu_info_text_no_menu">Aucune donnée pour le menu</string>
     <string name="restart_where_you_left">Reprendre là où vous vous êtes arrêté</string>
     <string name="init_activity">Au démarrage :</string>
@@ -81,5 +81,5 @@
     <string name="change_api_url_error">Erreur lors du changement de l\'URL de l\'API</string>
     <string name="change_api_url_success">URL de l\'API changée avec succès</string>
     <string name="label_emoji_explanation">Explication des labels</string>
-    <string name="emoji_explanation">Explication des emojis : \n\n🍃: Végétarien\n🏠: Fait maison\n🌿: Haute valeur environnementale\n🌱: Bio\n👨‍🍳: Recette de chef fait maison\n🌾: Gluten\n📍: Produits locaux\n🏡: Assemblé sur place</string>
+    <string name="emoji_explanation">Explication des emojis : \n\n🍃: Végétarien\n🏠: Fait maison\n🌿: Haute valeur environnementale\n🌱: Bio\n👨‍🍳: Recette du chef fait maison\n🌾: Gluten\n📍: Produits locaux\n🏡: Assemblé sur place</string>
 </resources>

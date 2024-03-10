@@ -7,7 +7,7 @@ data class Menu(
     val day2: Day = Day(),
     val day3: Day = Day(),
     val day4: Day = Day(),
-    val redactionMessage: String? = null,
+    val information: String? = null,
     val day5: Day? = null
 
 ) {
@@ -29,7 +29,7 @@ data class Menu(
             } else {
                 ""
             }
-        } (\n${if (redactionMessage != null) ",\nredaction message: $redactionMessage" else ""})"
+        } (\n${if (information != null) ",\ninformationF: $information" else ""})"
     }
 
     fun toJson(): String {
@@ -37,12 +37,12 @@ data class Menu(
             if (day5 != null) {
                 ", \"day5\": ${day5.toJson()}"
             } else ""
-        } ${if (redactionMessage != null) ", \"redactionMessage\": \"$redactionMessage\"" else ""}}"
+        } ${if (information != null) ", \"information\": \"$information\"" else ""}}"
     }
 
     override fun equals(other: Any?): Boolean {
         if (other is Menu) {
-            return day1 == other.day1 && day2 == other.day2 && day3 == other.day3 && day4 == other.day4 && day5 == other.day5 && redactionMessage == other.redactionMessage
+            return day1 == other.day1 && day2 == other.day2 && day3 == other.day3 && day4 == other.day4 && day5 == other.day5 && information == other.information
         }
         return false
     }
@@ -52,7 +52,7 @@ data class Menu(
         result = 31 * result + day2.hashCode()
         result = 31 * result + day3.hashCode()
         result = 31 * result + day4.hashCode()
-        result = 31 * result + (redactionMessage?.hashCode() ?: 0)
+        result = 31 * result + (information?.hashCode() ?: 0)
         result = 31 * result + (day5?.hashCode() ?: 0)
         return result
     }
@@ -60,14 +60,14 @@ data class Menu(
     companion object {
         fun fromJson(json: String): Menu {
             val jsonObject = JSONObject(json)
-            return if (jsonObject.has("redactionMessage")) {
+            return if (jsonObject.has("information")) {
                 if (jsonObject.has("day5")) {
                     Menu(
                         Day.fromJson(jsonObject.getString("day1")),
                         Day.fromJson(jsonObject.getString("day2")),
                         Day.fromJson(jsonObject.getString("day3")),
                         Day.fromJson(jsonObject.getString("day4")),
-                        jsonObject.getString("redactionMessage"),
+                        jsonObject.getString("information"),
                         Day.fromJson(jsonObject.getString("day5"))
                     )
                 } else {
@@ -76,7 +76,7 @@ data class Menu(
                         Day.fromJson(jsonObject.getString("day2")),
                         Day.fromJson(jsonObject.getString("day3")),
                         Day.fromJson(jsonObject.getString("day4")),
-                        jsonObject.getString("redactionMessage")
+                        jsonObject.getString("information")
                     )
                 }
             } else {

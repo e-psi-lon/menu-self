@@ -151,11 +151,11 @@ class SettingsActivity : AppCompatActivity() {
                 builder.apply {
                     setTitle(R.string.more_menu_info)
                     if (menus.containsKey("evening")) {
-                        if (menus["evening"]?.redactionMessage != null) {
+                        if (menus["evening"]?.information != null) {
                             setMessage(
                                 getString(
-                                    R.string.more_menu_info_text_redaction_message,
-                                    menus["evening"]?.redactionMessage ?: ""
+                                    R.string.more_menu_info_text_information,
+                                    menus["evening"]?.information ?: ""
                                 )
                             )
                         } else {
@@ -166,11 +166,11 @@ class SettingsActivity : AppCompatActivity() {
                             )
                         }
                     } else if (menus.containsKey("noon")) {
-                        if (menus["noon"]?.redactionMessage != null) {
+                        if (menus["noon"]?.information != null) {
                             setMessage(
                                 getString(
-                                    R.string.more_menu_info_text_redaction_message,
-                                    menus["noon"]?.redactionMessage ?: ""
+                                    R.string.more_menu_info_text_information,
+                                    menus["noon"]?.information ?: ""
                                 )
                             )
                         } else {
