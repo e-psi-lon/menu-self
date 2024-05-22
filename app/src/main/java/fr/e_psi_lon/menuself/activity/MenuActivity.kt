@@ -85,7 +85,7 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
         if (intent.hasExtra(if (pageIndex == 0) "noon" else "evening")) {
             menus[if (pageIndex == 0) "noon" else "evening"] =
                 Menu.fromJson(intent.getStringExtra(if (pageIndex == 0) "noon" else "evening")!!)
-            CoroutineScope(Dispatchers.IO).launch {
+            CoroutineScope(Dispatchers.Main).launch {
                 showMenu(currentDay)
             }
             if (intent.hasExtra(if (pageIndex == 0) "evening" else "noon")) {
@@ -99,7 +99,9 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
             }
             if (menuRequest.isNetworkAvailable(this.applicationContext)) {
                 try {
-                    fetchMenuFromPronote()
+                    CoroutineScope(Dispatchers.IO).launch {
+                        fetchMenuFromPronote()
+                    }
                 } catch (e: Exception) {
                     menuLayout.isRefreshing = false
                     statusView.text = getString(R.string.loading_error)
@@ -186,7 +188,9 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
                 try {
                     menus["evening"] = Menu()
                     menus["noon"] = Menu()
-                    fetchMenuFromPronote(true)
+                    CoroutineScope(Dispatchers.IO).launch {
+                        fetchMenuFromPronote(true)
+                    }
                 } catch (e: Exception) {
                     menuLayout.isRefreshing = false
                     statusView.text = getString(R.string.loading_error)
@@ -344,7 +348,7 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
                 .build()
             val response = client.newCall(request).execute()
             return if (response.code == 200) {
-                val token = JSONObject(response.body!!.string()).getString("token")
+                val token = JSONObject(response.body.string()).getString("token")
                 config.put("pronoteToken", token)
                 File(filesDir, "config.json").writeText(config.toString())
                 token
@@ -354,8 +358,7 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
         }
     }
 
-    private fun fetchMenuFromPronote(onReload: Boolean = false) =
-        CoroutineScope(Dispatchers.IO).launch {
+    private suspend fun fetchMenuFromPronote(onReload: Boolean = false) {
             val menusFile = File(applicationContext.filesDir, "menus.json")
             val json = if (menusFile.exists()) {
                 try {
@@ -385,14 +388,18 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
                     }
                 }
                 if (pageIndex == 0 && menus.containsKey("noon") && menus["noon"] != Menu()) {
-                    showMenu(currentDay)
-                    checkForUpdates()
-                    return@launch
+                    withContext(Dispatchers.Main) {
+                        showMenu(currentDay)
+                        checkForUpdates()
+                    }
+                    return
                 }
                 if (pageIndex == 1 && menus.containsKey("evening") && menus["evening"] != Menu()) {
-                    showMenu(currentDay)
-                    checkForUpdates()
-                    return@launch
+                    withContext(Dispatchers.Main) {
+                        showMenu(currentDay)
+                        checkForUpdates()
+                    }
+                    return
                 }
             }
             val client = OkHttpClient()
@@ -405,7 +412,7 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
                     menuLayout.isRefreshing = false
                     statusView.text = getString(R.string.loading_error)
                 }
-                return@launch
+                return
             }
             try {
                 val token = getOrCheckToken(config)
@@ -418,7 +425,7 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
                         menuLayout.isRefreshing = false
                         statusView.text = getString(R.string.loading_error)
                     }
-                    return@launch
+                    return
                 }
                 config.put("pronoteToken", token)
                 File(filesDir, "config.json").writeText(config.toString())
@@ -446,7 +453,7 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
                 val request = Request.Builder()
                     .url("${config.get("pronoteAPI")}/menu?token=$token&dateFrom=$dateFrom&dateTo=$dateTo")
                     .build()
-                val pronoteMenu = client.newCall(request).execute().body?.string() ?: ""
+                val pronoteMenu = client.newCall(request).execute().body.string()
                 if (pronoteMenu == "" || pronoteMenu == "\"notfound\"" || pronoteMenu == "[]") {
                     try {
                         menus["evening"] = Menu()
@@ -456,7 +463,7 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
                         menuLayout.isRefreshing = false
                         statusView.text = getString(R.string.loading_error)
                     }
-                    return@launch
+                    return
                 }
                 val pronoteMenuJson = JSONArray(pronoteMenu)
                 val lunchDays = mutableListOf<Day>()
@@ -567,7 +574,9 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
                         menus["evening"] = Menu()
                     }
                 }
-                showMenu(currentDay)
+                withContext(Dispatchers.Main) {
+                    showMenu(currentDay)
+                }
                 if (!onReload) {
                     checkForUpdates()
                 }
@@ -643,6 +652,8 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
             menuListView.isEnabled = true
             statusView.visibility = View.GONE
         } catch (e: Exception) {
+            e.printStackTrace()
+
             statusView.text = getString(R.string.loading_error)
             statusView.visibility = View.VISIBLE
             menuListView.visibility = View.GONE
@@ -676,9 +687,11 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
         file.writeText(json)
     }
 
-    private fun fetchMenuData(onReload: Boolean = false) {
+    private suspend fun fetchMenuData(onReload: Boolean = false) {
         if (menus[if (pageIndex == 0) "noon" else "evening"] != Menu()) {
-            showMenu(currentDay)
+            withContext(Dispatchers.Main) {
+                showMenu(currentDay)
+            }
             return
         }
         val doc: Document = if (pageIndex == 0)
@@ -742,7 +755,7 @@ open class MenuActivity(private var hour: Int, private var pageIndex: Int) : App
                         }
                         tempString
                     }
-                } else {
+                } else if (element.isNotEmpty()) {
                     added.add(element)
                 }
                 if (added.size >= 1) {

@@ -110,7 +110,7 @@ class ContributorsActivity : AppCompatActivity() {
             .url("https://api.github.com/repos/e-psi-lon/menu-self/contributors")
             .build()
         val response = client.newCall(request).execute()
-        val contributorsText = response.body?.string() ?: ""
+        val contributorsText = response.body.string()
         return JSONArray(contributorsText)
     }
 

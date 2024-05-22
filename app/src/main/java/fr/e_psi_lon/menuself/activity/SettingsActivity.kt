@@ -540,7 +540,7 @@ class SettingsActivity : AppCompatActivity() {
                 }"
             )
             .build()
-        val repoOutput = client.newCall(request).execute().body?.string() ?: ""
+        val repoOutput = client.newCall(request).execute().body.string()
         return try {
             val repoJson = JSONObject(repoOutput)
             val contentUrl =
@@ -549,7 +549,7 @@ class SettingsActivity : AppCompatActivity() {
                 Request.Builder()
                     .url(contentUrl)
                     .build()
-            ).execute().body?.string() ?: ""
+            ).execute().body.string()
             val contentJson = JSONObject(contentOutput)
             listOf(contentJson.getString("download_url"), contentJson.getLong("size").toString())
         } catch (e: Exception) {
